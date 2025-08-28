@@ -58,7 +58,7 @@
   </style>
 </head>
 <body>
-  <!-- Use your local logo instead of external ones -->
+  <!-- Local starball logo -->
   <img class="star" src="assets/ucl_logo.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
   <img class="star" src="assets/ucl_logo.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
 
@@ -126,7 +126,6 @@ const TEAMS_36 = [
 ];
 
 // ----- CRESTS mapping to your filenames -----
-// IMPORTANT: GitHub Pages alt dizinde çalışır; göreli yol kullan
 const CREST_BASE = 'crests';
 const CREST_MAP = {
   'Paris Saint-Germain': 'psg',
@@ -173,13 +172,18 @@ const norm = (s='') => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLower
 const byPot = (teams) => { const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
 const rngFactory = (seed) => { let s=(seed>>>0)||1; return ()=> (s=(1664525*s+1013904223)>>>0, s/2**32); };
 
-function orderFixturesByPotSequence(list){
-  const seq = [];
-  for(let p=1;p<=4;p++){
-    const chunk = list.filter(f=>f.pot===p).sort((A,B)=> A.opponent.localeCompare(B.opponent));
-    seq.push(...chunk);
+// NEW: Interleaved order P1,P2,P3,P4,P1,P2,P3,P4
+function orderFixturesInterleaved(list){
+  const pots = {1:[],2:[],3:[],4:[]};
+  for(const f of list){ pots[f.pot].push(f); }
+  for(let p=1;p<=4;p++){ pots[p].sort((A,B)=> A.opponent.localeCompare(B.opponent)); }
+  const out=[];
+  for(let round=0; round<2; round++){
+    for(let p=1;p<=4;p++){
+      if(pots[p][round]) out.push(pots[p][round]);
+    }
   }
-  return seq; // Pot1,Pot1,Pot2,Pot2,Pot3,Pot3,Pot4,Pot4
+  return out;
 }
 
 // ----- PAIRINGS with exact H/A via 2-SAT -----
@@ -273,7 +277,7 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
         const a = name<oname ? name : oname; const b = name<oname ? oname : name; const varId = varOf.get(`${a}__${b}`); const firstHome = assign[varId];
         const isHome = (name===a) ? firstHome : !firstHome; list.push({ opponent:oname, pot:p, home:isHome });
       }}
-      return { team: row.team, fixtures: orderFixturesByPotSequence(list) };
+      return { team: row.team, fixtures: orderFixturesInterleaved(list) };
     });
 
     return { ok:true, table: tableHA };
@@ -288,7 +292,7 @@ const $ = (sel) => document.querySelector(sel);
 function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
 function teamPanel(row, highlight=false){
-  const ordered = orderFixturesByPotSequence(row.fixtures);
+  const ordered = orderFixturesInterleaved(row.fixtures);
   const box = document.createElement('div'); box.className = 'tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight');
   const list = document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0';
   ordered.forEach(f=>{
@@ -310,7 +314,7 @@ function teamPanel(row, highlight=false){
 }
 
 function focusPanel(row, revealedNames){
-  const orderAll = orderFixturesByPotSequence(row.fixtures);
+  const orderAll = orderFixturesInterleaved(row.fixtures);
   const items = orderAll.filter(f=> revealedNames.includes(f.opponent));
   const box = document.createElement('div'); box.className='center';
   const tile = document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%';
@@ -374,7 +378,7 @@ function renderAll(){ while(focusMount.firstChild) focusMount.removeChild(focusM
 // ----- REVEAL -----
 function runFocusReveal(name, tableSrc){ if(!tableSrc) return; const focusRow = tableSrc.find(r=> r.team.name===name); if(!focusRow){ showError('Selected team not found.'); return; }
   phase='focus'; revealed=[]; revealToken++; const token = revealToken; clearError(); renderFocus(focusRow);
-  const ordered = orderFixturesByPotSequence(focusRow.fixtures);
+  const ordered = orderFixturesInterleaved(focusRow.fixtures);
   ordered.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken!==token) return; revealed.push(f.opponent); renderFocus(focusRow); if(revealed.length>=8){ phase='all'; renderAll(); } }, 650*(idx+1)); }); }
 
 // ----- START -----
