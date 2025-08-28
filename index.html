@@ -1,58 +1,81 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-
-/*
-  UCL Draw — Reborn v2.1 (EN, Fixed First-Click + Exact 4H/4A)
-  — Fix 1: First Start click now works. Cause was reading stale state (res) before setState applied.
-           We now pass the freshly computed table into reveal.
-  — Fix 2: Exact 4H/4A per team. 2‑SAT constraint now applies to ALL four pots (including own pot),
-           so each pot contributes exactly 1 Home among its two matches ⇒ total 4 Home / 4 Away.
-  — Fix 3: Other teams stay hidden until ALL 8 opponents of the selected club are revealed.
-  — UX: Start button has initial glow that disappears on first click. Typeahead shows all on focus, filters on typing.
-*/
-
-// ---------------- THEME ----------------
-const Theme = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Inter:wght@400;600;800&display=swap');
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UCL Draw — Standalone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
     :root{ --bg0:#050a22; --bg1:#0a1542; --accA:#0232FF; --accB:#7a3cff; --accC:#00eeff; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.18); --txt:#ffffff }
-    .stage{min-height:100vh; color:var(--txt); background:
+    *{box-sizing:border-box}
+    body{margin:0; color:var(--txt); background:
       radial-gradient(900px 520px at 10% -10%, rgba(122,60,255,.35), transparent 60%),
       radial-gradient(700px 420px at 110% 10%, rgba(0,238,255,.35), transparent 60%),
       linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 70%);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
+    .wrap{max-width:1120px; margin:0 auto; padding:16px}
     .h-display{font-family:'Barlow Condensed', Inter, sans-serif; letter-spacing:.02em; color:#fff}
-    .glass{background:var(--card); border:1px solid var(--border); backdrop-filter: blur(10px);}
-    .btn{border-radius:9999px; padding:.85rem 1.4rem; font-weight:800; font-family:'Barlow Condensed', Inter; letter-spacing:.02em;
+    .tile{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); border-radius:14px}
+    .tile.highlight{ border-color: rgba(0,238,255,.8); box-shadow: 0 0 0 2px rgba(0,238,255,.35), 0 0 32px rgba(0,238,255,.25), inset 0 0 24px rgba(2,50,255,.18); animation: glow 2.4s ease-in-out infinite alternate }
+    @keyframes glow{ from{ box-shadow: 0 0 0 2px rgba(0,238,255,.25), 0 0 18px rgba(0,238,255,.18), inset 0 0 12px rgba(2,50,255,.12)} to{ box-shadow: 0 0 0 2px rgba(0,238,255,.45), 0 0 36px rgba(0,238,255,.30), inset 0 0 24px rgba(2,50,255,.22)} }
+    .bar{background:linear-gradient(90deg, var(--accA), var(--accC)); color:#fff; border-radius:10px; font-weight:800}
+    .btn{border-radius:9999px; padding:.85rem 1.4rem; font-weight:800; font-family:'Barlow Condensed', Inter; letter-spacing:.02em; border:none; 
       background:linear-gradient(90deg,var(--accA),var(--accB)); color:#fff; box-shadow:0 10px 24px rgba(0,0,0,.35); cursor:pointer; transition:transform .08s ease, box-shadow .2s ease}
     .btn:hover{box-shadow:0 12px 28px rgba(0,0,0,.45)}
     .btn:active{transform:translateY(1px) scale(.98)}
     .btn:focus-visible{outline:3px solid rgba(0,238,255,.6); outline-offset:2px}
     .btn-glow{ animation: btnpulse 1.3s ease-in-out infinite; box-shadow:0 0 0 0 rgba(0,238,255,.45), 0 0 22px rgba(0,238,255,.35) }
     @keyframes btnpulse{ 0%{ box-shadow:0 0 0 0 rgba(0,238,255,.45), 0 0 22px rgba(0,238,255,.35)} 100%{ box-shadow:0 0 0 12px rgba(0,238,255,0), 0 0 10px rgba(0,238,255,.15)} }
-    .crest{width:18px; height:18px; border-radius:4px; object-fit:contain; background:transparent}
-    .star{position:absolute; opacity:.16; filter: drop-shadow(0 0 10px rgba(255,255,255,.25))}
-    .tile{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); border-radius:14px}
-    .tile.highlight{ border-color: rgba(0,238,255,.8); box-shadow: 0 0 0 2px rgba(0,238,255,.35), 0 0 32px rgba(0,238,255,.25), inset 0 0 24px rgba(2,50,255,.18); animation: glow 2.4s ease-in-out infinite alternate }
-    @keyframes glow{ from{ box-shadow: 0 0 0 2px rgba(0,238,255,.25), 0 0 18px rgba(0,238,255,.18), inset 0 0 12px rgba(2,50,255,.12)} to{ box-shadow: 0 0 0 2px rgba(0,238,255,.45), 0 0 36px rgba(0,238,255,.30), inset 0 0 24px rgba(2,50,255,.22)} }
-    .bar{background:linear-gradient(90deg, var(--accA), var(--accC)); color:#fff; border-radius:10px; font-weight:800}
-    .haTag{width:24px; height:18px; border-radius:4px; display:grid; place-items:center; font-weight:800; font-size:12px}
-    .h{background:#1e4bff}
-    .a{background:#00b2ff}
-    .reveal{animation: pop .28s cubic-bezier(.2,1,.2,1)}
-    @keyframes pop{ from{ transform: scale(.96); opacity:.4 } to{ transform: scale(1); opacity:1 } }
     .chooser{max-width:760px; margin:0 auto}
     .input{width:100%; padding:.8rem 1rem; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); color:#fff}
     .input::placeholder{ color: rgba(255,255,255,.55) }
     .suggest{position:absolute; z-index:20; width:100%; background:rgba(4,17,42,.96); border:1px solid rgba(255,255,255,.12); border-radius:12px; overflow:hidden; max-height:320px; overflow-y:auto}
     .suggest li{padding:.55rem .8rem; cursor:pointer}
     .suggest li:hover{background:rgba(255,255,255,.06)}
+    .row{display:flex; gap:8px; align-items:center}
+    .center{display:flex; flex-direction:column; align-items:center}
+    .mb2{margin-bottom:8px} .mb3{margin-bottom:12px} .mb4{margin-bottom:16px}
     .tag{font-size:11px; padding:.1rem .35rem; border-radius:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12)}
-    .pin-wrap{ max-width: 44rem; margin: 0 auto 1rem auto; }
-  `}</style>
-);
+    .haTag{width:24px; height:18px; border-radius:4px; display:grid; place-items:center; font-weight:800; font-size:12px}
+    .h{background:#1e4bff} .a{background:#00b2ff}
+    .grid{display:grid; gap:16px}
+    @media(min-width:640px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
+    @media(min-width:1024px){ .grid.cols-3{grid-template-columns:1fr 1fr 1fr} }
+    .crest{width:18px; height:18px; border-radius:4px; object-fit:contain; background:transparent}
+    .error{color:#ffd0d0; background:rgba(255,0,0,.1); border:1px solid rgba(255,0,0,.25); padding:8px 12px; border-radius:12px; text-align:center}
+    .star{position:absolute; opacity:.16; filter: drop-shadow(0 0 10px rgba(255,255,255,.25))}
+    .reveal{animation: pop .28s cubic-bezier(.2,1,.2,1)}
+    @keyframes pop{ from{ transform: scale(.96); opacity:.4 } to{ transform: scale(1); opacity:1 } }
+    .pin{max-width:44rem; margin: 0 auto 12px auto}
+  </style>
+</head>
+<body>
+  <img class="star" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
+  <img class="star" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/UEFA_Champions_League.svg/120px-UEFA_Champions_League.svg.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
 
-// ---------------- DATA (Official 36 clubs) ----------------
+  <div class="wrap">
+    <!-- chooser -->
+    <div class="center mb4">
+      <div class="chooser" style="position:relative; width:100%">
+        <label class="mb2" style="display:block; font-size:12px; opacity:.9">Your Team</label>
+        <input id="teamInput" class="input" placeholder="Type to search (e.g. Gala...)" />
+        <ul id="suggestList" class="suggest" style="display:none; margin-top:8px"></ul>
+      </div>
+      <button id="startBtn" class="btn btn-glow" style="margin-top:12px">Start</button>
+      <div id="selectedNote" style="font-size:12px; opacity:.8; margin-top:6px"></div>
+    </div>
+
+    <div id="errorBox" class="error" style="display:none"></div>
+
+    <div id="focusMount"></div>
+    <div id="allMount"></div>
+  </div>
+
+<script>
+// ----- DATA (official 36) -----
 const TEAMS_36 = [
   // Pot 1
   { name: 'Paris Saint-Germain', country: 'FRA', pot: 1 },
@@ -96,27 +119,54 @@ const TEAMS_36 = [
   { name: 'Kairat Almaty', country: 'KAZ', pot: 4 },
 ];
 
-// ---------------- CRESTS ----------------
-const CREST_SLUG = {
-  'Paris Saint-Germain': 'psg', 'Real Madrid': 'real-madrid', 'Manchester City': 'manchester-city', 'Bayern München': 'bayern-munich',
-  'Liverpool': 'liverpool', 'Inter': 'inter', 'Chelsea': 'chelsea', 'Borussia Dortmund': 'borussia-dortmund', 'Barcelona': 'barcelona',
-  'Arsenal': 'arsenal', 'Bayer Leverkusen': 'bayer-leverkusen', 'Atlético Madrid': 'atletico-madrid', 'Benfica': 'benfica', 'Atalanta': 'atalanta',
-  'Villarreal': 'villarreal', 'Juventus': 'juventus', 'Eintracht Frankfurt': 'eintracht-frankfurt', 'Club Brugge': 'club-brugge',
-  'Tottenham Hotspur': 'tottenham', 'PSV Eindhoven': 'psv', 'Ajax': 'ajax', 'Napoli': 'napoli', 'Sporting CP': 'sporting',
-  'Olympiacos': 'olympiacos', 'Slavia Praha': 'slavia-prague', 'Bodø/Glimt': 'bodo-glimt', 'Marseille': 'marseille',
-  'Copenhagen': 'fc-kobenhavn', 'Monaco': 'monaco', 'Galatasaray': 'galatasaray', 'Union SG': 'union-sg', 'Qarabağ': 'qarabag',
-  'Athletic Club': 'athletic-club', 'Newcastle United': 'newcastle', 'Pafos': 'pafos', 'Kairat Almaty': 'kairat'
+// ----- CRESTS mapping to your filenames -----
+const CREST_BASE = '/crests';
+const CREST_MAP = {
+  'Paris Saint-Germain': 'psg',
+  'Real Madrid': 'real',
+  'Manchester City': 'city',
+  'Bayern München': 'bayern',
+  'Liverpool': 'lfc',
+  'Inter': 'inter',
+  'Chelsea': 'cfc',
+  'Borussia Dortmund': 'bvb',
+  'Barcelona': 'barcelona',
+  'Arsenal': 'arsenal',
+  'Bayer Leverkusen': 'bayer',
+  'Atlético Madrid': 'atleti',
+  'Benfica': 'benfica',
+  'Atalanta': 'atalanta',
+  'Villarreal': 'villareal', // you saved as villareal.png
+  'Juventus': 'juve',
+  'Eintracht Frankfurt': 'frankfurt',
+  'Club Brugge': 'brugge',
+  'Tottenham Hotspur': 'spurs',
+  'PSV Eindhoven': 'psv',
+  'Ajax': 'ajax',
+  'Napoli': 'napoli',
+  'Sporting CP': 'sporting',
+  'Olympiacos': 'olympiacos',
+  'Slavia Praha': 'slavia',
+  'Bodø/Glimt': 'bodo',
+  'Marseille': 'marseille',
+  'Copenhagen': 'copenhagen', 'FC København': 'copenhagen',
+  'Monaco': 'monaco', 'AS Monaco': 'monaco',
+  'Galatasaray': 'gs',
+  'Union SG': 'union',
+  'Qarabağ': 'qarabag', 'Qarabag': 'qarabag',
+  'Athletic Club': 'athletic',
+  'Newcastle United': 'newcastle',
+  'Pafos': 'pafos',
+  'Kairat Almaty': 'kairat',
 };
-const CREST_BASE = "/crests";
-const crestFallback = (name) => { const n=encodeURIComponent(name); return `https://ui-avatars.com/api/?name=${n}&size=64&background=071033&color=E7F0FF&rounded=true&bold=true&length=2`; };
-const crestUrl = (name) => `${CREST_BASE}/${CREST_SLUG[name]||'missing'}.png`;
+function crestUrl(name){ const slug = CREST_MAP[name]; return slug? `${CREST_BASE}/${slug}.png` : `${CREST_BASE}/missing.png`; }
 
-// ---------------- UTILS ----------------
+// ----- UTILS -----
+const norm = (s='') => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const byPot = (teams) => { const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
 const rngFactory = (seed) => { let s=(seed>>>0)||1; return ()=> (s=(1664525*s+1013904223)>>>0, s/2**32); };
-const norm = (s) => (s||"").normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 
-// ---------------- PAIRINGS (greedy + 2-SAT for H/A) ----------------
+// ----- PAIRINGS with exact H/A via 2-SAT -----
 function buildPairings(teams, tries = 300, seedBase = Date.now()){
   const NEEDED_PER_POT = 2; const allPots=[1,2,3,4];
   const idxByPotInit = byPot(teams);
@@ -129,34 +179,28 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
     teams.forEach(t=>{ need.set(t.name,{1:2,2:2,3:2,4:2}); assoc.set(t.name,{}); opp.set(t.name,new Set()); byName.set(t.name,t); });
     allPots.forEach(p=> idxByPot[p] = [...idxByPotInit[p-1]]);
 
-    // tasks: for every team, two opponents from each pot
     const tasks = []; for(const t of teams){ for(const p of allPots){ tasks.push([t,p]); tasks.push([t,p]); } }
 
     function canPair(a,b,p){
       if(a.name===b.name) return false;
-      if(a.country===b.country) return false;                // no same-country
-      if(opp.get(a.name).has(b.name)) return false;          // avoid duplicate edges
-      if((assoc.get(a.name)[b.country]||0)>=2) return false; // <=2 per foreign association
+      if(a.country===b.country) return false;
+      if(opp.get(a.name).has(b.name)) return false;
+      if((assoc.get(a.name)[b.country]||0)>=2) return false;
       if((assoc.get(b.name)[a.country]||0)>=2) return false;
       if(need.get(a.name)[p]<=0) return false;
       if(need.get(b.name)[a.pot]<=0) return false;
       return true;
     }
-
     function candidatesFor(t,p){
       const list = idxByPot[p]; const out=[];
       for(const c of list){ if(canPair(t,c,p)) out.push(c); }
       out.sort((A,B)=>{
-        const aNeed = need.get(A.name)[t.pot]; const bNeed = need.get(B.name)[t.pot];
-        if(aNeed!==bNeed) return aNeed-bNeed;
-        const aAssoc = assoc.get(A.name)[t.country]||0; const bAssoc = assoc.get(B.name)[t.country]||0;
-        if(aAssoc!==bAssoc) return aAssoc-bAssoc;
-        const ar = countryFreq[A.country], br = countryFreq[B.country]; if(ar!==br) return ar-br;
-        return r()<0.5 ? -1 : 1;
+        const aNeed = need.get(A.name)[t.pot]; const bNeed = need.get(B.name)[t.pot]; if(aNeed!==bNeed) return aNeed-bNeed;
+        const aAssoc = assoc.get(A.name)[t.country]||0; const bAssoc = assoc.get(B.name)[t.country]||0; if(aAssoc!==bAssoc) return aAssoc-bAssoc;
+        const ar = countryFreq[A.country], br = countryFreq[B.country]; if(ar!==br) return ar-br; return r()<0.5 ? -1 : 1;
       });
       return out;
     }
-
     function place(a,b){
       opp.get(a.name).add(b.name); opp.get(b.name).add(a.name);
       need.get(a.name)[b.pot]--; need.get(b.name)[a.pot]--;
@@ -178,7 +222,6 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
       place(t,pick); tasks[bestIdx]=null;
     }
 
-    // build per-team opponents by pot
     const table = teams.map(t=>{
       const res={team:t,pots:{1:[],2:[],3:[],4:[]}};
       for(const oname of opp.get(t.name)){ res.pots[ byName.get(oname).pot ].push(oname); }
@@ -187,47 +230,32 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
     });
     if(table.some(x=>!x)) return null;
 
-    // ---------- H/A with exact constraints via 2-SAT on ALL pots ----------
-    // Variable per undirected edge (a__b) with a<b. True means 'a is Home'.
+    // H/A with 2-SAT (exactly one Home per pot among its two vs that pot)
     const edgeKeys = []; const varOf = new Map();
     const pushKey = (a,b)=>{ const key = a<b ? `${a}__${b}` : `${b}__${a}`; if(!varOf.has(key)){ varOf.set(key, edgeKeys.length); edgeKeys.push(key); } };
     for(const row of table){ for(const p of allPots){ for(const oname of row.pots[p]) pushKey(row.team.name, oname); }}
-    const M = edgeKeys.length; const N = M*2; // implication graph nodes
-    const adj = Array.from({length:N},()=>[]), radj = Array.from({length:N},()=>[]);
+    const M = edgeKeys.length; const N = M*2; const adj = Array.from({length:N},()=>[]), radj=Array.from({length:N},()=>[]);
     const lit = (team, other)=>{ const a = team<other ? team : other; const b = team<other ? other : team; const v = varOf.get(`${a}__${b}`); const neg = team!==a; return {v,neg}; };
-    const node = (x)=> x.v*2 + (x.neg?1:0);
-    const neg = (x)=> ({v:x.v, neg:!x.neg});
-    const imply = (u,v)=>{ adj[node(u)].push(node(v)); radj[node(v)].push(node(u)); };
-    const addOr = (u,v)=>{ imply(neg(u), v); imply(neg(v), u); };
-    const addXor = (u,v)=>{ addOr(u,v); addOr(neg(u), neg(v)); };
+    const node = (x)=> x.v*2 + (x.neg?1:0); const neg = (x)=> ({v:x.v, neg:!x.neg});
+    const imply=(u,v)=>{ adj[node(u)].push(node(v)); radj[node(v)].push(node(u)); };
+    const addOr=(u,v)=>{ imply(neg(u),v); imply(neg(v),u); };
+    const addXor=(u,v)=>{ addOr(u,v); addOr(neg(u),neg(v)); };
 
-    // For each team and each pot (including own pot), exactly one Home among its two matches
-    for(const row of table){
-      const t = row.team.name;
-      for(const p of allPots){ const opps = row.pots[p]; if(opps.length!==2) return null; const [o1,o2] = opps; addXor(lit(t,o1), lit(t,o2)); }
-    }
+    for(const row of table){ const t=row.team.name; for(const p of allPots){ const opps=row.pots[p]; if(opps.length!==2) return null; const [o1,o2]=opps; addXor(lit(t,o1), lit(t,o2)); } }
 
-    // 2-SAT solve (Kosaraju)
     const order=[]; const used=Array(N).fill(false);
     const dfs1=(u)=>{ used[u]=true; for(const v of adj[u]) if(!used[v]) dfs1(v); order.push(u); };
     for(let i=0;i<N;i++) if(!used[i]) dfs1(i);
-    const comp=Array(N).fill(-1); let j=0;
-    const dfs2=(u,c)=>{ comp[u]=c; for(const v of radj[u]) if(comp[v]===-1) dfs2(v,c); };
+    const comp=Array(N).fill(-1); let j=0; const dfs2=(u,c)=>{ comp[u]=c; for(const v of radj[u]) if(comp[v]===-1) dfs2(v,c); };
     for(let i=N-1;i>=0;i--){ const v=order[i]; if(comp[v]===-1) dfs2(v,j++); }
     const assign=Array(M).fill(false);
-    for(let v=0; v<M; v++){
-      if(comp[2*v]===comp[2*v+1]) return null; // UNSAT: retry
-      assign[v] = comp[2*v] > comp[2*v+1];
-    }
+    for(let v=0; v<M; v++){ if(comp[2*v]===comp[2*v+1]) return null; assign[v]= comp[2*v] > comp[2*v+1]; }
 
-    // Build fixtures with H/A from assignment
     const tableHA = table.map(row=>{
       const list=[]; const name=row.team.name;
       for(const p of allPots){ for(const oname of row.pots[p]){
-        const a = name<oname ? name : oname; const b = name<oname ? oname : name;
-        const varId = varOf.get(`${a}__${b}`); const firstHome = assign[varId];
-        const isHome = (name===a) ? firstHome : !firstHome;
-        list.push({ opponent:oname, pot:p, home:isHome });
+        const a = name<oname ? name : oname; const b = name<oname ? oname : name; const varId = varOf.get(`${a}__${b}`); const firstHome = assign[varId];
+        const isHome = (name===a) ? firstHome : !firstHome; list.push({ opponent:oname, pot:p, home:isHome });
       }}
       list.sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
       return { team: row.team, fixtures: list };
@@ -240,195 +268,105 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
   return { ok:false, error:`Could not find a valid pairing after ${tries} attempts.` };
 }
 
-// ---------------- UI PARTS ----------------
-function TeamPanel({row, highlight=false}){
-  const team = row.team;
-  return (
-    <div className={`tile p-3 reveal ${highlight? 'highlight' : ''}`}>
-      <ul className="space-y-1 mb-3">
-        {row.fixtures.map((f,i)=> (
-          <li key={i} className="flex items-center justify-between gap-2 px-2 py-1 rounded-lg border border-white/10">
-            <div className="flex items-center gap-2 min-w-0">
-              <img className="crest" src={crestUrl(f.opponent)} onError={(e)=>{e.currentTarget.src=crestFallback(f.opponent)}} alt={f.opponent} />
-              <span className="truncate">{f.opponent}</span>
-              <span className="tag">Pot {f.pot}</span>
-            </div>
-            <div className={`haTag ${f.home? 'h':'a'}`}>{f.home? 'H':'A'}</div>
-          </li>
-        ))}
-      </ul>
-      <div className="bar px-3 py-2 flex items-center gap-2">
-        <img className="crest" src={crestUrl(team.name)} onError={(e)=>{e.currentTarget.src=crestFallback(team.name)}} alt={team.name} />
-        <div className="h-display text-lg truncate">{team.name}</div>
-      </div>
-    </div>
-  );
+// ----- UI helpers -----
+const $ = (sel) => document.querySelector(sel);
+function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
+
+function teamPanel(row, highlight=false){
+  const box = document.createElement('div'); box.className = 'tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight');
+  const list = document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0';
+  row.fixtures.forEach(f=>{
+    const li = document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
+    const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
+    const img = document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src = CREST_BASE + '/missing.png'; };
+    const nameSpan = document.createElement('span'); nameSpan.textContent=f.opponent; nameSpan.style.whiteSpace='nowrap'; nameSpan.style.overflow='hidden'; nameSpan.style.textOverflow='ellipsis';
+    const tag = document.createElement('span'); tag.className='tag'; tag.textContent='Pot ' + f.pot; tag.style.marginLeft='8px';
+    left.append(img, nameSpan, tag);
+    const ha = document.createElement('div'); ha.className = 'haTag ' + (f.home?'h':'a'); ha.textContent = f.home? 'H':'A';
+    li.append(left, ha); list.appendChild(li);
+  });
+  const bar = document.createElement('div'); bar.className='bar row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center';
+  const timg = document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src = CREST_BASE + '/missing.png'; };
+  const tname = document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.style.overflow='hidden'; tname.style.textOverflow='ellipsis'; tname.textContent=row.team.name;
+  bar.append(timg, tname);
+  box.append(list, bar);
+  return box;
 }
 
-function FocusPanel({row, revealed}){
-  const team = row.team;
-  const items = row.fixtures
-    .filter(f=> revealed.includes(f.opponent))
-    .sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
-  return (
-    <div className="max-w-2xl mx-auto">
-      <div className="tile p-3 highlight">
-        <ul className="space-y-1 mb-3">
-          {items.map((f,i)=> (
-            <li key={i} className="reveal flex items-center justify-between gap-2 px-2 py-1 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 min-w-0">
-                <img className="crest" src={crestUrl(f.opponent)} onError={(e)=>{e.currentTarget.src=crestFallback(f.opponent)}} alt={f.opponent} />
-                <span className="truncate">{f.opponent}</span>
-                <span className="tag">Pot {f.pot}</span>
-              </div>
-              <div className={`haTag ${f.home? 'h':'a'}`}>{f.home? 'H':'A'}</div>
-            </li>
-          ))}
-        </ul>
-        <div className="bar px-3 py-2 flex items-center gap-2">
-          <img className="crest" src={crestUrl(team.name)} onError={(e)=>{e.currentTarget.src=crestFallback(team.name)}} alt={team.name} />
-          <div className="h-display text-lg truncate">{team.name}</div>
-        </div>
-      </div>
-    </div>
-  );
+function focusPanel(row, revealedNames){
+  const box = document.createElement('div'); box.className='center';
+  const tile = document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%';
+  const ul = document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0';
+  row.fixtures.filter(f=>revealedNames.includes(f.opponent)).sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent)).forEach(f=>{
+    const li = document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
+    const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
+    const img = document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; };
+    const span = document.createElement('span'); span.textContent=f.opponent; span.style.whiteSpace='nowrap'; span.style.overflow='hidden'; span.style.textOverflow='ellipsis';
+    const tag = document.createElement('span'); tag.className='tag'; tag.textContent='Pot ' + f.pot; tag.style.marginLeft='8px';
+    const ha = document.createElement('div'); ha.className='haTag ' + (f.home?'h':'a'); ha.textContent=f.home?'H':'A';
+    left.append(img, span, tag); li.append(left, ha); ul.appendChild(li);
+  });
+  const bar = document.createElement('div'); bar.className='bar row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center';
+  const timg = document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; };
+  const tname = document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.textContent=row.team.name;
+  bar.append(timg, tname);
+  tile.append(ul, bar); box.appendChild(tile); return box;
 }
 
-function Typeahead({value, setValue, suggestions, onPick, onEnterSelect}){
-  const [focused, setFocused] = useState(false);
-  const open = focused && suggestions.length>0;
-  return (
-    <div className="chooser relative">
-      <label className="block text-sm mb-1 opacity-90">Your Team</label>
-      <input
-        className="input"
-        placeholder="Type to search (e.g. Gala...)"
-        value={value}
-        onChange={e=> setValue(e.target.value)}
-        onFocus={()=> setFocused(true)}
-        onBlur={()=> setTimeout(()=> setFocused(false),50)}
-        onKeyDown={(e)=>{
-          if(e.key==='Enter'){ e.preventDefault(); onEnterSelect(); }
-          if(e.key==='Escape'){ setFocused(false); }
-        }}
-      />
-      {open && (
-        <ul className="suggest mt-2">
-          {suggestions.slice(0,36).map((t,i)=> (
-            <li key={i} onMouseDown={(e)=>{ e.preventDefault(); onPick(t.name); setFocused(false); }}>
-              {t.name} <span className="opacity-60 text-xs">({t.country})</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
+// ----- STATE -----
+let selected = '';
+let res = null; // { ok, table }
+let phase = 'idle'; // idle | focus | all
+let revealed = [];
+let revealToken = 0;
+let startGlow = true;
 
-// ---------------- ROOT ----------------
-export default function UCLDrawRebornV21(){
-  const [value, setValue] = useState("");
-  const [selected, setSelected] = useState("");
-  const [res, setRes] = useState(null); // { ok, table }
-  const [phase, setPhase] = useState('idle'); // idle | focus | all
-  const [revealed, setRevealed] = useState([]); // opponent names revealed for focus team
-  const [error, setError] = useState('');
-  const [startGlow, setStartGlow] = useState(true);
-  const revealToken = useRef(0); // cancels stale reveals when changing team
+// ----- TYPEAHEAD -----
+const input = $('#teamInput');
+const listEl = $('#suggestList');
 
-  const star1 = 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png';
-  const star2 = 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/UEFA_Champions_League.svg/120px-UEFA_Champions_League.svg.png';
+function currentSuggestions(){ const q=norm(input.value); if(!q) return TEAMS_36; return TEAMS_36.filter(t=> norm(t.name).startsWith(q)); }
+function openSuggest(){ const sug = currentSuggestions(); fillSuggest(sug); listEl.style.display = 'block'; }
+function closeSuggest(){ listEl.style.display = 'none'; }
+function fillSuggest(items){ clear(listEl); items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent = `${t.name} (${t.country})`; li.onmousedown = (e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
+function pickTeam(name){ selected = name; input.value = name; $('#selectedNote').textContent = 'Selected: ' + name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table); } else { phase='all'; renderAll(); } } }
 
-  const suggestions = useMemo(()=>{
-    const q = norm(value);
-    if(!q) return TEAMS_36; // focus shows all, typing filters
-    return TEAMS_36.filter(t=> norm(t.name).startsWith(q));
-  },[value]);
+input.addEventListener('focus', ()=> openSuggest());
+input.addEventListener('blur', ()=> setTimeout(closeSuggest, 60));
+input.addEventListener('input', ()=>{ const sug = currentSuggestions(); fillSuggest(sug); listEl.style.display = 'block'; });
+input.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ e.preventDefault(); const q=norm(input.value); const exact = TEAMS_36.find(t=> norm(t.name)===q); if(exact) pickTeam(exact.name); else { const sug=currentSuggestions(); if(sug.length>0) pickTeam(sug[0].name); } closeSuggest(); }
+  if(e.key==='Escape'){ closeSuggest(); }
+});
 
-  function pickTeam(name){ setSelected(name); setValue(name); }
+// ----- RENDER MOUNTS -----
+const focusMount = $('#focusMount');
+const allMount = $('#allMount');
+const errorBox = $('#errorBox');
 
-  function onEnterSelect(){
-    // Enter only selects, does NOT start draw
-    const q = norm(value);
-    if(!q && suggestions.length>0){ pickTeam(suggestions[0].name); return; }
-    const exact = TEAMS_36.find(t=> norm(t.name) === q);
-    if(exact){ pickTeam(exact.name); return; }
-    if(suggestions.length>0){ pickTeam(suggestions[0].name); }
-  }
+function showError(msg){ errorBox.textContent = msg; errorBox.style.display = 'block'; }
+function clearError(){ errorBox.style.display = 'none'; errorBox.textContent=''; }
 
-  // Reveal that can work with fresh table data (first click fix)
-  function runFocusReveal(name, tableSrc){
-    const table = tableSrc || res?.table;
-    if(!table) return;
-    const focusRow = table.find(r=> r.team.name === name);
-    if(!focusRow){ setError('Selected team not found in results.'); return; }
-    const token = ++revealToken.current;
-    setPhase('focus');
-    setRevealed([]);
-    const ordered = [...focusRow.fixtures].sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
-    ordered.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken.current!==token) return; setRevealed(prev=> [...prev, f.opponent]); }, 650*(idx+1)); });
-    // others gated by effect
-  }
+function renderFocus(row){ clear(focusMount); clear(allMount); focusMount.appendChild(focusPanel(row, revealed)); }
+function renderAll(){ clear(focusMount); clear(allMount); if(!res) return; const pinned = res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others = res.table.filter(r=> r!==pinned);
+  const pinWrap = document.createElement('div'); pinWrap.className = 'pin'; pinWrap.appendChild(teamPanel(pinned, true)); allMount.appendChild(pinWrap);
+  const grid = document.createElement('div'); grid.className = 'grid cols-1 cols-2 cols-3'; allMount.appendChild(grid);
+  others.forEach(row=> grid.appendChild(teamPanel(row, false))); }
 
-  // Gate: do not show others until all 8 are revealed
-  useEffect(()=>{ if(phase==='focus' && revealed.length>=8){ setPhase('all'); } },[phase, revealed]);
+// ----- REVEAL -----
+function runFocusReveal(name, tableSrc){ if(!tableSrc) return; const focusRow = tableSrc.find(r=> r.team.name===name); if(!focusRow){ showError('Selected team not found.'); return; }
+  phase='focus'; revealed=[]; revealToken++; const token = revealToken; clearError(); renderFocus(focusRow);
+  const ordered = [...focusRow.fixtures].sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
+  ordered.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken!==token) return; revealed.push(f.opponent); renderFocus(focusRow); if(revealed.length>=8){ phase='all'; renderAll(); } }, 650*(idx+1)); }); }
 
-  function start(){
-    setError(''); setStartGlow(false);
-    const chosen = selected || (suggestions[0]?.name || "");
-    if(!chosen){ setError('Please type and pick a team.'); return; }
-    const out = buildPairings(TEAMS_36, 500);
-    if(!out.ok){ setError(out.error); return; }
-    setRes(out);
-    runFocusReveal(chosen, out.table); // use fresh table to avoid first-click noop
-  }
-
-  function handlePick(name){
-    pickTeam(name);
-    if(!res) return; // no draw yet
-    if(phase==='focus') runFocusReveal(name, res.table); // keep focus until 8 revealed
-    else setPhase('all'); // already revealed; just pin
-  }
-
-  const pinnedRow = res?.table.find(r=> r.team.name === (selected||value));
-  const others = res?.table.filter(r=> r.team.name !== (selected||value)) || [];
-
-  return (
-    <div className="stage relative">
-      <Theme />
-      {/* decorative starballs */}
-      <img className="star" src={star1} alt="starball" style={{top:18,left:18,width:80,height:80}} />
-      <img className="star" src={star2} alt="starball" style={{bottom:18,right:18,width:90,height:90}} />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
-        {/* Team chooser + Start */}
-        <div className="flex flex-col items-center gap-3 mb-4">
-          <Typeahead value={value} setValue={setValue} suggestions={suggestions} onPick={handlePick} onEnterSelect={onEnterSelect} />
-          <button onClick={start} className={`btn ${startGlow? 'btn-glow':''}`}>Start</button>
-          {selected && <div className="text-xs opacity-80">Selected: <b>{selected}</b></div>}
-        </div>
-
-        {error && <div className="text-sm text-red-300 bg-red-900/30 border border-red-500/30 rounded-xl px-3 py-2 text-center mb-4">{error}</div>}
-
-        {/* Focus reveal only (others hidden until all 8 are shown) */}
-        {phase==='focus' && res && pinnedRow && (
-          <FocusPanel row={pinnedRow} revealed={revealed} />
-        )}
-
-        {/* After reveal: pinned highlight on top center, then the rest */}
-        {phase==='all' && res && (
-          <>
-            {pinnedRow && (
-              <div className="pin-wrap">
-                <TeamPanel row={pinnedRow} highlight={true} />
-              </div>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {others.map((row,i)=> <TeamPanel key={i} row={row} />)}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
+// ----- START -----
+const startBtn = $('#startBtn');
+startBtn.addEventListener('click', ()=>{
+  clearError(); if(startGlow){ startBtn.classList.remove('btn-glow'); startGlow=false; }
+  const chosen = selected || (currentSuggestions()[0]?.name || ''); if(!chosen){ showError('Please type and pick a team.'); return; }
+  const out = buildPairings(TEAMS_36, 500); if(!out || !out.ok){ showError(out?.error || 'Pairing failed.'); return; }
+  res = out; runFocusReveal(chosen, out.table);
+});
+</script>
+</body>
+</html>
