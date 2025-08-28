@@ -8,12 +8,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+    html, body { height: 100%; }
     :root{ --bg0:#050a22; --bg1:#0a1542; --accA:#0232FF; --accB:#7a3cff; --accC:#00eeff; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.18); --txt:#ffffff }
     *{box-sizing:border-box}
-    body{margin:0; color:var(--txt); background:
-      radial-gradient(900px 520px at 10% -10%, rgba(122,60,255,.35), transparent 60%),
-      radial-gradient(700px 420px at 110% 10%, rgba(0,238,255,.35), transparent 60%),
-      linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 70%);
+    body{margin:0; color:var(--txt);
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(122,60,255,.35), transparent 60%),
+        radial-gradient(700px 420px at 110% 10%, rgba(0,238,255,.35), transparent 60%),
+        linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 70%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
     .wrap{max-width:1120px; margin:0 auto; padding:16px}
@@ -53,8 +58,9 @@
   </style>
 </head>
 <body>
-  <img class="star" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
-  <img class="star" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/UEFA_Champions_League.svg/120px-UEFA_Champions_League.svg.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
+  <!-- Use your local logo instead of external ones -->
+  <img class="star" src="assets/ucl_logo.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
+  <img class="star" src="assets/ucl_logo.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
 
   <div class="wrap">
     <!-- chooser -->
@@ -120,7 +126,8 @@ const TEAMS_36 = [
 ];
 
 // ----- CRESTS mapping to your filenames -----
-const CREST_BASE = './crests';
+// IMPORTANT: GitHub Pages alt dizinde çalışır; göreli yol kullan
+const CREST_BASE = 'crests';
 const CREST_MAP = {
   'Paris Saint-Germain': 'psg',
   'Real Madrid': 'real',
@@ -136,7 +143,7 @@ const CREST_MAP = {
   'Atlético Madrid': 'atleti',
   'Benfica': 'benfica',
   'Atalanta': 'atalanta',
-  'Villarreal': 'villareal', // you saved as villareal.png
+  'Villarreal': 'villareal',
   'Juventus': 'juve',
   'Eintracht Frankfurt': 'frankfurt',
   'Club Brugge': 'brugge',
@@ -165,6 +172,15 @@ function crestUrl(name){ const slug = CREST_MAP[name]; return slug? `${CREST_BAS
 const norm = (s='') => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const byPot = (teams) => { const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
 const rngFactory = (seed) => { let s=(seed>>>0)||1; return ()=> (s=(1664525*s+1013904223)>>>0, s/2**32); };
+
+function orderFixturesByPotSequence(list){
+  const seq = [];
+  for(let p=1;p<=4;p++){
+    const chunk = list.filter(f=>f.pot===p).sort((A,B)=> A.opponent.localeCompare(B.opponent));
+    seq.push(...chunk);
+  }
+  return seq; // Pot1,Pot1,Pot2,Pot2,Pot3,Pot3,Pot4,Pot4
+}
 
 // ----- PAIRINGS with exact H/A via 2-SAT -----
 function buildPairings(teams, tries = 300, seedBase = Date.now()){
@@ -257,8 +273,7 @@ function buildPairings(teams, tries = 300, seedBase = Date.now()){
         const a = name<oname ? name : oname; const b = name<oname ? oname : name; const varId = varOf.get(`${a}__${b}`); const firstHome = assign[varId];
         const isHome = (name===a) ? firstHome : !firstHome; list.push({ opponent:oname, pot:p, home:isHome });
       }}
-      list.sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
-      return { team: row.team, fixtures: list };
+      return { team: row.team, fixtures: orderFixturesByPotSequence(list) };
     });
 
     return { ok:true, table: tableHA };
@@ -273,9 +288,10 @@ const $ = (sel) => document.querySelector(sel);
 function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
 function teamPanel(row, highlight=false){
+  const ordered = orderFixturesByPotSequence(row.fixtures);
   const box = document.createElement('div'); box.className = 'tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight');
   const list = document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0';
-  row.fixtures.forEach(f=>{
+  ordered.forEach(f=>{
     const li = document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
     const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
     const img = document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src = CREST_BASE + '/missing.png'; };
@@ -294,10 +310,12 @@ function teamPanel(row, highlight=false){
 }
 
 function focusPanel(row, revealedNames){
+  const orderAll = orderFixturesByPotSequence(row.fixtures);
+  const items = orderAll.filter(f=> revealedNames.includes(f.opponent));
   const box = document.createElement('div'); box.className='center';
   const tile = document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%';
   const ul = document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0';
-  row.fixtures.filter(f=>revealedNames.includes(f.opponent)).sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent)).forEach(f=>{
+  items.forEach(f=>{
     const li = document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
     const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
     const img = document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; };
@@ -322,14 +340,14 @@ let revealToken = 0;
 let startGlow = true;
 
 // ----- TYPEAHEAD -----
-const input = $('#teamInput');
-const listEl = $('#suggestList');
+const input = document.querySelector('#teamInput');
+const listEl = document.querySelector('#suggestList');
 
 function currentSuggestions(){ const q=norm(input.value); if(!q) return TEAMS_36; return TEAMS_36.filter(t=> norm(t.name).startsWith(q)); }
 function openSuggest(){ const sug = currentSuggestions(); fillSuggest(sug); listEl.style.display = 'block'; }
 function closeSuggest(){ listEl.style.display = 'none'; }
-function fillSuggest(items){ clear(listEl); items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent = `${t.name} (${t.country})`; li.onmousedown = (e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
-function pickTeam(name){ selected = name; input.value = name; $('#selectedNote').textContent = 'Selected: ' + name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table); } else { phase='all'; renderAll(); } } }
+function fillSuggest(items){ while(listEl.firstChild) listEl.removeChild(listEl.firstChild); items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent = `${t.name} (${t.country})`; li.onmousedown = (e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
+function pickTeam(name){ selected = name; input.value = name; document.querySelector('#selectedNote').textContent = 'Selected: ' + name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table); } else { phase='all'; renderAll(); } } }
 
 input.addEventListener('focus', ()=> openSuggest());
 input.addEventListener('blur', ()=> setTimeout(closeSuggest, 60));
@@ -340,15 +358,15 @@ input.addEventListener('keydown', (e)=>{
 });
 
 // ----- RENDER MOUNTS -----
-const focusMount = $('#focusMount');
-const allMount = $('#allMount');
-const errorBox = $('#errorBox');
+const focusMount = document.querySelector('#focusMount');
+const allMount = document.querySelector('#allMount');
+const errorBox = document.querySelector('#errorBox');
 
 function showError(msg){ errorBox.textContent = msg; errorBox.style.display = 'block'; }
 function clearError(){ errorBox.style.display = 'none'; errorBox.textContent=''; }
 
-function renderFocus(row){ clear(focusMount); clear(allMount); focusMount.appendChild(focusPanel(row, revealed)); }
-function renderAll(){ clear(focusMount); clear(allMount); if(!res) return; const pinned = res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others = res.table.filter(r=> r!==pinned);
+function renderFocus(row){ while(focusMount.firstChild) focusMount.removeChild(focusMount.firstChild); while(allMount.firstChild) allMount.removeChild(allMount.firstChild); focusMount.appendChild(focusPanel(row, revealed)); }
+function renderAll(){ while(focusMount.firstChild) focusMount.removeChild(focusMount.firstChild); while(allMount.firstChild) allMount.removeChild(allMount.firstChild); if(!res) return; const pinned = res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others = res.table.filter(r=> r!==pinned);
   const pinWrap = document.createElement('div'); pinWrap.className = 'pin'; pinWrap.appendChild(teamPanel(pinned, true)); allMount.appendChild(pinWrap);
   const grid = document.createElement('div'); grid.className = 'grid cols-1 cols-2 cols-3'; allMount.appendChild(grid);
   others.forEach(row=> grid.appendChild(teamPanel(row, false))); }
@@ -356,11 +374,11 @@ function renderAll(){ clear(focusMount); clear(allMount); if(!res) return; const
 // ----- REVEAL -----
 function runFocusReveal(name, tableSrc){ if(!tableSrc) return; const focusRow = tableSrc.find(r=> r.team.name===name); if(!focusRow){ showError('Selected team not found.'); return; }
   phase='focus'; revealed=[]; revealToken++; const token = revealToken; clearError(); renderFocus(focusRow);
-  const ordered = [...focusRow.fixtures].sort((A,B)=> A.pot-B.pot || A.opponent.localeCompare(B.opponent));
+  const ordered = orderFixturesByPotSequence(focusRow.fixtures);
   ordered.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken!==token) return; revealed.push(f.opponent); renderFocus(focusRow); if(revealed.length>=8){ phase='all'; renderAll(); } }, 650*(idx+1)); }); }
 
 // ----- START -----
-const startBtn = $('#startBtn');
+const startBtn = document.querySelector('#startBtn');
 startBtn.addEventListener('click', ()=>{
   clearError(); if(startGlow){ startBtn.classList.remove('btn-glow'); startGlow=false; }
   const chosen = selected || (currentSuggestions()[0]?.name || ''); if(!chosen){ showError('Please type and pick a team.'); return; }
