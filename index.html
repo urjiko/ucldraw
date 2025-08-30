@@ -3,37 +3,48 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UCL Draw — Standalone</title>
+  <title>UEFA Draw — Standalone</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     html, body { height: 100%; }
-    :root{ --bg0:#050a22; --bg1:#0a1542; --accA:#0232FF; --accB:#7a3cff; --accC:#00eeff; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.18); --txt:#ffffff }
-    *{box-sizing:border-box}
-    body{margin:0; color:var(--txt);
-      background:
-        radial-gradient(900px 520px at 10% -10%, rgba(122,60,255,.35), transparent 60%),
-        radial-gradient(700px 420px at 110% 10%, rgba(0,238,255,.35), transparent 60%),
-        linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 70%);
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    :root{
+      --txt:#ffffff;
+      /* bars */
+      --uclBar1:#0232FF; --uclBar2:#00eeff;
+      --uelBar1:#000000; --uelBar2:#ff5f00;
+      /* HA tags + highlight + glow (UCL default) */
+      --haH:#1e4bff; --haA:#00b2ff; /* H / A backgrounds */
+      --hiEdge: rgba(0,238,255,.45); --hiOuter: rgba(0,238,255,.30); --hiInner: rgba(2,50,255,.22);
+      --glow1: rgba(0,238,255,.55); --glow2: rgba(0,238,255,.35);
     }
+    body.theme-uel{
+      /* swap background */
+      background: url('assets/arkaplanuel.jpg') no-repeat center center fixed; background-size: cover;
+      /* UEL palette overrides */
+      --haH:#ff5f00; --haA:#111111;
+      --hiEdge: rgba(255,95,0,.65); --hiOuter: rgba(255,95,0,.36); --hiInner: rgba(255,95,0,.22);
+      --glow1: rgba(255,95,0,.7); --glow2: rgba(255,95,0,.45);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; color:var(--txt); background: url('assets/arkaplanucl.jpg') no-repeat center center fixed; background-size: cover; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
     .wrap{max-width:1120px; margin:0 auto; padding:16px}
     .h-display{font-family:'Barlow Condensed', Inter, sans-serif; letter-spacing:.02em; color:#fff}
     .tile{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); border-radius:14px}
-    .tile.highlight{ border-color: rgba(0,238,255,.8); box-shadow: 0 0 0 2px rgba(0,238,255,.35), 0 0 32px rgba(0,238,255,.25), inset 0 0 24px rgba(2,50,255,.18); animation: glow 2.4s ease-in-out infinite alternate }
-    @keyframes glow{ from{ box-shadow: 0 0 0 2px rgba(0,238,255,.25), 0 0 18px rgba(0,238,255,.18), inset 0 0 12px rgba(2,50,255,.12)} to{ box-shadow: 0 0 0 2px rgba(0,238,255,.45), 0 0 36px rgba(0,238,255,.30), inset 0 0 24px rgba(2,50,255,.22)} }
-    .bar{background:linear-gradient(90deg, var(--accA), var(--accC)); color:#fff; border-radius:10px; font-weight:800}
-    .btn{border-radius:9999px; padding:.85rem 1.4rem; font-weight:800; font-family:'Barlow Condensed', Inter; letter-spacing:.02em; border:none; 
-      background:linear-gradient(90deg,var(--accA),var(--accB)); color:#fff; box-shadow:0 10px 24px rgba(0,0,0,.35); cursor:pointer; transition:transform .08s ease, box-shadow .2s ease}
-    .btn:hover{box-shadow:0 12px 28px rgba(0,0,0,.45)}
-    .btn:active{transform:translateY(1px) scale(.98)}
-    .btn:focus-visible{outline:3px solid rgba(0,238,255,.6); outline-offset:2px}
-    .btn-glow{ animation: btnpulse 1.3s ease-in-out infinite; box-shadow:0 0 0 0 rgba(0,238,255,.45), 0 0 22px rgba(0,238,255,.35) }
-    @keyframes btnpulse{ 0%{ box-shadow:0 0 0 0 rgba(0,238,255,.45), 0 0 22px rgba(0,238,255,.35)} 100%{ box-shadow:0 0 0 12px rgba(0,238,255,0), 0 0 10px rgba(0,238,255,.15)} }
+    .tile.highlight{ border-color: var(--hiEdge); box-shadow: 0 0 0 2px var(--hiEdge), 0 0 32px var(--hiOuter), inset 0 0 24px var(--hiInner); animation: glow 2.4s ease-in-out infinite alternate }
+    @keyframes glow{ from{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 18px var(--hiOuter), inset 0 0 12px var(--hiInner)} to{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 36px var(--hiOuter), inset 0 0 24px var(--hiInner)} }
+    .bar{ color:#fff; border-radius:10px; font-weight:800 }
+    .bar.ucl{ background:linear-gradient(90deg, var(--uclBar1), var(--uclBar2)); }
+    .bar.uel{ background:linear-gradient(90deg, var(--uelBar1), var(--uelBar2)); }
+    /* Start button theming */
+    #startBtn{border-radius:9999px; padding:.85rem 1.4rem; font-weight:800; font-family:'Barlow Condensed', Inter; letter-spacing:.02em; border:none; background:linear-gradient(90deg,#0232FF,#7a3cff); color:#fff; box-shadow:0 10px 24px rgba(0,0,0,.35); cursor:pointer; transition:transform .08s ease, box-shadow .2s ease}
+    body.theme-uel #startBtn{ background:linear-gradient(90deg, #000000, #ff5f00) }
+    #startBtn:hover{box-shadow:0 12px 28px rgba(0,0,0,.45)} #startBtn:active{transform:translateY(1px) scale(.98)} #startBtn:focus-visible{outline:3px solid rgba(255,255,255,.6); outline-offset:2px}
+    /* Pulsing glow uses variables so palette switches with theme */
+    .btn-glow{ animation: btnpulse 1.3s ease-in-out infinite; box-shadow:0 0 0 0 var(--glow1), 0 0 22px var(--glow2) }
+    @keyframes btnpulse{ 0%{ box-shadow:0 0 0 0 var(--glow1), 0 0 22px var(--glow2)} 100%{ box-shadow:0 0 0 12px rgba(0,0,0,0), 0 0 10px var(--glow2)} }
+
     .chooser{max-width:760px; margin:0 auto}
     .input{width:100%; padding:.8rem 1rem; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); color:#fff}
     .input::placeholder{ color: rgba(255,255,255,.55) }
@@ -42,10 +53,10 @@
     .suggest li:hover{background:rgba(255,255,255,.06)}
     .row{display:flex; gap:8px; align-items:center}
     .center{display:flex; flex-direction:column; align-items:center}
-    .mb2{margin-bottom:8px} .mb3{margin-bottom:12px} .mb4{margin-bottom:16px}
+    .mb2{margin-bottom:8px} .mb4{margin-bottom:16px}
     .tag{font-size:11px; padding:.1rem .35rem; border-radius:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12)}
-    .haTag{width:24px; height:18px; border-radius:4px; display:grid; place-items:center; font-weight:800; font-size:12px}
-    .h{background:#1e4bff} .a{background:#00b2ff}
+    .haTag{width:24px; height:18px; border-radius:4px; display:grid; place-items:center; font-weight:800; font-size:12px; color:#fff}
+    .h{background:var(--haH)} .a{background:var(--haA)}
     .grid{display:grid; gap:16px}
     @media(min-width:640px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
     @media(min-width:1024px){ .grid.cols-3{grid-template-columns:1fr 1fr 1fr} }
@@ -58,20 +69,25 @@
   </style>
 </head>
 <body>
-  <!-- Local starball logo -->
-  <img class="star" src="assets/ucl_logo.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
-  <img class="star" src="assets/ucl_logo.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
+  <!-- Logos swap per competition -->
+  <img id="starTop" class="star" src="assets/ucl_logo.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
+  <img id="starBottom" class="star" src="assets/ucl_logo.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
 
   <div class="wrap">
-    <!-- chooser -->
+    <div class="center mb4">
+      <div class="row" style="gap:12px; flex-wrap:wrap; justify-content:center">
+        <button id="btnUCL" class="btn">Champions League</button>
+        <button id="btnUEL" class="btn" style="background:linear-gradient(90deg,#000,#ff5f00)">Europa League</button>
+      </div>
+    </div>
+
     <div class="center mb4">
       <div class="chooser" style="position:relative; width:100%">
         <label class="mb2" style="display:block; font-size:12px; opacity:.9">Your Team</label>
-        <input id="teamInput" class="input" placeholder="Type to search (e.g. Gala...)" />
+        <input id="teamInput" class="input" placeholder="Type to search" />
         <ul id="suggestList" class="suggest" style="display:none; margin-top:8px"></ul>
       </div>
-      <button id="startBtn" class="btn btn-glow" style="margin-top:12px">Start</button>
-      <div id="selectedNote" style="font-size:12px; opacity:.8; margin-top:6px"></div>
+      <button id="startBtn" class="btn-glow" style="margin-top:12px">Start</button>
     </div>
 
     <div id="errorBox" class="error" style="display:none"></div>
@@ -81,314 +97,89 @@
   </div>
 
 <script>
-// ----- DATA (official 36) -----
-const TEAMS_36 = [
-  // Pot 1
-  { name: 'Paris Saint-Germain', country: 'FRA', pot: 1 },
-  { name: 'Real Madrid', country: 'ESP', pot: 1 },
-  { name: 'Manchester City', country: 'ENG', pot: 1 },
-  { name: 'Bayern München', country: 'GER', pot: 1 },
-  { name: 'Liverpool', country: 'ENG', pot: 1 },
-  { name: 'Inter', country: 'ITA', pot: 1 },
-  { name: 'Chelsea', country: 'ENG', pot: 1 },
-  { name: 'Borussia Dortmund', country: 'GER', pot: 1 },
-  { name: 'Barcelona', country: 'ESP', pot: 1 },
-  // Pot 2
-  { name: 'Arsenal', country: 'ENG', pot: 2 },
-  { name: 'Bayer Leverkusen', country: 'GER', pot: 2 },
-  { name: 'Atlético Madrid', country: 'ESP', pot: 2 },
-  { name: 'Benfica', country: 'POR', pot: 2 },
-  { name: 'Atalanta', country: 'ITA', pot: 2 },
-  { name: 'Villarreal', country: 'ESP', pot: 2 },
-  { name: 'Juventus', country: 'ITA', pot: 2 },
-  { name: 'Eintracht Frankfurt', country: 'GER', pot: 2 },
-  { name: 'Club Brugge', country: 'BEL', pot: 2 },
-  // Pot 3
-  { name: 'Tottenham Hotspur', country: 'ENG', pot: 3 },
-  { name: 'PSV Eindhoven', country: 'NED', pot: 3 },
-  { name: 'Ajax', country: 'NED', pot: 3 },
-  { name: 'Napoli', country: 'ITA', pot: 3 },
-  { name: 'Sporting CP', country: 'POR', pot: 3 },
-  { name: 'Olympiacos', country: 'GRE', pot: 3 },
-  { name: 'Slavia Praha', country: 'CZE', pot: 3 },
-  { name: 'Bodø/Glimt', country: 'NOR', pot: 3 },
-  { name: 'Marseille', country: 'FRA', pot: 3 },
-  // Pot 4
-  { name: 'Copenhagen', country: 'DEN', pot: 4 },
-  { name: 'Monaco', country: 'FRA', pot: 4 },
-  { name: 'Galatasaray', country: 'TUR', pot: 4 },
-  { name: 'Union SG', country: 'BEL', pot: 4 },
-  { name: 'Qarabağ', country: 'AZE', pot: 4 },
-  { name: 'Athletic Club', country: 'ESP', pot: 4 },
-  { name: 'Newcastle United', country: 'ENG', pot: 4 },
-  { name: 'Pafos', country: 'CYP', pot: 4 },
-  { name: 'Kairat Almaty', country: 'KAZ', pot: 4 },
+// ---------------- DATA ----------------
+const UCL_TEAMS = [
+  { name:'Paris Saint-Germain', country:'FRA', pot:1 },{ name:'Real Madrid', country:'ESP', pot:1 },{ name:'Manchester City', country:'ENG', pot:1 },{ name:'Bayern München', country:'GER', pot:1 },{ name:'Liverpool', country:'ENG', pot:1 },{ name:'Inter', country:'ITA', pot:1 },{ name:'Chelsea', country:'ENG', pot:1 },{ name:'Borussia Dortmund', country:'GER', pot:1 },{ name:'Barcelona', country:'ESP', pot:1 },
+  { name:'Arsenal', country:'ENG', pot:2 },{ name:'Bayer Leverkusen', country:'GER', pot:2 },{ name:'Atlético Madrid', country:'ESP', pot:2 },{ name:'Benfica', country:'POR', pot:2 },{ name:'Atalanta', country:'ITA', pot:2 },{ name:'Villarreal', country:'ESP', pot:2 },{ name:'Juventus', country:'ITA', pot:2 },{ name:'Eintracht Frankfurt', country:'GER', pot:2 },{ name:'Club Brugge', country:'BEL', pot:2 },
+  { name:'Tottenham Hotspur', country:'ENG', pot:3 },{ name:'PSV Eindhoven', country:'NED', pot:3 },{ name:'Ajax', country:'NED', pot:3 },{ name:'Napoli', country:'ITA', pot:3 },{ name:'Sporting CP', country:'POR', pot:3 },{ name:'Olympiacos', country:'GRE', pot:3 },{ name:'Slavia Praha', country:'CZE', pot:3 },{ name:'Bodø/Glimt', country:'NOR', pot:3 },{ name:'Marseille', country:'FRA', pot:3 },
+  { name:'Copenhagen', country:'DEN', pot:4 },{ name:'Monaco', country:'FRA', pot:4 },{ name:'Galatasaray', country:'TUR', pot:4 },{ name:'Union SG', country:'BEL', pot:4 },{ name:'Qarabağ', country:'AZE', pot:4 },{ name:'Athletic Club', country:'ESP', pot:4 },{ name:'Newcastle United', country:'ENG', pot:4 },{ name:'Pafos', country:'CYP', pot:4 },{ name:'Kairat Almaty', country:'KAZ', pot:4 }
 ];
 
-// ----- CRESTS mapping to your filenames -----
-const CREST_BASE = 'crests';
-const CREST_MAP = {
-  'Paris Saint-Germain': 'psg',
-  'Real Madrid': 'real',
-  'Manchester City': 'city',
-  'Bayern München': 'bayern',
-  'Liverpool': 'lfc',
-  'Inter': 'inter',
-  'Chelsea': 'cfc',
-  'Borussia Dortmund': 'bvb',
-  'Barcelona': 'barcelona',
-  'Arsenal': 'arsenal',
-  'Bayer Leverkusen': 'bayer',
-  'Atlético Madrid': 'atleti',
-  'Benfica': 'benfica',
-  'Atalanta': 'atalanta',
-  'Villarreal': 'villareal',
-  'Juventus': 'juve',
-  'Eintracht Frankfurt': 'frankfurt',
-  'Club Brugge': 'brugge',
-  'Tottenham Hotspur': 'spurs',
-  'PSV Eindhoven': 'psv',
-  'Ajax': 'ajax',
-  'Napoli': 'napoli',
-  'Sporting CP': 'sporting',
-  'Olympiacos': 'olympiacos',
-  'Slavia Praha': 'slavia',
-  'Bodø/Glimt': 'bodo',
-  'Marseille': 'marseille',
-  'Copenhagen': 'copenhagen', 'FC København': 'copenhagen',
-  'Monaco': 'monaco', 'AS Monaco': 'monaco',
-  'Galatasaray': 'gs',
-  'Union SG': 'union',
-  'Qarabağ': 'qarabag', 'Qarabag': 'qarabag',
-  'Athletic Club': 'athletic',
-  'Newcastle United': 'newcastle',
-  'Pafos': 'pafos',
-  'Kairat Almaty': 'kairat',
-};
-function crestUrl(name){ const slug = CREST_MAP[name]; return slug? `${CREST_BASE}/${slug}.png` : `${CREST_BASE}/missing.png`; }
+const UEL_TEAMS = [
+  { name:'Basel', country:'SUI', pot:1 }, { name:'Real Betis', country:'ESP', pot:1 }, { name:'Bologna', country:'ITA', pot:1 }, { name:'Braga', country:'POR', pot:1 }, { name:'Brann', country:'NOR', pot:1 }, { name:'Celta Vigo', country:'ESP', pot:1 }, { name:'Celtic', country:'SCO', pot:1 }, { name:'Dinamo Zagreb', country:'CRO', pot:1 }, { name:'Eintracht Frankfurt', country:'GER', pot:1 },
+  { name:'Feyenoord', country:'NED', pot:2 }, { name:'Fenerbahçe', country:'TUR', pot:2 }, { name:'Sporting Braga', country:'POR', pot:2 }, { name:'Lille', country:'FRA', pot:2 }, { name:'Lyon', country:'FRA', pot:2 }, { name:'Maccabi Tel-Aviv', country:'ISR', pot:2 }, { name:'Midtjylland', country:'DEN', pot:2 }, { name:'Nice', country:'FRA', pot:2 }, { name:'PAOK', country:'GRE', pot:2 },
+  { name:'Porto', country:'POR', pot:3 }, { name:'Rangers', country:'SCO', pot:3 }, { name:'Roma', country:'ITA', pot:3 }, { name:'Red Bull Salzburg', country:'AUT', pot:3 }, { name:'Sturm Graz', country:'AUT', pot:3 }, { name:'Stuttgart', country:'GER', pot:3 }, { name:'Union Berlin', country:'GER', pot:3 }, { name:'Utrecht', country:'NED', pot:3 }, { name:'Young Boys', country:'SUI', pot:3 },
+  { name:'Anderlecht', country:'BEL', pot:4 }, { name:'FCSB', country:'ROU', pot:4 }, { name:'Ferencváros', country:'HUN', pot:4 }, { name:'Genk', country:'BEL', pot:4 }, { name:'Hapoel Tel Aviv', country:'ISR', pot:4 }, { name:'Kızılyıldız', country:'SRB', pot:4 }, { name:'Ludogorets', country:'BUL', pot:4 }, { name:'Malmö', country:'SWE', pot:4 }, { name:'Viktoria Plzeň', country:'CZE', pot:4 }
+];
 
-// ----- UTILS -----
-const norm = (s='') => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const byPot = (teams) => { const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
-const rngFactory = (seed) => { let s=(seed>>>0)||1; return ()=> (s=(1664525*s+1013904223)>>>0, s/2**32); };
+// Crest map (short; extend as needed)
+const CREST_BASE='crests';
+const CREST_MAP={ 'Paris Saint-Germain':'psg','Real Madrid':'real','Manchester City':'city','Bayern München':'bayern','Liverpool':'lfc','Inter':'inter','Chelsea':'cfc','Borussia Dortmund':'bvb','Barcelona':'barcelona','Arsenal':'arsenal','Bayer Leverkusen':'bayer','Atlético Madrid':'atleti','Benfica':'benfica','Atalanta':'atalanta','Villarreal':'villareal','Juventus':'juve','Eintracht Frankfurt':'frankfurt','Club Brugge':'brugge','Tottenham Hotspur':'spurs','PSV Eindhoven':'psv','Ajax':'ajax','Napoli':'napoli','Sporting CP':'sporting','Olympiacos':'olympiacos','Slavia Praha':'slavia','Bodø/Glimt':'bodo','Marseille':'marseille','Copenhagen':'copenhagen','Monaco':'monaco','Galatasaray':'gs','Union SG':'union','Qarabağ':'qarabag','Athletic Club':'athletic','Newcastle United':'newcastle','Pafos':'pafos','Kairat Almaty':'kairat',
+  'Basel':'basel','Real Betis':'betis','Bologna':'bologna','Braga':'braga','Brann':'brann','Celta Vigo':'celta','Celtic':'celtic','Dinamo Zagreb':'dinamo','Feyenoord':'feyenoord','Fenerbahçe':'fener','Sporting Braga':'braga','Lille':'lille','Lyon':'lyon','Maccabi Tel-Aviv':'telaviv','Midtjylland':'midt','Nice':'nice','PAOK':'paok','Porto':'porto','Rangers':'rangers','Roma':'roma','Red Bull Salzburg':'salzburg','Sturm Graz':'strumgraz','Stuttgart':'stuttgart','Union Berlin':'union','Utrecht':'utrecht','Young Boys':'youngboys','Anderlecht':'anderlecht','FCSB':'fcsb','Ferencváros':'feren','Genk':'genk','Hapoel Tel Aviv':'telaviv','Kızılyıldız':'kizilyildiz','Ludogorets':'ludogrets','Malmö':'malmo','Viktoria Plzeň':'plezen','europaleague':'europaleague'};
+function crestUrl(name){ const slug=CREST_MAP[name]; return slug? `${CREST_BASE}/${slug}.png` : `${CREST_BASE}/missing.png`; }
 
-// NEW: Interleaved order P1,P2,P3,P4,P1,P2,P3,P4
-function orderFixturesInterleaved(list){
-  const pots = {1:[],2:[],3:[],4:[]};
-  for(const f of list){ pots[f.pot].push(f); }
-  for(let p=1;p<=4;p++){ pots[p].sort((A,B)=> A.opponent.localeCompare(B.opponent)); }
-  const out=[];
-  for(let round=0; round<2; round++){
-    for(let p=1;p<=4;p++){
-      if(pots[p][round]) out.push(pots[p][round]);
-    }
-  }
-  return out;
-}
+// ---------------- CORE UTILS ----------------
+const norm=(s='')=> s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const byPot=(teams)=>{ const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
+function orderFixturesInterleaved(list){ const pots={1:[],2:[],3:[],4:[]}; for(const f of list) pots[f.pot].push(f); for(let p=1;p<=4;p++) pots[p].sort((A,B)=>A.opponent.localeCompare(B.opponent)); const out=[]; for(let r=0;r<2;r++){ for(let p=1;p<=4;p++){ if(pots[p][r]) out.push(pots[p][r]); } } return out; }
 
-// ----- PAIRINGS with exact H/A via 2-SAT -----
-function buildPairings(teams, tries = 300, seedBase = Date.now()){
-  const NEEDED_PER_POT = 2; const allPots=[1,2,3,4];
-  const idxByPotInit = byPot(teams);
-  const countryFreq = {}; teams.forEach(t=> countryFreq[t.country]=(countryFreq[t.country]||0)+1);
-
-  function attempt(seed){
-    const r = rngFactory(seed);
-    const need = new Map(); const assoc = new Map(); const opp = new Map(); const byName = new Map();
-    const idxByPot = {1:[],2:[],3:[],4:[]};
+// pairing builder (Swiss-like)
+function buildPairings(teams, tries=300){
+  const allPots=[1,2,3,4]; const idxByPot=byPot(teams); const countryFreq={}; teams.forEach(t=> countryFreq[t.country]=(countryFreq[t.country]||0)+1);
+  function attempt(){
+    const need=new Map(), assoc=new Map(), opp=new Map(), byName=new Map();
     teams.forEach(t=>{ need.set(t.name,{1:2,2:2,3:2,4:2}); assoc.set(t.name,{}); opp.set(t.name,new Set()); byName.set(t.name,t); });
-    allPots.forEach(p=> idxByPot[p] = [...idxByPotInit[p-1]]);
-
-    const tasks = []; for(const t of teams){ for(const p of allPots){ tasks.push([t,p]); tasks.push([t,p]); } }
-
-    function canPair(a,b,p){
-      if(a.name===b.name) return false;
-      if(a.country===b.country) return false;
-      if(opp.get(a.name).has(b.name)) return false;
-      if((assoc.get(a.name)[b.country]||0)>=2) return false;
-      if((assoc.get(b.name)[a.country]||0)>=2) return false;
-      if(need.get(a.name)[p]<=0) return false;
-      if(need.get(b.name)[a.pot]<=0) return false;
-      return true;
-    }
-    function candidatesFor(t,p){
-      const list = idxByPot[p]; const out=[];
-      for(const c of list){ if(canPair(t,c,p)) out.push(c); }
-      out.sort((A,B)=>{
-        const aNeed = need.get(A.name)[t.pot]; const bNeed = need.get(B.name)[t.pot]; if(aNeed!==bNeed) return aNeed-bNeed;
-        const aAssoc = assoc.get(A.name)[t.country]||0; const bAssoc = assoc.get(B.name)[t.country]||0; if(aAssoc!==bAssoc) return aAssoc-bAssoc;
-        const ar = countryFreq[A.country], br = countryFreq[B.country]; if(ar!==br) return ar-br; return r()<0.5 ? -1 : 1;
-      });
-      return out;
-    }
-    function place(a,b){
-      opp.get(a.name).add(b.name); opp.get(b.name).add(a.name);
-      need.get(a.name)[b.pot]--; need.get(b.name)[a.pot]--;
-      assoc.get(a.name)[b.country]=(assoc.get(a.name)[b.country]||0)+1;
-      assoc.get(b.name)[a.country]=(assoc.get(b.name)[a.country]||0)+1;
-    }
-
-    for(let step=0; step<tasks.length; step++){
-      let bestIdx=-1, bestCnt=1e9, bestCands=null;
-      for(let i=0;i<tasks.length;i++){
-        const item = tasks[i]; if(!item) continue; const [t,p]=item;
-        if(need.get(t.name)[p]<=0){ tasks[i]=null; continue; }
-        const cands = candidatesFor(t,p); const cnt=cands.length; if(cnt===0) return null;
-        if(cnt<bestCnt){ bestCnt=cnt; bestIdx=i; bestCands=cands; if(cnt===1) break; }
-      }
-      if(bestIdx<0) break;
-      const [t,p]=tasks[bestIdx];
-      const pick = bestCands[Math.floor(Math.random()*Math.min(bestCands.length,3))];
-      place(t,pick); tasks[bestIdx]=null;
-    }
-
-    const table = teams.map(t=>{
-      const res={team:t,pots:{1:[],2:[],3:[],4:[]}};
-      for(const oname of opp.get(t.name)){ res.pots[ byName.get(oname).pot ].push(oname); }
-      for(const q of allPots){ if(res.pots[q].length!==NEEDED_PER_POT) return null; }
-      return res;
-    });
-    if(table.some(x=>!x)) return null;
-
-    // H/A with 2-SAT (exactly one Home per pot among its two vs that pot)
-    const edgeKeys = []; const varOf = new Map();
-    const pushKey = (a,b)=>{ const key = a<b ? `${a}__${b}` : `${b}__${a}`; if(!varOf.has(key)){ varOf.set(key, edgeKeys.length); edgeKeys.push(key); } };
-    for(const row of table){ for(const p of allPots){ for(const oname of row.pots[p]) pushKey(row.team.name, oname); }}
-    const M = edgeKeys.length; const N = M*2; const adj = Array.from({length:N},()=>[]), radj=Array.from({length:N},()=>[]);
-    const lit = (team, other)=>{ const a = team<other ? team : other; const b = team<other ? other : team; const v = varOf.get(`${a}__${b}`); const neg = team!==a; return {v,neg}; };
-    const node = (x)=> x.v*2 + (x.neg?1:0); const neg = (x)=> ({v:x.v, neg:!x.neg});
-    const imply=(u,v)=>{ adj[node(u)].push(node(v)); radj[node(v)].push(node(u)); };
-    const addOr=(u,v)=>{ imply(neg(u),v); imply(neg(v),u); };
-    const addXor=(u,v)=>{ addOr(u,v); addOr(neg(u),neg(v)); };
-
-    for(const row of table){ const t=row.team.name; for(const p of allPots){ const opps=row.pots[p]; if(opps.length!==2) return null; const [o1,o2]=opps; addXor(lit(t,o1), lit(t,o2)); } }
-
-    const order=[]; const used=Array(N).fill(false);
-    const dfs1=(u)=>{ used[u]=true; for(const v of adj[u]) if(!used[v]) dfs1(v); order.push(u); };
-    for(let i=0;i<N;i++) if(!used[i]) dfs1(i);
-    const comp=Array(N).fill(-1); let j=0; const dfs2=(u,c)=>{ comp[u]=c; for(const v of radj[u]) if(comp[v]===-1) dfs2(v,c); };
-    for(let i=N-1;i>=0;i--){ const v=order[i]; if(comp[v]===-1) dfs2(v,j++); }
-    const assign=Array(M).fill(false);
-    for(let v=0; v<M; v++){ if(comp[2*v]===comp[2*v+1]) return null; assign[v]= comp[2*v] > comp[2*v+1]; }
-
-    const tableHA = table.map(row=>{
-      const list=[]; const name=row.team.name;
-      for(const p of allPots){ for(const oname of row.pots[p]){
-        const a = name<oname ? name : oname; const b = name<oname ? oname : name; const varId = varOf.get(`${a}__${b}`); const firstHome = assign[varId];
-        const isHome = (name===a) ? firstHome : !firstHome; list.push({ opponent:oname, pot:p, home:isHome });
-      }}
-      return { team: row.team, fixtures: orderFixturesInterleaved(list) };
-    });
-
-    return { ok:true, table: tableHA };
+    const tasks=[]; for(const t of teams){ for(const p of allPots){ tasks.push([t,p]); tasks.push([t,p]); } }
+    function canPair(a,b,p){ return a.name!==b.name && a.country!==b.country && !opp.get(a.name).has(b.name) && (assoc.get(a.name)[b.country]||0)<2 && (assoc.get(b.name)[a.country]||0)<2 && (need.get(a.name)[p]>0) && (need.get(b.name)[a.pot]>0); }
+    function candidatesFor(t,p){ const list=idxByPot[p-1]; const out=[]; for(const c of list){ if(canPair(t,c,p)) out.push(c); } out.sort((A,B)=>{ const aN=(need.get(A.name)[t.pot]); const bN=(need.get(B.name)[t.pot]); if(aN!==bN) return aN-bN; const aA=(assoc.get(A.name)[t.country]||0); const bA=(assoc.get(B.name)[t.country]||0); if(aA!==bA) return aA-bA; const ar=countryFreq[A.country], br=countryFreq[B.country]; if(ar!==br) return ar-br; return Math.random()<.5?-1:1; }); return out; }
+    function place(a,b){ opp.get(a.name).add(b.name); opp.get(b.name).add(a.name); need.get(a.name)[b.pot]--; need.get(b.name)[a.pot]--; assoc.get(a.name)[b.country]=(assoc.get(a.name)[b.country]||0)+1; assoc.get(b.name)[a.country]=(assoc.get(b.name)[a.country]||0)+1; }
+    for(let step=0; step<tasks.length; step++){ let bestIdx=-1, bestCnt=1e9, bestC=null; for(let i=0;i<tasks.length;i++){ const it=tasks[i]; if(!it) continue; const [t,p]=it; if(need.get(t.name)[p]<=0){ tasks[i]=null; continue; } const c=candidatesFor(t,p); const cnt=c.length; if(cnt===0) return null; if(cnt<bestCnt){ bestCnt=cnt; bestIdx=i; bestC=c; if(cnt===1) break; } } if(bestIdx<0) break; const [t,p]=tasks[bestIdx]; const pick=bestC[Math.floor(Math.random()*Math.min(bestC.length,3))]; place(t,pick); tasks[bestIdx]=null; }
+    const table=teams.map(t=>{ const res={team:t,pots:{1:[],2:[],3:[],4:[]}}; for(const oname of opp.get(t.name)){ res.pots[ byName.get(oname).pot ].push(oname); } for(const q of allPots){ if(res.pots[q].length!==2) return null; } return res; }); if(table.some(x=>!x)) return null;
+    const edgeHA=new Map();
+    const withHA=table.map(row=>{ const list=[]; const t=row.team.name; for(const p of allPots){ const pair=row.pots[p]; const [o1,o2]=pair; const k1=[t,o1].sort().join('#'), k2=[t,o2].sort().join('#'); const firstHome= edgeHA.get(k1) ?? (Math.random()<.5); edgeHA.set(k1, firstHome); edgeHA.set(k2, !firstHome); list.push({opponent:o1, pot:p, home: edgeHA.get(k1) }); list.push({opponent:o2, pot:p, home: edgeHA.get(k2) }); } return { team: row.team, fixtures: orderFixturesInterleaved(list) }; });
+    return { ok:true, table:withHA };
   }
-
-  for(let k=0;k<tries;k++){ const res = attempt(seedBase + k*7919); if(res) return res; }
-  return { ok:false, error:`Could not find a valid pairing after ${tries} attempts.` };
+  for(let k=0;k<tries;k++){ const r=attempt(); if(r) return r; } return { ok:false, error:'Pairing failed.' };
 }
 
-// ----- UI helpers -----
-const $ = (sel) => document.querySelector(sel);
-function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
+// ---------------- STATE & UI ----------------
+let selected=''; let res=null; let phase='idle'; let revealed=[]; let revealToken=0; let TEAM_POOL=UCL_TEAMS; let BAR_CLASS='ucl';
 
-function teamPanel(row, highlight=false){
-  const ordered = orderFixturesInterleaved(row.fixtures);
-  const box = document.createElement('div'); box.className = 'tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight');
-  const list = document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0';
-  ordered.forEach(f=>{
-    const li = document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
-    const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
-    const img = document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src = CREST_BASE + '/missing.png'; };
-    const nameSpan = document.createElement('span'); nameSpan.textContent=f.opponent; nameSpan.style.whiteSpace='nowrap'; nameSpan.style.overflow='hidden'; nameSpan.style.textOverflow='ellipsis';
-    const tag = document.createElement('span'); tag.className='tag'; tag.textContent='Pot ' + f.pot; tag.style.marginLeft='8px';
-    left.append(img, nameSpan, tag);
-    const ha = document.createElement('div'); ha.className = 'haTag ' + (f.home?'h':'a'); ha.textContent = f.home? 'H':'A';
-    li.append(left, ha); list.appendChild(li);
-  });
-  const bar = document.createElement('div'); bar.className='bar row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center';
-  const timg = document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src = CREST_BASE + '/missing.png'; };
-  const tname = document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.style.overflow='hidden'; tname.style.textOverflow='ellipsis'; tname.textContent=row.team.name;
-  bar.append(timg, tname);
-  box.append(list, bar);
-  return box;
-}
+const input=document.querySelector('#teamInput'); const listEl=document.querySelector('#suggestList');
+const focusMount=document.querySelector('#focusMount'); const allMount=document.querySelector('#allMount'); const errorBox=document.querySelector('#errorBox');
+const starTop = document.getElementById('starTop'); const starBottom = document.getElementById('starBottom');
 
-function focusPanel(row, revealedNames){
-  const orderAll = orderFixturesInterleaved(row.fixtures);
-  const items = orderAll.filter(f=> revealedNames.includes(f.opponent));
-  const box = document.createElement('div'); box.className='center';
-  const tile = document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%';
-  const ul = document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0';
-  items.forEach(f=>{
-    const li = document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0';
-    const left = document.createElement('div'); left.className='row'; left.style.minWidth='0';
-    const img = document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; };
-    const span = document.createElement('span'); span.textContent=f.opponent; span.style.whiteSpace='nowrap'; span.style.overflow='hidden'; span.style.textOverflow='ellipsis';
-    const tag = document.createElement('span'); tag.className='tag'; tag.textContent='Pot ' + f.pot; tag.style.marginLeft='8px';
-    const ha = document.createElement('div'); ha.className='haTag ' + (f.home?'h':'a'); ha.textContent=f.home?'H':'A';
-    left.append(img, span, tag); li.append(left, ha); ul.appendChild(li);
-  });
-  const bar = document.createElement('div'); bar.className='bar row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center';
-  const timg = document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; };
-  const tname = document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.textContent=row.team.name;
-  bar.append(timg, tname);
-  tile.append(ul, bar); box.appendChild(tile); return box;
-}
+function currentSuggestions(){ const q=norm(input.value); if(!q) return TEAM_POOL; return TEAM_POOL.filter(t=> norm(t.name).startsWith(q)); }
+function openSuggest(){ fillSuggest(currentSuggestions()); listEl.style.display='block'; }
+function closeSuggest(){ listEl.style.display='none'; }
+function fillSuggest(items){ listEl.innerHTML=''; items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent=`${t.name} (${t.country})`; li.onmousedown=(e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
+function pickTeam(name){ selected=name; input.value=name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table);} else { phase='all'; renderAll(); } } }
 
-// ----- STATE -----
-let selected = '';
-let res = null; // { ok, table }
-let phase = 'idle'; // idle | focus | all
-let revealed = [];
-let revealToken = 0;
-let startGlow = true;
-
-// ----- TYPEAHEAD -----
-const input = document.querySelector('#teamInput');
-const listEl = document.querySelector('#suggestList');
-
-function currentSuggestions(){ const q=norm(input.value); if(!q) return TEAMS_36; return TEAMS_36.filter(t=> norm(t.name).startsWith(q)); }
-function openSuggest(){ const sug = currentSuggestions(); fillSuggest(sug); listEl.style.display = 'block'; }
-function closeSuggest(){ listEl.style.display = 'none'; }
-function fillSuggest(items){ while(listEl.firstChild) listEl.removeChild(listEl.firstChild); items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent = `${t.name} (${t.country})`; li.onmousedown = (e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
-function pickTeam(name){ selected = name; input.value = name; document.querySelector('#selectedNote').textContent = 'Selected: ' + name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table); } else { phase='all'; renderAll(); } } }
-
+// inputs
 input.addEventListener('focus', ()=> openSuggest());
 input.addEventListener('blur', ()=> setTimeout(closeSuggest, 60));
-input.addEventListener('input', ()=>{ const sug = currentSuggestions(); fillSuggest(sug); listEl.style.display = 'block'; });
-input.addEventListener('keydown', (e)=>{
-  if(e.key==='Enter'){ e.preventDefault(); const q=norm(input.value); const exact = TEAMS_36.find(t=> norm(t.name)===q); if(exact) pickTeam(exact.name); else { const sug=currentSuggestions(); if(sug.length>0) pickTeam(sug[0].name); } closeSuggest(); }
-  if(e.key==='Escape'){ closeSuggest(); }
-});
+input.addEventListener('input', ()=>{ fillSuggest(currentSuggestions()); listEl.style.display='block'; });
+input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); const q=norm(input.value); const exact=TEAM_POOL.find(t=> norm(t.name)===q); if(exact) pickTeam(exact.name); else { const sug=currentSuggestions(); if(sug.length>0) pickTeam(sug[0].name); } closeSuggest(); } if(e.key==='Escape'){ closeSuggest(); } });
 
-// ----- RENDER MOUNTS -----
-const focusMount = document.querySelector('#focusMount');
-const allMount = document.querySelector('#allMount');
-const errorBox = document.querySelector('#errorBox');
+function showError(msg){ errorBox.textContent=msg; errorBox.style.display='block'; } function clearError(){ errorBox.style.display='none'; errorBox.textContent=''; }
 
-function showError(msg){ errorBox.textContent = msg; errorBox.style.display = 'block'; }
-function clearError(){ errorBox.style.display = 'none'; errorBox.textContent=''; }
+function teamPanel(row, highlight=false){ const ordered=row.fixtures; const box=document.createElement('div'); box.className='tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight'); const list=document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0'; ordered.forEach(f=>{ const li=document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const nameSpan=document.createElement('span'); nameSpan.textContent=f.opponent; nameSpan.style.whiteSpace='nowrap'; nameSpan.style.overflow='hidden'; nameSpan.style.textOverflow='ellipsis'; const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; left.append(img, nameSpan, tag); const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; li.append(left, ha); list.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.style.overflow='hidden'; tname.style.textOverflow='ellipsis'; tname.textContent=row.team.name; bar.append(timg,tname); box.append(list,bar); return box; }
 
-function renderFocus(row){ while(focusMount.firstChild) focusMount.removeChild(focusMount.firstChild); while(allMount.firstChild) allMount.removeChild(allMount.firstChild); focusMount.appendChild(focusPanel(row, revealed)); }
-function renderAll(){ while(focusMount.firstChild) focusMount.removeChild(focusMount.firstChild); while(allMount.firstChild) allMount.removeChild(allMount.firstChild); if(!res) return; const pinned = res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others = res.table.filter(r=> r!==pinned);
-  const pinWrap = document.createElement('div'); pinWrap.className = 'pin'; pinWrap.appendChild(teamPanel(pinned, true)); allMount.appendChild(pinWrap);
-  const grid = document.createElement('div'); grid.className = 'grid cols-1 cols-2 cols-3'; allMount.appendChild(grid);
-  others.forEach(row=> grid.appendChild(teamPanel(row, false))); }
+function focusPanel(row, revealedNames){ const items=row.fixtures.filter(f=> revealedNames.includes(f.opponent)); const box=document.createElement('div'); box.className='center'; const tile=document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%'; const ul=document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0'; items.forEach(f=>{ const li=document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const span=document.createElement('span'); span.textContent=f.opponent; span.style.whiteSpace='nowrap'; span.style.overflow='hidden'; span.style.textOverflow='ellipsis'; const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; left.append(img, span, tag); li.append(left, ha); ul.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.textContent=row.team.name; bar.append(timg, tname); tile.append(ul, bar); box.appendChild(tile); return box; }
 
-// ----- REVEAL -----
-function runFocusReveal(name, tableSrc){ if(!tableSrc) return; const focusRow = tableSrc.find(r=> r.team.name===name); if(!focusRow){ showError('Selected team not found.'); return; }
-  phase='focus'; revealed=[]; revealToken++; const token = revealToken; clearError(); renderFocus(focusRow);
-  const ordered = orderFixturesInterleaved(focusRow.fixtures);
-  ordered.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken!==token) return; revealed.push(f.opponent); renderFocus(focusRow); if(revealed.length>=8){ phase='all'; renderAll(); } }, 650*(idx+1)); }); }
+function renderFocus(row){ focusMount.innerHTML=''; allMount.innerHTML=''; focusMount.appendChild(focusPanel(row, revealed)); }
+function renderAll(){ focusMount.innerHTML=''; allMount.innerHTML=''; if(!res) return; const pinned=res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others=res.table.filter(r=> r!==pinned); const pinWrap=document.createElement('div'); pinWrap.className='pin'; pinWrap.appendChild(teamPanel(pinned, true)); allMount.appendChild(pinWrap); const grid=document.createElement('div'); grid.className='grid cols-1 cols-2 cols-3'; allMount.appendChild(grid); others.forEach(row=> grid.appendChild(teamPanel(row,false))); }
 
-// ----- START -----
-const startBtn = document.querySelector('#startBtn');
-startBtn.addEventListener('click', ()=>{
-  clearError(); if(startGlow){ startBtn.classList.remove('btn-glow'); startGlow=false; }
-  const chosen = selected || (currentSuggestions()[0]?.name || ''); if(!chosen){ showError('Please type and pick a team.'); return; }
-  const out = buildPairings(TEAMS_36, 500); if(!out || !out.ok){ showError(out?.error || 'Pairing failed.'); return; }
-  res = out; runFocusReveal(chosen, out.table);
-});
+function runFocusReveal(name, tableSrc){ if(!tableSrc) return; const focusRow=tableSrc.find(r=> r.team.name===name); if(!focusRow){ showError('Selected team not found.'); return; } phase='focus'; revealed=[]; revealToken++; const token=revealToken; clearError(); renderFocus(focusRow); focusRow.fixtures.forEach((f,idx)=>{ setTimeout(()=>{ if(revealToken!==token) return; revealed.push(f.opponent); renderFocus(focusRow); if(revealed.length>=8){ phase='all'; renderAll(); } }, 650*(idx+1)); }); }
+
+const startBtn=document.querySelector('#startBtn');
+startBtn.addEventListener('click', ()=>{ if(startBtn.classList.contains('btn-glow')) startBtn.classList.remove('btn-glow'); clearError(); const chosen=selected || (currentSuggestions()[0]?.name || ''); if(!chosen){ showError('Pick a team first.'); return; } const out=buildPairings(TEAM_POOL, 600); if(!out || !out.ok){ showError(out?.error || 'Pairing failed.'); return; } res=out; runFocusReveal(chosen, out.table); });
+
+// selector
+const btnUCL=document.querySelector('#btnUCL');
+const btnUEL=document.querySelector('#btnUEL');
+btnUCL.addEventListener('click', ()=>{ document.body.classList.remove('theme-uel'); TEAM_POOL=UCL_TEAMS; BAR_CLASS='ucl'; selected=''; input.value=''; res=null; revealToken++; focusMount.innerHTML=''; allMount.innerHTML=''; if(starTop) starTop.src = 'assets/ucl_logo.png'; if(starBottom) starBottom.src = 'assets/ucl_logo.png'; fillSuggest(currentSuggestions()); listEl.style.display='block'; startBtn.classList.add('btn-glow'); });
+btnUEL.addEventListener('click', ()=>{ document.body.classList.add('theme-uel'); TEAM_POOL=UEL_TEAMS; BAR_CLASS='uel'; selected=''; input.value=''; res=null; revealToken++; focusMount.innerHTML=''; allMount.innerHTML=''; if(starTop) starTop.src = CREST_BASE + '/europaleague.png'; if(starBottom) starBottom.src = CREST_BASE + '/europaleague.png'; fillSuggest(currentSuggestions()); listEl.style.display='block'; startBtn.classList.add('btn-glow'); });
 </script>
 </body>
 </html>
