@@ -21,13 +21,7 @@
       /* suggest menu */
       --suggBg: rgba(4,17,42,.96); --suggBorder: rgba(255,255,255,.12);
     }
-    body.theme-uel{
-      /* UEL palette overrides */
-      --haH:#ff5f00; --haA:#111111;
-      --hiEdge: rgba(255,95,0,.65); --hiOuter: rgba(255,95,0,.36); --hiInner: rgba(255,95,0,.22);
-      --glow1: rgba(255,95,0,.7); --glow2: rgba(255,95,0,.45);
-      --suggBg: rgba(0,0,0,.92); --suggBorder: rgba(255,95,0,.45);
-    }
+    body.theme-uel{ background: url('assets/arkaplanuel.jpg') no-repeat center center fixed; background-size: cover; }
     *{box-sizing:border-box}
     body{margin:0; color:var(--txt); background: url('assets/arkaplanucl.jpg') no-repeat center center fixed; background-size: cover; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
     body.theme-uel{ background: url('crests/background_europaijpg') no-repeat center center fixed; background-size: cover; }
@@ -120,13 +114,13 @@ const UEL_TEAMS = [
   { name:'Basel', country:'SUI', pot:1 }, { name:'Real Betis', country:'ESP', pot:1 }, { name:'Bologna', country:'ITA', pot:1 }, { name:'Braga', country:'POR', pot:1 }, { name:'Brann', country:'NOR', pot:1 }, { name:'Celta Vigo', country:'ESP', pot:1 }, { name:'Celtic', country:'SCO', pot:1 }, { name:'Dinamo Zagreb', country:'CRO', pot:1 }, { name:'Eintracht Frankfurt', country:'GER', pot:1 },
   { name:'Feyenoord', country:'NED', pot:2 }, { name:'Fenerbahçe', country:'TUR', pot:2 }, { name:'Sporting Braga', country:'POR', pot:2 }, { name:'Lille', country:'FRA', pot:2 }, { name:'Lyon', country:'FRA', pot:2 }, { name:'Maccabi Tel-Aviv', country:'ISR', pot:2 }, { name:'Midtjylland', country:'DEN', pot:2 }, { name:'Nice', country:'FRA', pot:2 }, { name:'PAOK', country:'GRE', pot:2 },
   { name:'Porto', country:'POR', pot:3 }, { name:'Rangers', country:'SCO', pot:3 }, { name:'Roma', country:'ITA', pot:3 }, { name:'Red Bull Salzburg', country:'AUT', pot:3 }, { name:'Sturm Graz', country:'AUT', pot:3 }, { name:'Stuttgart', country:'GER', pot:3 }, { name:'Union Berlin', country:'GER', pot:3 }, { name:'Utrecht', country:'NED', pot:3 }, { name:'Young Boys', country:'SUI', pot:3 },
-  { name:'Anderlecht', country:'BEL', pot:4 }, { name:'FCSB', country:'ROU', pot:4 }, { name:'Ferencváros', country:'HUN', pot:4 }, { name:'Genk', country:'BEL', pot:4 }, { name:'Hapoel Tel Aviv', country:'ISR', pot:4 }, { name:'Kızılyıldız', country:'SRB', pot:4 }, { name:'Ludogorets', country:'BUL', pot:4 }, { name:'Malmö', country:'SWE', pot:4 }, { name:'Viktoria Plzeň', country:'CZE', pot:4 }
+  { name:'Anderlecht', country:'BEL', pot:4 }, { name:'FCSB', country:'ROU', pot:4 }, { name:'Ferencváros', country:'HUN', pot:4 }, { name:'Genk', country:'BEL', pot:4 }, { name:'Hapoel Tel Aviv', country:'ISR', pot:4 }, { name:'Crvena zvezda', country:'SRB', pot:4 }, { name:'Ludogorets', country:'BUL', pot:4 }, { name:'Malmö', country:'SWE', pot:4 }, { name:'Viktoria Plzeň', country:'CZE', pot:4 }
 ];
 
 // Crest map (short; extend as needed)
 const CREST_BASE='crests';
 const CREST_MAP={ 'Paris Saint-Germain':'psg','Real Madrid':'real','Manchester City':'city','Bayern München':'bayern','Liverpool':'lfc','Inter':'inter','Chelsea':'cfc','Borussia Dortmund':'bvb','Barcelona':'barcelona','Arsenal':'arsenal','Bayer Leverkusen':'bayer','Atlético Madrid':'atleti','Benfica':'benfica','Atalanta':'atalanta','Villarreal':'villareal','Juventus':'juve','Eintracht Frankfurt':'frankfurt','Club Brugge':'brugge','Tottenham Hotspur':'spurs','PSV Eindhoven':'psv','Ajax':'ajax','Napoli':'napoli','Sporting CP':'sporting','Olympiacos':'olympiacos','Slavia Praha':'slavia','Bodø/Glimt':'bodo','Marseille':'marseille','Copenhagen':'copenhagen','Monaco':'monaco','Galatasaray':'gs','Union SG':'union','Qarabağ':'qarabag','Athletic Club':'athletic','Newcastle United':'newcastle','Pafos':'pafos','Kairat Almaty':'kairat',
-  'Basel':'basel','Real Betis':'betis','Bologna':'bologna','Braga':'braga','Brann':'brann','Celta Vigo':'celta','Celtic':'celtic','Dinamo Zagreb':'dinamo','Feyenoord':'feyenoord','Fenerbahçe':'fener','Sporting Braga':'braga','Lille':'lille','Lyon':'lyon','Maccabi Tel-Aviv':'telaviv','Midtjylland':'midt','Nice':'nice','PAOK':'paok','Porto':'porto','Rangers':'rangers','Roma':'roma','Red Bull Salzburg':'salzburg','Sturm Graz':'strumgraz','Stuttgart':'stuttgart','Union Berlin':'union','Utrecht':'utrecht','Young Boys':'youngboys','Anderlecht':'anderlecht','FCSB':'fcsb','Ferencváros':'feren','Genk':'genk','Hapoel Tel Aviv':'telaviv','Kızılyıldız':'kizilyildiz','Ludogorets':'ludogrets','Malmö':'malmo','Viktoria Plzeň':'plezen','europaleague':'europaleague'};
+  'Basel':'basel','Real Betis':'betis','Bologna':'bologna','Braga':'braga','Brann':'brann','Celta Vigo':'celta','Celtic':'celtic','Dinamo Zagreb':'dinamo','Feyenoord':'feyenoord','Fenerbahçe':'fener','Sporting Braga':'braga','Lille':'lille','Lyon':'lyon','Maccabi Tel-Aviv':'telaviv','Midtjylland':'midt','Nice':'nice','PAOK':'paok','Porto':'porto','Rangers':'rangers','Roma':'roma','Red Bull Salzburg':'salzburg','Sturm Graz':'strumgraz','Stuttgart':'stuttgart','Union Berlin':'union','Utrecht':'utrecht','Young Boys':'youngboys','Anderlecht':'anderlecht','FCSB':'fcsb','Ferencváros':'feren','Genk':'genk','Hapoel Tel Aviv':'telaviv','Kızılyıldız':'kizilyildiz','Crvena zvezda':'kizilyildiz','Ludogorets':'ludogrets','Malmö':'malmo','Viktoria Plzeň':'plezen','europaleague':'europaleague'};
 function crestUrl(name){ const slug=CREST_MAP[name]; return slug? `${CREST_BASE}/${slug}.png` : `${CREST_BASE}/missing.png`; }
 
 // ---------------- CORE UTILS ----------------
