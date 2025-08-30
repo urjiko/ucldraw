@@ -18,20 +18,22 @@
       --haH:#1e4bff; --haA:#00b2ff; /* H / A backgrounds */
       --hiEdge: rgba(0,238,255,.45); --hiOuter: rgba(0,238,255,.30); --hiInner: rgba(2,50,255,.22);
       --glow1: rgba(0,238,255,.55); --glow2: rgba(0,238,255,.35);
+      /* suggest menu */
+      --suggBg: rgba(4,17,42,.96); --suggBorder: rgba(255,255,255,.12);
     }
     body.theme-uel{
-      /* swap background */
-      background: url('assets/arkaplanuel.jpg') no-repeat center center fixed; background-size: cover;
       /* UEL palette overrides */
       --haH:#ff5f00; --haA:#111111;
       --hiEdge: rgba(255,95,0,.65); --hiOuter: rgba(255,95,0,.36); --hiInner: rgba(255,95,0,.22);
       --glow1: rgba(255,95,0,.7); --glow2: rgba(255,95,0,.45);
+      --suggBg: rgba(0,0,0,.92); --suggBorder: rgba(255,95,0,.45);
     }
     *{box-sizing:border-box}
     body{margin:0; color:var(--txt); background: url('assets/arkaplanucl.jpg') no-repeat center center fixed; background-size: cover; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    body.theme-uel{ background: url('crests/background_europaijpg') no-repeat center center fixed; background-size: cover; }
     .wrap{max-width:1120px; margin:0 auto; padding:16px}
     .h-display{font-family:'Barlow Condensed', Inter, sans-serif; letter-spacing:.02em; color:#fff}
-    .tile{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); border-radius:14px}
+    .tile{background:rgba(8,21,48,.38); border:1px solid rgba(255,255,255,.12); border-radius:14px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px)}
     .tile.highlight{ border-color: var(--hiEdge); box-shadow: 0 0 0 2px var(--hiEdge), 0 0 32px var(--hiOuter), inset 0 0 24px var(--hiInner); animation: glow 2.4s ease-in-out infinite alternate }
     @keyframes glow{ from{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 18px var(--hiOuter), inset 0 0 12px var(--hiInner)} to{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 36px var(--hiOuter), inset 0 0 24px var(--hiInner)} }
     .bar{ color:#fff; border-radius:10px; font-weight:800 }
@@ -48,8 +50,8 @@
     .chooser{max-width:760px; margin:0 auto}
     .input{width:100%; padding:.8rem 1rem; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); color:#fff}
     .input::placeholder{ color: rgba(255,255,255,.55) }
-    .suggest{position:absolute; z-index:20; width:100%; background:rgba(4,17,42,.96); border:1px solid rgba(255,255,255,.12); border-radius:12px; overflow:hidden; max-height:320px; overflow-y:auto}
-    .suggest li{padding:.55rem .8rem; cursor:pointer}
+    .suggest{position:absolute; z-index:20; width:100%; background:var(--suggBg); border:1px solid var(--suggBorder); border-radius:12px; overflow:hidden; max-height:320px; overflow-y:auto}
+    .suggest li{padding:.55rem .8rem; cursor:pointer; display:flex; align-items:center; gap:8px}
     .suggest li:hover{background:rgba(255,255,255,.06)}
     .row{display:flex; gap:8px; align-items:center}
     .center{display:flex; flex-direction:column; align-items:center}
@@ -62,25 +64,34 @@
     @media(min-width:1024px){ .grid.cols-3{grid-template-columns:1fr 1fr 1fr} }
     .crest{width:18px; height:18px; border-radius:4px; object-fit:contain; background:transparent}
     .error{color:#ffd0d0; background:rgba(255,0,0,.1); border:1px solid rgba(255,0,0,.25); padding:8px 12px; border-radius:12px; text-align:center}
-    .star{position:absolute; opacity:.16; filter: drop-shadow(0 0 10px rgba(255,255,255,.25))}
     .reveal{animation: pop .28s cubic-bezier(.2,1,.2,1)}
     @keyframes pop{ from{ transform: scale(.96); opacity:.4 } to{ transform: scale(1); opacity:1 } }
     .pin{max-width:44rem; margin: 0 auto 12px auto}
+
+    /* masthead + segment control */
+    .mast{display:flex; justify-content:center; align-items:center; margin-bottom:8px}
+    .mast img{width:90px; height:90px; opacity:.9; filter: drop-shadow(0 0 10px rgba(255,255,255,.25))}
+    .seg{display:flex; align-items:center; gap:4px; padding:4px; border-radius:9999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px)}
+    .seg-btn{display:flex; align-items:center; gap:8px; padding:.5rem .9rem; border-radius:9999px; background:transparent; border:none; color:#fff; font-weight:800; font-family:'Barlow Condensed', Inter; letter-spacing:.02em; cursor:pointer}
+    .seg-btn img{width:18px; height:18px}
+    .seg-btn.active{background:linear-gradient(90deg, var(--uclBar1), var(--uclBar2)); box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    body.theme-uel .seg-btn.active{background:linear-gradient(90deg, var(--uelBar1), var(--uelBar2))}
   </style>
 </head>
 <body>
-  <!-- Logos swap per competition -->
-  <img id="starTop" class="star" src="assets/ucl_logo.png" style="top:18px;left:18px;width:80px;height:80px" alt="starball"/>
-  <img id="starBottom" class="star" src="assets/ucl_logo.png" style="bottom:18px;right:18px;width:90px;height:90px" alt="starball"/>
-
   <div class="wrap">
+    <!-- masthead star centered above search -->
+    <div class="mast"><img id="mastStar" src="assets/ucl_logo.png" alt="starball"/></div>
+
+    <!-- selector modern segmented control -->
     <div class="center mb4">
-      <div class="row" style="gap:12px; flex-wrap:wrap; justify-content:center">
-        <button id="btnUCL" class="btn">Champions League</button>
-        <button id="btnUEL" class="btn" style="background:linear-gradient(90deg,#000,#ff5f00)">Europa League</button>
+      <div class="seg" id="segToggle">
+        <button id="btnUCL" class="seg-btn active"><img src="assets/ucl_logo.png" alt=""/>Champions League</button>
+        <button id="btnUEL" class="seg-btn"><img src="crests/europaleague.png" alt=""/>Europa League</button>
       </div>
     </div>
 
+    <!-- chooser -->
     <div class="center mb4">
       <div class="chooser" style="position:relative; width:100%">
         <label class="mb2" style="display:block; font-size:12px; opacity:.9">Your Team</label>
@@ -119,7 +130,7 @@ const CREST_MAP={ 'Paris Saint-Germain':'psg','Real Madrid':'real','Manchester C
 function crestUrl(name){ const slug=CREST_MAP[name]; return slug? `${CREST_BASE}/${slug}.png` : `${CREST_BASE}/missing.png`; }
 
 // ---------------- CORE UTILS ----------------
-const norm=(s='')=> s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const norm=(s='')=> s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const byPot=(teams)=>{ const p=[[],[],[],[]]; teams.forEach(t=>p[t.pot-1].push(t)); return p; };
 function orderFixturesInterleaved(list){ const pots={1:[],2:[],3:[],4:[]}; for(const f of list) pots[f.pot].push(f); for(let p=1;p<=4;p++) pots[p].sort((A,B)=>A.opponent.localeCompare(B.opponent)); const out=[]; for(let r=0;r<2;r++){ for(let p=1;p<=4;p++){ if(pots[p][r]) out.push(pots[p][r]); } } return out; }
 
@@ -147,12 +158,12 @@ let selected=''; let res=null; let phase='idle'; let revealed=[]; let revealToke
 
 const input=document.querySelector('#teamInput'); const listEl=document.querySelector('#suggestList');
 const focusMount=document.querySelector('#focusMount'); const allMount=document.querySelector('#allMount'); const errorBox=document.querySelector('#errorBox');
-const starTop = document.getElementById('starTop'); const starBottom = document.getElementById('starBottom');
+const mastStar = document.getElementById('mastStar');
 
 function currentSuggestions(){ const q=norm(input.value); if(!q) return TEAM_POOL; return TEAM_POOL.filter(t=> norm(t.name).startsWith(q)); }
 function openSuggest(){ fillSuggest(currentSuggestions()); listEl.style.display='block'; }
 function closeSuggest(){ listEl.style.display='none'; }
-function fillSuggest(items){ listEl.innerHTML=''; items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); li.textContent=`${t.name} (${t.country})`; li.onmousedown=(e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
+function fillSuggest(items){ listEl.innerHTML=''; items.slice(0,36).forEach(t=>{ const li=document.createElement('li'); const img=document.createElement('img'); img.className='crest'; img.src=crestUrl(t.name); img.alt=''; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const text=document.createElement('span'); text.textContent=`${t.name} (${t.country})`; li.append(img, text); li.onmousedown=(e)=>{ e.preventDefault(); pickTeam(t.name); closeSuggest(); }; listEl.appendChild(li); }); }
 function pickTeam(name){ selected=name; input.value=name; if(res){ if(phase==='focus'){ runFocusReveal(name, res.table);} else { phase='all'; renderAll(); } } }
 
 // inputs
@@ -163,9 +174,11 @@ input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault()
 
 function showError(msg){ errorBox.textContent=msg; errorBox.style.display='block'; } function clearError(){ errorBox.style.display='none'; errorBox.textContent=''; }
 
-function teamPanel(row, highlight=false){ const ordered=row.fixtures; const box=document.createElement('div'); box.className='tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight'); const list=document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0'; ordered.forEach(f=>{ const li=document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const nameSpan=document.createElement('span'); nameSpan.textContent=f.opponent; nameSpan.style.whiteSpace='nowrap'; nameSpan.style.overflow='hidden'; nameSpan.style.textOverflow='ellipsis'; const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; left.append(img, nameSpan, tag); const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; li.append(left, ha); list.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.style.overflow='hidden'; tname.style.textOverflow='ellipsis'; tname.textContent=row.team.name; bar.append(timg,tname); box.append(list,bar); return box; }
+function pinTeam(name){ selected=name; if(res){ phase='all'; renderAll(); window.scrollTo({top:0, behavior:'smooth'}); } }
 
-function focusPanel(row, revealedNames){ const items=row.fixtures.filter(f=> revealedNames.includes(f.opponent)); const box=document.createElement('div'); box.className='center'; const tile=document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%'; const ul=document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0'; items.forEach(f=>{ const li=document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const span=document.createElement('span'); span.textContent=f.opponent; span.style.whiteSpace='nowrap'; span.style.overflow='hidden'; span.style.textOverflow='ellipsis'; const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; left.append(img, span, tag); li.append(left, ha); ul.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.textContent=row.team.name; bar.append(timg, tname); tile.append(ul, bar); box.appendChild(tile); return box; }
+function teamPanel(row, highlight=false){ const ordered=row.fixtures; const box=document.createElement('div'); box.className='tile p-3'; box.style.padding='12px'; if(highlight) box.classList.add('highlight'); const list=document.createElement('ul'); list.style.listStyle='none'; list.style.padding=0; list.style.margin='0 0 12px 0'; ordered.forEach(f=>{ const li=document.createElement('li'); li.className='row'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.loading='lazy'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const nameSpan=document.createElement('span'); nameSpan.textContent=f.opponent; nameSpan.style.whiteSpace='nowrap'; nameSpan.style.overflow='hidden'; nameSpan.style.textOverflow='ellipsis'; nameSpan.style.cursor='pointer'; nameSpan.title='Pin this team'; nameSpan.addEventListener('click', ()=> pinTeam(f.opponent)); const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; left.append(img, nameSpan, tag); const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; li.append(left, ha); list.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('button'); tname.className='h-display'; tname.style.fontSize='18px'; tname.style.overflow='hidden'; tname.style.textOverflow='ellipsis'; tname.style.background='transparent'; tname.style.border='none'; tname.style.color='#fff'; tname.style.cursor='pointer'; tname.textContent=row.team.name; tname.title='Pin this team'; tname.addEventListener('click', ()=> pinTeam(row.team.name)); bar.append(timg,tname); box.append(list,bar); return box; }
+
+function focusPanel(row, revealedNames){ const items=row.fixtures.filter(f=> revealedNames.includes(f.opponent)); const box=document.createElement('div'); box.className='center'; const tile=document.createElement('div'); tile.className='tile highlight'; tile.style.padding='12px'; tile.style.maxWidth='720px'; tile.style.width='100%'; const ul=document.createElement('ul'); ul.style.listStyle='none'; ul.style.padding=0; ul.style.margin='0 0 12px 0'; items.forEach(f=>{ const li=document.createElement('li'); li.className='row reveal'; li.style.justifyContent='space-between'; li.style.padding='6px 8px'; li.style.border='1px solid rgba(255,255,255,.1)'; li.style.borderRadius='10px'; li.style.margin='4px 0'; const left=document.createElement('div'); left.className='row'; left.style.minWidth='0'; const img=document.createElement('img'); img.className='crest'; img.src=crestUrl(f.opponent); img.alt=f.opponent; img.onerror=()=>{ img.src=CREST_BASE+'/missing.png'; }; const span=document.createElement('button'); span.textContent=f.opponent; span.style.whiteSpace='nowrap'; span.style.overflow='hidden'; span.style.textOverflow='ellipsis'; span.style.background='transparent'; span.style.border='none'; span.style.color='#fff'; span.style.cursor='pointer'; span.title='Pin this team'; span.addEventListener('click', ()=> pinTeam(f.opponent)); const tag=document.createElement('span'); tag.className='tag'; tag.textContent='Pot '+f.pot; tag.style.marginLeft='8px'; const ha=document.createElement('div'); ha.className='haTag '+(f.home?'h':'a'); ha.textContent=f.home?'H':'A'; left.append(img, span, tag); li.append(left, ha); ul.appendChild(li); }); const bar=document.createElement('div'); bar.className='bar '+BAR_CLASS+' row'; bar.style.padding='10px 12px'; bar.style.gap='8px'; bar.style.alignItems='center'; const timg=document.createElement('img'); timg.className='crest'; timg.src=crestUrl(row.team.name); timg.alt=row.team.name; timg.onerror=()=>{ timg.src=CREST_BASE+'/missing.png'; }; const tname=document.createElement('div'); tname.className='h-display'; tname.style.fontSize='18px'; tname.textContent=row.team.name; bar.append(timg, tname); tile.append(ul, bar); box.appendChild(tile); return box; }
 
 function renderFocus(row){ focusMount.innerHTML=''; allMount.innerHTML=''; focusMount.appendChild(focusPanel(row, revealed)); }
 function renderAll(){ focusMount.innerHTML=''; allMount.innerHTML=''; if(!res) return; const pinned=res.table.find(r=> r.team.name===selected) || res.table[0]; if(!pinned) return; const others=res.table.filter(r=> r!==pinned); const pinWrap=document.createElement('div'); pinWrap.className='pin'; pinWrap.appendChild(teamPanel(pinned, true)); allMount.appendChild(pinWrap); const grid=document.createElement('div'); grid.className='grid cols-1 cols-2 cols-3'; allMount.appendChild(grid); others.forEach(row=> grid.appendChild(teamPanel(row,false))); }
@@ -178,8 +191,9 @@ startBtn.addEventListener('click', ()=>{ if(startBtn.classList.contains('btn-glo
 // selector
 const btnUCL=document.querySelector('#btnUCL');
 const btnUEL=document.querySelector('#btnUEL');
-btnUCL.addEventListener('click', ()=>{ document.body.classList.remove('theme-uel'); TEAM_POOL=UCL_TEAMS; BAR_CLASS='ucl'; selected=''; input.value=''; res=null; revealToken++; focusMount.innerHTML=''; allMount.innerHTML=''; if(starTop) starTop.src = 'assets/ucl_logo.png'; if(starBottom) starBottom.src = 'assets/ucl_logo.png'; fillSuggest(currentSuggestions()); listEl.style.display='block'; startBtn.classList.add('btn-glow'); });
-btnUEL.addEventListener('click', ()=>{ document.body.classList.add('theme-uel'); TEAM_POOL=UEL_TEAMS; BAR_CLASS='uel'; selected=''; input.value=''; res=null; revealToken++; focusMount.innerHTML=''; allMount.innerHTML=''; if(starTop) starTop.src = CREST_BASE + '/europaleague.png'; if(starBottom) starBottom.src = CREST_BASE + '/europaleague.png'; fillSuggest(currentSuggestions()); listEl.style.display='block'; startBtn.classList.add('btn-glow'); });
+function activate(seg){ if(seg==='ucl'){ document.body.classList.remove('theme-uel'); TEAM_POOL=UCL_TEAMS; BAR_CLASS='ucl'; btnUCL.classList.add('active'); btnUEL.classList.remove('active'); mastStar.src='assets/ucl_logo.png'; } else { document.body.classList.add('theme-uel'); TEAM_POOL=UEL_TEAMS; BAR_CLASS='uel'; btnUEL.classList.add('active'); btnUCL.classList.remove('active'); mastStar.src='crests/europaleague.png'; } selected=''; input.value=''; res=null; revealToken++; focusMount.innerHTML=''; allMount.innerHTML=''; fillSuggest(currentSuggestions()); listEl.style.display='block'; startBtn.classList.add('btn-glow'); }
+btnUCL.addEventListener('click', ()=> activate('ucl'));
+btnUEL.addEventListener('click', ()=> activate('uel'));
 </script>
 </body>
 </html>
