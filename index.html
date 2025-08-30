@@ -34,6 +34,9 @@
     .wrap{max-width:1120px; margin:0 auto; padding:16px}
     .h-display{font-family:'Barlow Condensed', Inter, sans-serif; letter-spacing:.02em; color:#fff}
     .tile{background:rgba(8,21,48,.38); border:1px solid rgba(255,255,255,.12); border-radius:14px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px)}
+/* UEL tiles: orange blur like the suggestion pill */
+body.theme-uel .tile{ background: linear-gradient(180deg, rgba(255,95,0,.18), rgba(0,0,0,.48)); border:1px solid rgba(255,95,0,.30); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px) }
+body.theme-uel .tag{ background: rgba(255,95,0,.12); border-color: rgba(255,95,0,.25) }
     .tile.highlight{ border-color: var(--hiEdge); box-shadow: 0 0 0 2px var(--hiEdge), 0 0 32px var(--hiOuter), inset 0 0 24px var(--hiInner); animation: glow 2.4s ease-in-out infinite alternate }
     @keyframes glow{ from{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 18px var(--hiOuter), inset 0 0 12px var(--hiInner)} to{ box-shadow: 0 0 0 2px var(--hiEdge), 0 0 36px var(--hiOuter), inset 0 0 24px var(--hiInner)} }
     .bar{ color:#fff; border-radius:10px; font-weight:800 }
