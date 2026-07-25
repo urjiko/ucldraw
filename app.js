@@ -2,10 +2,23 @@
   'use strict';
 
   const DATA = window.UCLDRAW_DATA;
+  const ENGINE = window.UCLDRAW_ENGINE;
   if (!DATA?.competitions) throw new Error('Competition data could not be loaded.');
+  if (!ENGINE?.generateCompetitionDraw) throw new Error('Draw engine could not be loaded.');
 
   const competitionOrder = ['ucl', 'uel', 'uecl'];
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TIMING = {
+    initialPause: 720,
+    rouletteBase: 105,
+    rouletteStep: 11,
+    decoyHold: 460,
+    winnerHold: 310,
+    fly: 900,
+    flyBack: 760,
+    fade: 240,
+    betweenFixtures: 680
+  };
 
   const els = {
     body: document.body,
@@ -47,9 +60,19 @@
   };
 
   const state = {
-    leagueId: 'ucl', selectedTeam: null, pendingTeam: null, mode: 'selection',
-    fixtures: [], revealedCount: 0, running: false, drawToken: 0,
-    activeCustomSlot: null, customBackup: null, toastTimer: null
+    leagueId: 'ucl',
+    selectedTeam: null,
+    pendingTeam: null,
+    mode: 'selection',
+    drawTable: null,
+    overrides: new Map(),
+    fixtures: [],
+    revealedCount: 0,
+    running: false,
+    drawToken: 0,
+    activeCustomSlot: null,
+    customBackup: null,
+    toastTimer: null
   };
 
   const competition = () => DATA.competitions[state.leagueId];
@@ -61,9 +84,9 @@
 
   function shuffle(items) {
     const result = [...items];
-    for (let i = result.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [result[i], result[j]] = [result[j], result[i]];
+    for (let index = result.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
     }
     return result;
   }
@@ -80,6 +103,9 @@
   function initials(name) {
     return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
   }
+
+  function cloneFixtures(fixtures) { return fixtures.map((fixture) => ({ ...fixture })); }
+  function teamIndex(team) { return competition().teams.indexOf(team); }
 
   function createCrest(team, size = 'normal') {
     const shell = document.createElement('span');
@@ -113,13 +139,11 @@
     return shell;
   }
 
-  function teamIndex(team) { return competition().teams.indexOf(team); }
-
   function showToast(message) {
     window.clearTimeout(state.toastTimer);
     els.toast.textContent = message;
     els.toast.classList.add('is-visible');
-    state.toastTimer = window.setTimeout(() => els.toast.classList.remove('is-visible'), 2600);
+    state.toastTimer = window.setTimeout(() => els.toast.classList.remove('is-visible'), 3000);
   }
 
   function setStatus(message) { els.drawStatus.textContent = message; }
@@ -187,7 +211,11 @@
   }
 
   function getTeamsForPot(pot) { return competition().teams.filter((team) => team.pot === pot); }
-  function getSelectedFixtureTeams() { return state.fixtures.map((fixture) => fixture.team).filter(Boolean); }
+
+  function visibleFixtureTeams() {
+    if (state.mode === 'draw') return state.fixtures.slice(0, state.revealedCount).map((fixture) => fixture.team);
+    return state.fixtures.map((fixture) => fixture.team).filter(Boolean);
+  }
 
   function customCandidateValidity(team, slotIndex) {
     const slot = state.fixtures[slotIndex];
@@ -202,6 +230,28 @@
     const associationCount = otherTeams.filter((otherTeam) => otherTeam.country === team.country).length;
     if (associationCount >= 2) return { valid: false, reason: 'Aynı federasyondan en fazla iki rakip seçilebilir.' };
     return { valid: true, reason: '' };
+  }
+
+  function fixturesForTeam(team) {
+    const override = state.overrides.get(team.name);
+    if (override) return cloneFixtures(override);
+    const generated = state.drawTable?.[team.name] || [];
+    return generated.map((fixture) => ({ team: fixture.opponent, pot: fixture.pot, home: fixture.home }));
+  }
+
+  function viewTeamDraw(team) {
+    if (state.running || state.mode === 'custom' || !state.drawTable) return;
+    state.selectedTeam = team;
+    state.fixtures = fixturesForTeam(team);
+    state.revealedCount = state.fixtures.length;
+    state.mode = 'complete';
+    state.activeCustomSlot = null;
+    els.drawTitle.textContent = team.name;
+    renderSelectedClub();
+    renderFixtureList();
+    renderDrawPots();
+    updateProgress();
+    setStatus(`${team.name} için kura sonucu. Başka bir takıma basarak onun rakiplerini de görebilirsin.`);
   }
 
   function createTeamButton(team, context) {
@@ -234,9 +284,9 @@
     if (team === state.selectedTeam) {
       button.classList.add('is-selected-club');
       button.disabled = true;
-      button.title = 'Seçtiğin takım';
+      button.title = 'Görüntülenen takım';
     }
-    if (getSelectedFixtureTeams().includes(team)) button.classList.add('is-drawn');
+    if (visibleFixtureTeams().includes(team)) button.classList.add('is-drawn');
 
     if (state.mode === 'custom') {
       const validity = state.activeCustomSlot === null
@@ -246,7 +296,13 @@
       button.disabled = false;
       button.title = validity.reason;
       button.addEventListener('click', () => handleCustomTeamSelection(team));
-    } else button.disabled = true;
+    } else if (state.mode === 'complete' && team !== state.selectedTeam) {
+      button.disabled = false;
+      button.classList.add('can-view');
+      button.title = `${team.name} kura sonucunu görüntüle`;
+      button.addEventListener('click', () => viewTeamDraw(team));
+    } else if (team !== state.selectedTeam) button.disabled = true;
+
     return button;
   }
 
@@ -317,7 +373,9 @@
         label.textContent = `${team.name} · Pot ${team.pot} · ${team.country}`;
         button.appendChild(label);
         button.addEventListener('mousedown', (event) => {
-          event.preventDefault(); openConfirmation(team); closeSearch();
+          event.preventDefault();
+          openConfirmation(team);
+          closeSearch();
         });
         item.appendChild(button);
         els.searchResults.appendChild(item);
@@ -331,7 +389,7 @@
     state.pendingTeam = team;
     els.confirmCrest.replaceChildren(createCrest(team, 'large'));
     els.confirmTitle.textContent = `${team.name} hazır`;
-    els.confirmText.textContent = `${team.name} ile kura çekimi başlayacak. Rakipler turnuva kurallarına göre belirlenecek. Hazır mısın?`;
+    els.confirmText.textContent = `${team.name} ile kura çekimi başlayacak. Bütün takımların kurası aynı anda ve karşılıklı olarak oluşturulacak. Hazır mısın?`;
     els.confirmBackdrop.hidden = false;
     document.body.style.overflow = 'hidden';
     els.confirmDrawButton.focus();
@@ -343,69 +401,6 @@
     state.pendingTeam = null;
   }
 
-  function buildSlotPots(comp) {
-    const pots = [];
-    for (let round = 0; round < comp.opponentsPerPot; round += 1)
-      for (let pot = 1; pot <= comp.potCount; pot += 1) pots.push(pot);
-    return pots;
-  }
-
-  function solveOpponentSlots(comp, selectedTeam) {
-    const slotPots = buildSlotPots(comp);
-    const candidatesByPot = new Map();
-    for (let pot = 1; pot <= comp.potCount; pot += 1) {
-      candidatesByPot.set(pot, comp.teams.filter((team) =>
-        team.pot === pot && team !== selectedTeam && team.country !== selectedTeam.country));
-    }
-
-    const selected = [];
-    const associationCounts = new Map();
-    function backtrack(slotIndex) {
-      if (slotIndex >= slotPots.length) return true;
-      const pot = slotPots[slotIndex];
-      const candidates = shuffle(candidatesByPot.get(pot) || []).sort((a, b) =>
-        (associationCounts.get(a.country) || 0) - (associationCounts.get(b.country) || 0));
-      for (const candidate of candidates) {
-        if (selected.includes(candidate)) continue;
-        const countryCount = associationCounts.get(candidate.country) || 0;
-        if (countryCount >= 2) continue;
-        selected.push(candidate);
-        associationCounts.set(candidate.country, countryCount + 1);
-        if (backtrack(slotIndex + 1)) return true;
-        selected.pop();
-        if (countryCount === 0) associationCounts.delete(candidate.country);
-        else associationCounts.set(candidate.country, countryCount);
-      }
-      return false;
-    }
-
-    if (!backtrack(0)) throw new Error('Bu takım listesiyle kurallara uygun kura üretilemedi. Torba ve ülke dağılımını kontrol et.');
-    return slotPots.map((pot, index) => ({ pot, team: selected[index], home: false }));
-  }
-
-  function assignVenues(fixtures, comp) {
-    if (comp.potCount === 4) {
-      for (let pot = 1; pot <= 4; pot += 1) {
-        const indexes = fixtures.map((fixture, index) => ({ fixture, index }))
-          .filter((entry) => entry.fixture.pot === pot).map((entry) => entry.index);
-        const firstIsHome = Math.random() < 0.5;
-        fixtures[indexes[0]].home = firstIsHome;
-        fixtures[indexes[1]].home = !firstIsHome;
-      }
-      return fixtures;
-    }
-    [[1, 2], [3, 4], [5, 6]].forEach(([firstPot, secondPot]) => {
-      const first = fixtures.find((fixture) => fixture.pot === firstPot);
-      const second = fixtures.find((fixture) => fixture.pot === secondPot);
-      const firstIsHome = Math.random() < 0.5;
-      first.home = firstIsHome;
-      second.home = !firstIsHome;
-    });
-    return fixtures;
-  }
-
-  function generateFixtures() { return assignVenues(solveOpponentSlots(competition(), state.selectedTeam), competition()); }
-
   function renderSelectedClub() {
     els.selectedClubCard.replaceChildren();
     if (!state.selectedTeam) return;
@@ -413,7 +408,7 @@
     copy.className = 'selected-club-copy';
     const label = document.createElement('div');
     label.className = 'selected-club-label';
-    label.textContent = `${competition().shortName} kura takımı`;
+    label.textContent = state.mode === 'complete' ? `${competition().shortName} kura sonucu` : `${competition().shortName} kura takımı`;
     const name = document.createElement('div');
     name.className = 'selected-club-name';
     name.textContent = state.selectedTeam.name;
@@ -462,7 +457,8 @@
       slot.addEventListener('click', () => {
         state.activeCustomSlot = index;
         setStatus(`Pot ${fixture.pot} için bir rakip seç.`);
-        renderFixtureList(); renderDrawPots();
+        renderFixtureList();
+        renderDrawPots();
       });
     } else slot.disabled = true;
     return slot;
@@ -475,7 +471,8 @@
   function updateProgress() {
     const total = state.fixtures.length || 1;
     const visible = state.mode === 'custom' || state.mode === 'complete'
-      ? state.fixtures.filter((fixture) => fixture.team).length : state.revealedCount;
+      ? state.fixtures.filter((fixture) => fixture.team).length
+      : state.revealedCount;
     els.progressBar.style.width = `${Math.round((visible / total) * 100)}%`;
   }
 
@@ -486,6 +483,10 @@
 
   function findTeamButton(team) {
     return document.querySelector(`.draw-side .team-button[data-team-index="${teamIndex(team)}"]`);
+  }
+
+  function fixtureTarget(index) {
+    return els.fixtureList.querySelector(`[data-fixture-index="${index}"]`);
   }
 
   function revealedFixtures() { return state.fixtures.slice(0, state.revealedCount); }
@@ -508,20 +509,26 @@
       const button = findTeamButton(candidates[step % candidates.length]);
       button?.classList.add('is-roulette');
       previousButton = button;
-      await wait(55 + Math.min(step * 8, 90));
+      await wait(TIMING.rouletteBase + Math.min(step * TIMING.rouletteStep, 120));
     }
     previousButton?.classList.remove('is-roulette');
   }
 
-  async function flyTeamCard(team, sourceElement, reverse = false) {
-    if (prefersReducedMotion || !sourceElement) { await wait(80); return; }
+  async function flyTeamCard(team, sourceElement, targetElement, reverse = false) {
+    if (prefersReducedMotion || !sourceElement || !targetElement) { await wait(100); return; }
     const sourceRect = sourceElement.getBoundingClientRect();
-    const targetRect = els.fixtureList.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
     const card = document.createElement('div');
     card.className = 'flying-card';
-    card.style.left = `${sourceRect.left}px`;
-    card.style.top = `${sourceRect.top}px`;
-    card.style.width = `${Math.max(210, sourceRect.width)}px`;
+    Object.assign(card.style, {
+      left: `${sourceRect.left}px`,
+      top: `${sourceRect.top}px`,
+      width: `${sourceRect.width}px`,
+      height: `${sourceRect.height}px`,
+      '--fly-duration': `${TIMING.fly}ms`,
+      '--fly-back-duration': `${TIMING.flyBack}ms`
+    });
+
     const inner = document.createElement('div');
     inner.className = 'flying-card-inner';
     inner.appendChild(createCrest(team));
@@ -531,17 +538,33 @@
     inner.appendChild(name);
     card.appendChild(inner);
     document.body.appendChild(card);
+
     await nextFrame();
-    const targetX = targetRect.left + targetRect.width / 2 - sourceRect.left - sourceRect.width / 2;
-    const targetY = targetRect.top + Math.min(targetRect.height, 220) / 2 - sourceRect.top;
-    card.style.transform = `translate(${targetX}px, ${targetY}px) scale(0.92)`;
+    card.classList.add('is-travelling');
+    Object.assign(card.style, {
+      left: `${targetRect.left}px`,
+      top: `${targetRect.top}px`,
+      width: `${targetRect.width}px`,
+      height: `${targetRect.height}px`
+    });
+    await wait(TIMING.fly);
+
     if (reverse) {
-      await wait(330);
-      card.style.transform = 'translate(0, 0) scale(1)';
-      card.style.opacity = '0.35';
-      await wait(300);
+      card.classList.add('is-rejected');
+      await wait(TIMING.decoyHold);
+      card.classList.add('is-returning');
+      Object.assign(card.style, {
+        left: `${sourceRect.left}px`,
+        top: `${sourceRect.top}px`,
+        width: `${sourceRect.width}px`,
+        height: `${sourceRect.height}px`
+      });
+      await wait(TIMING.flyBack);
     } else {
-      await wait(500); card.style.opacity = '0'; await wait(130);
+      card.classList.add('is-arrived');
+      await wait(TIMING.winnerHold);
+      card.style.opacity = '0';
+      await wait(TIMING.fade);
     }
     card.remove();
   }
@@ -550,11 +573,12 @@
     const allEligible = currentlyEligibleTeams(fixture.pot);
     const candidates = shuffle(allEligible.includes(fixture.team) ? allEligible : [...allEligible, fixture.team]);
     if (!candidates.length) return;
-    const variant = randomItem(['roulette', 'fakeout', 'late-switch', 'double-check']);
+    const variant = randomItem(['roulette', 'fakeout', 'late-switch', 'double-check', 'fakeout']);
     setStatus(`Pot ${fixture.pot} taranıyor...`);
-    await pulseCandidates(candidates, 9 + Math.floor(Math.random() * 6), token);
+    await pulseCandidates(candidates, 11 + Math.floor(Math.random() * 6), token);
     if (token !== state.drawToken) return;
 
+    const target = fixtureTarget(fixtureIndex);
     const decoys = candidates.filter((team) => team !== fixture.team);
     if (variant !== 'roulette' && decoys.length) {
       const decoy = randomItem(decoys);
@@ -563,42 +587,49 @@
       if (variant === 'fakeout') setStatus(`${decoy.name} öne çıktı... uygunluk kontrol ediliyor.`);
       else if (variant === 'late-switch') setStatus('Son saniye kontrolü yapılıyor...');
       else setStatus('Federasyon ve iç saha/deplasman dengesi doğrulanıyor...');
-      await flyTeamCard(decoy, decoyButton, true);
+      await flyTeamCard(decoy, decoyButton, target, true);
       decoyButton?.classList.remove('is-decoy');
       if (token !== state.drawToken) return;
-      await pulseCandidates(shuffle(candidates.filter((team) => team !== decoy)), 5 + Math.floor(Math.random() * 4), token);
+      await pulseCandidates(shuffle(candidates.filter((team) => team !== decoy)), 6 + Math.floor(Math.random() * 4), token);
     }
 
     if (token !== state.drawToken) return;
     const winnerButton = findTeamButton(fixture.team);
     winnerButton?.classList.add('is-winner');
     setStatus(`${fixture.team.name} seçildi. ${fixture.home ? 'İç saha' : 'Deplasman'} maçı.`);
-    await wait(220);
-    await flyTeamCard(fixture.team, winnerButton, false);
+    await wait(TIMING.winnerHold);
+    await flyTeamCard(fixture.team, winnerButton, target, false);
     winnerButton?.classList.remove('is-winner');
   }
 
   async function runDraw(token) {
-    await wait(450);
+    await wait(TIMING.initialPause);
     for (let index = 0; index < state.fixtures.length; index += 1) {
       if (token !== state.drawToken) return;
       const fixture = state.fixtures[index];
       await animateFixtureSelection(fixture, index, token);
       if (token !== state.drawToken) return;
       state.revealedCount = index + 1;
-      clearAnimationClasses(); renderFixtureList(index); renderDrawPots(); updateProgress();
-      await wait(390);
+      clearAnimationClasses();
+      renderFixtureList(index);
+      renderDrawPots();
+      updateProgress();
+      await wait(TIMING.betweenFixtures);
     }
     if (token !== state.drawToken) return;
     state.running = false;
     state.mode = 'complete';
-    setStatus('Kura tamamlandı. Sonuçları değiştirebilir veya aynı takım için yeniden deneyebilirsin.');
+    setStatus('Kura tamamlandı. Torbalardaki başka bir takıma basarak onun kura sonucunu da görebilirsin.');
     els.drawActions.hidden = false;
-    renderFixtureList(); renderDrawPots(); updateProgress();
+    renderSelectedClub();
+    renderFixtureList();
+    renderDrawPots();
+    updateProgress();
   }
 
   function showDrawScreen() {
     closeSearch();
+    els.competitionPicker.hidden = true;
     els.selectionScreen.hidden = true;
     els.drawScreen.hidden = false;
     els.drawTitle.textContent = state.selectedTeam.name;
@@ -616,16 +647,28 @@
     state.revealedCount = 0;
     state.activeCustomSlot = null;
     state.customBackup = null;
-    try { state.fixtures = generateFixtures(); }
-    catch (error) { state.running = false; state.mode = 'selection'; showToast(error.message); return; }
+    state.overrides.clear();
+
+    try {
+      state.drawTable = ENGINE.generateCompetitionDraw(competition());
+      state.fixtures = fixturesForTeam(state.selectedTeam);
+    } catch (error) {
+      state.running = false;
+      state.mode = 'selection';
+      showToast(error.message);
+      return;
+    }
+
     showDrawScreen();
     els.drawActions.hidden = true;
     els.customActions.hidden = true;
     els.customNote.hidden = true;
     els.pairControls.hidden = true;
     els.progressBar.style.width = '0%';
-    setStatus('Kura motoru kuralları kontrol ediyor...');
-    renderDrawPots(); renderFixtureList(); runDraw(token);
+    setStatus('Kura motoru bütün takımların eşleşmelerini doğruladı. Çekim başlıyor...');
+    renderDrawPots();
+    renderFixtureList();
+    runDraw(token);
   }
 
   function showSelectionScreen() {
@@ -634,14 +677,18 @@
     state.mode = 'selection';
     state.selectedTeam = null;
     state.pendingTeam = null;
+    state.drawTable = null;
+    state.overrides.clear();
     state.fixtures = [];
     state.revealedCount = 0;
     state.activeCustomSlot = null;
     state.customBackup = null;
     els.teamSearch.value = '';
+    els.competitionPicker.hidden = false;
     els.selectionScreen.hidden = false;
     els.drawScreen.hidden = true;
-    closeSearch(); renderSelectionPots();
+    closeSearch();
+    renderSelectionPots();
     window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
   }
 
@@ -691,13 +738,17 @@
     setStatus(state.fixtures.every((fixture) => fixture.team)
       ? 'Kişisel kura hazır. Son kontrolleri yapıp tamamlayabilirsin.'
       : `Pot ${nextFixture.pot} için bir rakip seç.`);
-    renderFixtureList(changedIndex); renderDrawPots(); renderPairControls(); updateProgress();
+    renderFixtureList(changedIndex);
+    renderDrawPots();
+    renderPairControls();
+    updateProgress();
     els.finishCustomButton.disabled = !validateFixtureSet().valid;
   }
 
   function swapHomeAwayForPots(pots) {
     state.fixtures.filter((fixture) => pots.includes(fixture.pot)).forEach((fixture) => { fixture.home = !fixture.home; });
-    renderFixtureList(); renderPairControls();
+    renderFixtureList();
+    renderPairControls();
   }
 
   function renderPairControls() {
@@ -721,18 +772,21 @@
 
   function enterCustomMode() {
     state.mode = 'custom';
-    state.customBackup = state.fixtures.map((fixture) => ({ ...fixture }));
+    state.customBackup = cloneFixtures(state.fixtures);
     state.activeCustomSlot = 0;
     els.drawActions.hidden = true;
     els.customActions.hidden = false;
     els.customNote.hidden = false;
     setStatus(`Pot ${state.fixtures[0].pot} için bir rakip seç veya mevcut sonucu düzenle.`);
-    renderFixtureList(); renderDrawPots(); renderPairControls(); updateProgress();
+    renderFixtureList();
+    renderDrawPots();
+    renderPairControls();
+    updateProgress();
     els.finishCustomButton.disabled = !validateFixtureSet().valid;
   }
 
   function cancelCustomMode() {
-    state.fixtures = state.customBackup.map((fixture) => ({ ...fixture }));
+    state.fixtures = cloneFixtures(state.customBackup);
     state.customBackup = null;
     state.activeCustomSlot = null;
     state.mode = 'complete';
@@ -741,7 +795,10 @@
     els.customNote.hidden = true;
     els.drawActions.hidden = false;
     setStatus('Kişisel seçim iptal edildi. Önceki kura sonucu geri yüklendi.');
-    renderPairControls(); renderFixtureList(); renderDrawPots(); updateProgress();
+    renderPairControls();
+    renderFixtureList();
+    renderDrawPots();
+    updateProgress();
   }
 
   function resetCustomSelections() {
@@ -749,12 +806,16 @@
     state.activeCustomSlot = 0;
     els.finishCustomButton.disabled = true;
     setStatus(`Pot ${state.fixtures[0].pot} için bir rakip seç.`);
-    renderFixtureList(); renderDrawPots(); renderPairControls(); updateProgress();
+    renderFixtureList();
+    renderDrawPots();
+    renderPairControls();
+    updateProgress();
   }
 
   function finishCustomMode() {
     const validation = validateFixtureSet();
     if (!validation.valid) { showToast(validation.reason); return; }
+    state.overrides.set(state.selectedTeam.name, cloneFixtures(state.fixtures));
     state.mode = 'complete';
     state.revealedCount = state.fixtures.length;
     state.activeCustomSlot = null;
@@ -762,8 +823,11 @@
     els.customActions.hidden = true;
     els.customNote.hidden = true;
     els.drawActions.hidden = false;
-    setStatus('Kişisel kura tamamlandı ve bütün kurallar doğrulandı.');
-    renderPairControls(); renderFixtureList(); renderDrawPots(); updateProgress();
+    setStatus('Kişisel kura tamamlandı. Başka takımların otomatik kura sonuçlarını da görüntüleyebilirsin.');
+    renderPairControls();
+    renderFixtureList();
+    renderDrawPots();
+    updateProgress();
   }
 
   function setLeague(leagueId) {
@@ -771,12 +835,17 @@
     state.leagueId = leagueId;
     state.selectedTeam = null;
     state.pendingTeam = null;
+    state.drawTable = null;
+    state.overrides.clear();
     state.fixtures = [];
     state.revealedCount = 0;
     state.mode = 'selection';
     state.running = false;
     state.drawToken += 1;
-    applyTheme(); renderBrand(); renderCompetitionPicker(); showSelectionScreen();
+    applyTheme();
+    renderBrand();
+    renderCompetitionPicker();
+    showSelectionScreen();
   }
 
   els.teamSearch.addEventListener('focus', renderSearchResults);
@@ -799,7 +868,8 @@
   els.confirmDrawButton.addEventListener('click', () => {
     if (!state.pendingTeam) return;
     state.selectedTeam = state.pendingTeam;
-    closeConfirmation(); startDraw();
+    closeConfirmation();
+    startDraw();
   });
   els.retryButton.addEventListener('click', startDraw);
   els.customizeButton.addEventListener('click', enterCustomMode);

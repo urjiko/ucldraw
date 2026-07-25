@@ -5,9 +5,11 @@ Vanilla HTML, CSS ve JavaScript ile hazırlanmış interaktif UEFA lig aşaması
 ## Yapı
 
 - `index.html`: Sayfa iskeleti ve erişilebilirlik etiketleri
-- `styles.css`: Üç turnuvanın temaları, responsive yerleşim ve animasyonlar
+- `styles.css`: Üç turnuvanın temaları, responsive yerleşim ve ana animasyonlar
+- `fixes.css`: Arama katmanı ve kura geçişleri için etkileşim düzeltmeleri
 - `teams.js`: Turnuva ayarları, torbalar ve takım verileri
-- `app.js`: Arama, seçim, kura motoru, animasyonlar ve kişisel kura modu
+- `draw-engine.js`: Bütün takımlar için karşılıklı ve kurallı kura tablosunu üretir
+- `app.js`: Arama, takım seçimi, kura sunumu, takım sonuçları arasında geçiş ve kişisel kura modu
 - `assets/`: Arka planlar ve turnuva görselleri
 - `crests/`: Takım armaları
 
@@ -24,7 +26,7 @@ Sadece `teams.js` içindeki ilgili turnuvanın `teams` dizisini düzenle:
 - `pot`: Takımın torbası
 - `crest`: Opsiyonel. `crests/team-file-slug.png` dosyasını kullanır. Dosya yoksa takımın baş harfleri gösterilir.
 
-Conference League listesi şimdilik açıkça işaretlenmiş örnek takımlardan oluşuyor.
+Bütün torbalarda eşit sayıda takım bulunmalıdır. Conference League listesi şimdilik açıkça işaretlenmiş örnek takımlardan oluşuyor.
 
 ## Uygulanan temel kurallar
 
@@ -44,7 +46,9 @@ Conference League listesi şimdilik açıkça işaretlenmiş örnek takımlardan
 - Aynı federasyondan takım seçilemez
 - Başka bir federasyondan en fazla iki rakip seçilebilir
 
-Bu simülatör seçilen takımın rakiplerini üretir. UEFA'nın bütün 36 takım için aynı anda çözdüğü küresel takvim, yayın, şehir, güvenlik ve önceki sezon kısıtları bu sürümün kapsamı dışındadır.
+Kura motoru yalnız seçilen takım için bağımsız rakipler üretmez. Turnuvadaki bütün takımlar için karşılıklı tek bir kura tablosu oluşturur. Kura tamamlandıktan sonra torbalardaki başka bir takıma basarak o takımın sonucuna geçilebilir.
+
+UEFA'nın yayın planı, şehir ve stadyum çakışmaları, güvenlik kararları, maç tarihleri ve önceki sezon takvim kısıtları bu sürümün kapsamı dışındadır.
 
 ## Yerel çalıştırma
 
