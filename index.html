@@ -4,17 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#022ae2">
-  <meta
-    name="description"
-    content="UEFA Champions League, Europa League ve Conference League için interaktif lig aşaması kura simülatörü."
-  >
+  <meta name="description" content="UEFA Champions League, Europa League ve Conference League için interaktif lig aşaması kura simülatörü.">
   <title>UEFA Draw Simulator</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="fixes.css">
+  <link rel="stylesheet" href="v3.css">
 </head>
 <body data-league="ucl">
   <main class="app-shell" id="app">
-    <header class="app-header">
+    <header class="app-header" id="appHeader">
       <div class="brand-row">
         <div class="brand-lockup">
           <div class="brand-mark" id="brandMark" aria-hidden="true"></div>
@@ -25,12 +23,7 @@
         </div>
         <div class="rules-chip" id="rulesChip">4 torba · 8 rakip · 4 iç saha / 4 deplasman</div>
       </div>
-
-      <nav
-        class="competition-picker"
-        id="competitionPicker"
-        aria-label="Turnuva seçimi"
-      ></nav>
+      <nav class="competition-picker" id="competitionPicker" aria-label="Turnuva seçimi"></nav>
     </header>
 
     <section class="selection-screen" id="selectionScreen">
@@ -39,23 +32,12 @@
           <h2>Takımını seç</h2>
           <p>Arama yap veya aşağıdaki torbalardan bir takıma dokun.</p>
         </div>
-
         <div class="search-wrap">
           <span class="search-icon" aria-hidden="true">⌕</span>
-          <input
-            class="team-search"
-            id="teamSearch"
-            type="search"
-            autocomplete="off"
-            placeholder="Takım ara..."
-            aria-label="Takım ara"
-            aria-controls="searchResults"
-            aria-expanded="false"
-          >
+          <input class="team-search" id="teamSearch" type="search" autocomplete="off" placeholder="Takım ara..." aria-label="Takım ara" aria-controls="searchResults" aria-expanded="false">
           <ul class="search-results" id="searchResults" hidden></ul>
         </div>
       </div>
-
       <div class="pot-grid" id="selectionPots"></div>
     </section>
 
@@ -70,71 +52,97 @@
         </div>
       </div>
 
+      <section class="draw-control-panel glass" id="drawControlPanel" aria-label="Kura kontrolü">
+        <div class="control-group">
+          <span class="control-label">Kura modu</span>
+          <div class="segmented-control" id="modeControl">
+            <button type="button" class="control-chip is-active" data-control-mode="auto">Otomatik</button>
+            <button type="button" class="control-chip" data-control-mode="manual">Seç tuşuyla</button>
+          </div>
+        </div>
+        <div class="control-group" id="speedControlGroup">
+          <span class="control-label">Otomatik hız</span>
+          <div class="segmented-control" id="speedControl">
+            <button type="button" class="control-chip is-active" data-speed="1">1×</button>
+            <button type="button" class="control-chip" data-speed="1.5">1.5×</button>
+            <button type="button" class="control-chip" data-speed="2">2×</button>
+          </div>
+        </div>
+        <div class="manual-control" id="manualControl" hidden>
+          <button type="button" class="manual-select-button" id="manualSelectButton">Seçimi başlat</button>
+          <div class="manual-countdown" id="manualCountdown" aria-live="polite">Hazır</div>
+        </div>
+        <button type="button" class="finish-all-button" id="finishAllButton">Her şeyi tamamla</button>
+      </section>
+
       <div class="draw-stage">
         <aside class="draw-side left" id="leftPots" aria-label="Sol torbalar"></aside>
-
         <section class="draw-center glass">
           <div class="selected-club-card" id="selectedClubCard"></div>
-          <div class="draw-status" id="drawStatus" aria-live="polite">
-            Kura hazırlanıyor.
-          </div>
-
+          <div class="draw-status" id="drawStatus" aria-live="polite">Kura hazırlanıyor.</div>
           <div class="custom-note" id="customNote" hidden>
-            Bir eşleşme yuvasına, ardından ilgili torbadaki geçerli takıma bas.
-            Aynı ülke, tekrar eden takım ve federasyon sınırları otomatik uygulanır.
+            Bir eşleşme yuvasına, ardından ilgili torbadaki geçerli takıma bas. Aynı ülke, tekrar eden takım ve federasyon sınırları otomatik uygulanır.
           </div>
-
           <div class="pair-controls" id="pairControls" hidden></div>
           <div class="fixture-list" id="fixtureList"></div>
-
           <div class="draw-actions" id="drawActions" hidden>
-            <button class="action-button primary" id="retryButton" type="button">
-              Yeniden dene
-            </button>
-            <button class="action-button" id="customizeButton" type="button">
-              Kendin seç
-            </button>
-            <button class="action-button" id="changeTeamButton" type="button">
-              Takımı değiştir
-            </button>
+            <button class="action-button primary" id="retryButton" type="button">Yeniden dene</button>
+            <button class="action-button" id="showOverviewButton" type="button">Tüm fikstürü göster</button>
+            <button class="action-button" id="customizeButton" type="button">Kendin seç</button>
+            <button class="action-button" id="changeTeamButton" type="button">Takımı değiştir</button>
           </div>
-
           <div class="custom-actions" id="customActions" hidden>
-            <button class="action-button primary" id="finishCustomButton" type="button">
-              Kişisel kurayı tamamla
-            </button>
-            <button class="action-button" id="resetCustomButton" type="button">
-              Seçimleri sıfırla
-            </button>
-            <button class="action-button danger" id="cancelCustomButton" type="button">
-              Vazgeç
-            </button>
+            <button class="action-button primary" id="finishCustomButton" type="button">Kişisel kurayı tamamla</button>
+            <button class="action-button" id="resetCustomButton" type="button">Seçimleri sıfırla</button>
+            <button class="action-button danger" id="cancelCustomButton" type="button">Vazgeç</button>
           </div>
         </section>
-
         <aside class="draw-side right" id="rightPots" aria-label="Sağ torbalar"></aside>
       </div>
+
+      <section class="all-fixtures-section glass" id="allFixturesSection" hidden>
+        <header class="all-fixtures-header">
+          <div>
+            <span class="all-fixtures-kicker">Tam turnuva kurası</span>
+            <h2>Tüm takımların fikstürü</h2>
+            <p>Bir takım kartına basarak merkezde o takımın kura sonucuna geçebilirsin.</p>
+          </div>
+          <button type="button" class="action-button" id="hideOverviewButton">Gizle</button>
+        </header>
+        <div class="all-fixtures-grid" id="allFixturesGrid"></div>
+      </section>
     </section>
   </main>
 
   <div class="modal-backdrop" id="confirmBackdrop" hidden>
-    <section
-      class="confirm-modal glass"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirmTitle"
-      aria-describedby="confirmText"
-    >
+    <section class="confirm-modal glass mode-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
       <div id="confirmCrest"></div>
       <h2 id="confirmTitle">Kura hazır</h2>
       <p id="confirmText"></p>
+      <fieldset class="mode-choice-fieldset">
+        <legend>Kura nasıl ilerlesin?</legend>
+        <div class="mode-choice-grid" id="initialModeChoice">
+          <button type="button" class="mode-choice-card is-selected" data-initial-mode="auto">
+            <strong>Otomatik</strong>
+            <span>Takımlar seçilen hızda art arda belirlenir.</span>
+          </button>
+          <button type="button" class="mode-choice-card" data-initial-mode="manual">
+            <strong>Seç tuşuyla</strong>
+            <span>Her rakip için seçimi sen başlatır ve durdurursun.</span>
+          </button>
+        </div>
+      </fieldset>
+      <div class="initial-speed" id="initialSpeedControl">
+        <span>Otomatik hız</span>
+        <div class="segmented-control">
+          <button type="button" class="control-chip is-active" data-initial-speed="1">1×</button>
+          <button type="button" class="control-chip" data-initial-speed="1.5">1.5×</button>
+          <button type="button" class="control-chip" data-initial-speed="2">2×</button>
+        </div>
+      </div>
       <div class="modal-actions">
-        <button class="action-button" id="cancelConfirmButton" type="button">
-          Geri dön
-        </button>
-        <button class="action-button primary" id="confirmDrawButton" type="button">
-          Hazırım, başlat
-        </button>
+        <button class="action-button" id="cancelConfirmButton" type="button">Geri dön</button>
+        <button class="action-button primary" id="confirmDrawButton" type="button">Hazırım, başlat</button>
       </div>
     </section>
   </div>
@@ -143,6 +151,6 @@
 
   <script src="teams.js"></script>
   <script src="draw-engine.js"></script>
-  <script src="app.js"></script>
+  <script src="app-v3.js"></script>
 </body>
 </html>
