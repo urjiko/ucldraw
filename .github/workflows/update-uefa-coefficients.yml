@@ -59,7 +59,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add generated-club-coefficients.js
-          git commit -m "Update UEFA club coefficients [skip ci]"
+          git commit -m "Update UEFA club coefficients"
           git push origin HEAD:${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
 
   report-failure:
