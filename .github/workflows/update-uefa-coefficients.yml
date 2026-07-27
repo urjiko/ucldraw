@@ -1,0 +1,47 @@
+name: Update UEFA club coefficients
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 1'
+  push:
+    branches:
+      - main
+      - agent/uefa-coefficients-venue-icons
+    paths:
+      - 'scripts/update-uefa-coefficients.mjs'
+      - 'team-pool-loader.js'
+      - 'generated-team-pools.js'
+      - '.github/workflows/update-uefa-coefficients.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+      - name: Install browser client
+        run: npm install --no-save --no-package-lock puppeteer-core@24
+      - name: Read official UEFA coefficients
+        run: node scripts/update-uefa-coefficients.mjs
+      - name: Commit coefficient snapshot when changed
+        run: |
+          if git diff --quiet -- generated-club-coefficients.js; then
+            echo "Coefficient snapshot already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add generated-club-coefficients.js
+          git commit -m "Update UEFA club coefficients [skip ci]"
+          git push
