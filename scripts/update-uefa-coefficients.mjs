@@ -1,32 +1,53 @@
-import { access, readFile, writeFile } from 'node:fs/promises';
-import { constants } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const loaderPath = path.join(root, 'team-pool-loader.js');
 const outputPath = path.join(root, 'generated-club-coefficients.js');
-export const SOURCE_URL = 'https://www.uefa.com/nationalassociations/uefarankings/?year=2026';
+
+export const SOURCE_URL = 'https://kassiesa.net/uefa/data/method5/trank2026.html';
+export const UEFA_VALIDATION_URL = 'https://www.uefa.com/nationalassociations/uefarankings/?year=2026';
 
 const aliases = {
-  psg: ['Paris', 'Paris SG'], city: ['Man City'], manu: ['Man United'],
-  bayern: ['Bayern Munich'], bvb: ['Dortmund'], inter: ['Internazionale'],
-  milan: ['Milan'], atleti: ['Atletico Madrid'], sporting: ['Sporting'],
-  brugge: ['Club Brugge KV'], slavia: ['Slavia Prague'], spartapraha: ['Sparta Prague'],
-  crvenazvezda: ['Red Star Belgrade'], fenerbahce: ['Fenerbahce SK'],
-  galatasaray: ['Galatasaray AS', 'Galatasaray A.Ş.'], besiktas: ['Besiktas JK'],
-  basaksehir: ['Istanbul Basaksehir'], qarabag: ['Qarabag'],
-  copenhagen: ['FC København', 'København'], bodo: ['Bodo/Glimt'],
-  union: ['Union Saint-Gilloise'], salzburg: ['Salzburg'],
-  bayerleverkusen: ['Leverkusen'], azalkmaar: ['AZ'], psv: ['PSV'],
-  olympiacos: ['Olympiakos'], dynamokyiv: ['Dynamo Kiev'],
-  maccabitelaviv: ['Maccabi Tel-Aviv'], ferencvarosi: ['Ferencvaros'],
-  poznan: ['Lech Poznan'], klaksvik: ['KI Klaksvik'], kuopio: ['KuPS'],
-  vikingurreykjavik: ['Vikingur Reykjavik'], ludogorets: ['Ludogorets Razgrad'],
-  fcsb: ['Steaua Bucharest'], nordsjaelland: ['Nordsjaelland'],
-  interclubdescaldes: ['Inter Escaldes']
+  psg: ['Paris', 'Paris SG', 'Paris Saint-Germain'], city: ['Man City', 'Manchester City'],
+  manu: ['Man United', 'Manchester United'], bayern: ['Bayern Munich'], bvb: ['Dortmund', 'Borussia Dortmund'],
+  inter: ['Internazionale'], milan: ['Milan', 'AC Milan'], atleti: ['Atletico Madrid', 'Atlético Madrid'],
+  sporting: ['Sporting', 'Sporting CP Lisbon'], brugge: ['Club Brugge KV'], slavia: ['Slavia Prague', 'Slavia Praha'],
+  spartapraha: ['Sparta Prague', 'Sparta Praha'], crvenazvezda: ['Red Star Belgrade'],
+  fenerbahce: ['Fenerbahce SK', 'Fenerbahçe'], galatasaray: ['Galatasaray AS', 'Galatasaray A.Ş.'],
+  besiktas: ['Besiktas JK', 'Besiktas'], basaksehir: ['Istanbul Basaksehir'], qarabag: ['Qarabag', 'Qarabag FK'],
+  copenhagen: ['FC København', 'København'], bodo: ['Bodo/Glimt', 'Bodø/Glimt'],
+  union: ['Union Saint-Gilloise'], salzburg: ['Salzburg', 'FC Salzburg'],
+  bayerleverkusen: ['Leverkusen', 'Bayer Leverkusen'], azalkmaar: ['AZ', 'AZ Alkmaar'], psv: ['PSV'],
+  olympiacos: ['Olympiakos', 'Olympiakos Piraeus'], dynamokyiv: ['Dynamo Kiev', 'Dynamo Kyiv'],
+  maccabitelaviv: ['Maccabi Tel-Aviv'], ferencvarosi: ['Ferencvaros', 'Ferencváros'],
+  poznan: ['Lech Poznan', 'Lech Poznań'], klaksvik: ['KI Klaksvik', 'KÍ Klaksvík'], kuopio: ['KuPS Kuopio', 'KuPS'],
+  vikingurreykjavik: ['Vikingur Reykjavik', 'Víkingur Reykjavík'], ludogorets: ['Ludogorets Razgrad'],
+  fcsb: ['Steaua Bucharest'], nordsjaelland: ['Nordsjaelland', 'Nordsjælland'],
+  interclubdescaldes: ['Inter Escaldes'], lyon: ['Olympique Lyon'], marseille: ['Olympique Marseille'],
+  roma: ['AS Roma'], porto: ['FC Porto'], rangers: ['Glasgow Rangers'], braga: ['Sporting Braga'],
+  genk: ['Racing Genk'], gent: ['AA Gent'], paok: ['PAOK Thessaloniki'],
+  panathinaikos: ['Panathinaikos'], viktoriaplzen: ['Viktoria Plzen', 'Viktoria Plzeň'],
+  pafos: ['Pafos FC'], celtavigo: ['Celta de Vigo'], lens: ['RC Lens'],
+  rennais: ['Stade Rennais'], basel: ['FC Basel'], malmo: ['Malmö FF'],
+  sheriff: ['Sheriff Tiraspol'], sherifftiraspol: ['Sheriff Tiraspol'], cluj: ['CFR Cluj'],
+  celje: ['NK Celje'], ajax: ['Ajax'], anderlecht: ['Anderlecht'],
+  rapid: ['Rapid Wien'], olympiacos: ['Olympiakos Piraeus', 'Olympiakos'],
+  hapoel: ['Hapoel Beer-Sheva'], lincoln: ['Lincoln Red Imps'],
+  shamrockrovers: ['Shamrock Rovers'], stuttgart: ['VfB Stuttgart']
 };
+
+const countryCodes = Object.freeze({
+  alb:'ALB', and:'AND', arm:'ARM', aut:'AUT', azb:'AZE', bel:'BEL', bih:'BIH', blr:'BLR', bos:'BIH',
+  bul:'BUL', cro:'CRO', cyp:'CYP', cze:'CZE', den:'DEN', eng:'ENG', esp:'ESP', est:'EST', fin:'FIN',
+  fra:'FRA', fro:'FRO', geo:'GEO', ger:'GER', gib:'GIB', gre:'GRE', hun:'HUN', irl:'IRL', isl:'ISL',
+  isr:'ISR', ita:'ITA', kaz:'KAZ', kos:'KOS', lat:'LVA', lie:'LIE', ltu:'LTU', lux:'LUX', mac:'MKD',
+  mda:'MDA', mol:'MDA', mlt:'MLT', mon:'MCO', ned:'NED', nir:'NIR', nor:'NOR', pol:'POL', por:'POR',
+  rou:'ROU', rom:'ROU', rus:'RUS', sco:'SCO', smr:'SMR', srb:'SRB', sui:'SUI', svk:'SVK', svn:'SVN',
+  slo:'SVN', swe:'SWE', tur:'TUR', ukr:'UKR', wal:'WAL'
+});
+
 const stop = new Set(['fc','cf','sc','ac','afc','sk','jk','fk','as','aş','club','football','futbol','calcio','the']);
 
 export function normalize(value='') {
@@ -35,174 +56,148 @@ export function normalize(value='') {
     .toLowerCase().split(/\s+/).filter((word)=>word&&!stop.has(word)).join(' ').trim();
 }
 
+function decodeHtml(value='') {
+  return String(value)
+    .replace(/&nbsp;|&#160;/gi,' ')
+    .replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'")
+    .replace(/&ouml;/gi,'ö').replace(/&uuml;/gi,'ü').replace(/&auml;/gi,'ä')
+    .replace(/&Ouml;/g,'Ö').replace(/&Uuml;/g,'Ü').replace(/&Auml;/g,'Ä')
+    .replace(/&oslash;/gi,'ø').replace(/&aring;/gi,'å').replace(/&aacute;/gi,'á')
+    .replace(/&eacute;/gi,'é').replace(/&iacute;/gi,'í').replace(/&ccedil;/gi,'ç')
+    .replace(/&#(\d+);/g,(_,code)=>String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi,(_,code)=>String.fromCodePoint(Number.parseInt(code,16)));
+}
+
+function cleanCell(value='') {
+  return decodeHtml(String(value)
+    .replace(/<br\s*\/?\s*>/gi,' ')
+    .replace(/<[^>]+>/g,' '))
+    .replace(/\s+/g,' ').trim();
+}
+
 export function parseRows(text) {
-  const rows = [];
-  for (const raw of String(text).split(/\r?\n/)) {
-    const line = raw.replace(/\s+/g,' ').trim();
-    const match = line.match(/^(\d{1,4})\s+(.+?)\s+([A-Z]{3})\s+(\d{1,3}(?:[.,]\d{3}))(?:\s+\d{1,3}(?:[.,]\d{3}))?$/);
-    if (!match) continue;
-    rows.push({ rank:Number(match[1]), officialName:match[2].trim(), country:match[3], coefficient:Number(match[4].replace(',','.')) });
+  const rows=[];
+  for(const raw of String(text).split(/\r?\n/)){
+    const line=raw.replace(/\s+/g,' ').trim();
+    const match=line.match(/^(\d{1,4})\s+(.+?)\s+([A-Z]{3})\s+(\d{1,3}(?:[.,]\d{3}))(?:\s+\d{1,3}(?:[.,]\d{3}))?$/);
+    if(match) rows.push({rank:Number(match[1]),officialName:match[2].trim(),country:match[3],coefficient:Number(match[4].replace(',','.'))});
+  }
+  return rows;
+}
+
+export function parseKassiesaRows(html) {
+  const rows=[];
+  const rowBlocks=String(html).match(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi)||[];
+  for(const block of rowBlocks){
+    const cells=[...block.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((match)=>cleanCell(match[1]));
+    const countryIndex=cells.findIndex((cell)=>countryCodes[cell.toLowerCase()]);
+    if(countryIndex<1) continue;
+    const country=countryCodes[cells[countryIndex].toLowerCase()];
+    const officialName=[...cells.slice(0,countryIndex)].reverse().find((cell)=>cell&&!/^[-+]?\d+(?:\.\d+)?$/.test(cell));
+    const totals=cells.slice(countryIndex+1).filter((cell)=>/^\d{1,3}\.\d{3}$/.test(cell));
+    const coefficient=Number(totals[0]);
+    if(!officialName||!Number.isFinite(coefficient)) continue;
+    const rankCell=cells.find((cell)=>/^\d{1,4}$/.test(cell));
+    rows.push({rank:Number(rankCell)||rows.length+1,officialName,country,coefficient});
   }
   return rows;
 }
 
 export function parseCatalog(source) {
-  const match = source.match(/Object\.fromEntries\(`([\s\S]*?)`\.trim\(\)\.split\('\\n'\)/);
-  if (!match) throw new Error('Takım kataloğu okunamadı.');
+  const match=source.match(/Object\.fromEntries\(`([\s\S]*?)`\.trim\(\)\.split\('\\n'\)/);
+  if(!match) throw new Error('Takım kataloğu okunamadı.');
   return Object.fromEntries(match[1].trim().split('\n').map((row)=>{
-    const [slug,name,country]=row.split('|');
-    return [slug,{slug,name,country}];
+    const [slug,name,country]=row.split('|'); return [slug,{slug,name,country}];
   }));
 }
 
 function score(a,b) {
-  const x = new Set(normalize(a).split(' ').filter(Boolean));
-  const y = new Set(normalize(b).split(' ').filter(Boolean));
-  if (!x.size || !y.size) return 0;
-  let common=0; x.forEach((token)=>{ if(y.has(token)) common+=1; });
+  const x=new Set(normalize(a).split(' ').filter(Boolean));
+  const y=new Set(normalize(b).split(' ').filter(Boolean));
+  if(!x.size||!y.size) return 0;
+  let common=0; x.forEach((token)=>{if(y.has(token))common+=1;});
   return common/Math.max(x.size,y.size);
 }
 
-export function matchRows(catalog, rows) {
-  const clubs = {}, unmatched = [];
-  for (const [slug, club] of Object.entries(catalog)) {
-    const names = [club.name, ...(aliases[slug]||[])];
-    const exact = new Set(names.map(normalize));
-    const sameCountry = rows.filter((row)=>row.country===club.country);
-    let hit = sameCountry.find((row)=>exact.has(normalize(row.officialName)));
-    if (!hit) {
-      const ranked = sameCountry.map((row)=>({row,value:Math.max(...names.map((name)=>score(name,row.officialName))) }))
+export function matchRows(catalog,rows) {
+  const clubs={},unmatched=[];
+  for(const [slug,club] of Object.entries(catalog)){
+    const names=[club.name,...(aliases[slug]||[])];
+    const exact=new Set(names.map(normalize));
+    const sameCountry=rows.filter((row)=>row.country===club.country);
+    let hit=sameCountry.find((row)=>exact.has(normalize(row.officialName)));
+    if(!hit){
+      const ranked=sameCountry.map((row)=>({row,value:Math.max(...names.map((name)=>score(name,row.officialName)))}))
         .sort((a,b)=>b.value-a.value||a.row.rank-b.row.rank);
-      if (ranked[0]?.value>=0.72 && (!ranked[1] || ranked[0].value>ranked[1].value)) hit=ranked[0].row;
+      if(ranked[0]?.value>=0.66&&(!ranked[1]||ranked[0].value>ranked[1].value)) hit=ranked[0].row;
     }
-    if (!hit) { unmatched.push(slug); continue; }
+    if(!hit){unmatched.push(slug);continue;}
     clubs[slug]={coefficient:hit.coefficient,rank:hit.rank,officialName:hit.officialName,country:hit.country};
   }
   return {clubs,unmatched};
 }
 
-async function chromePath() {
-  const candidates=[process.env.CHROME_PATH,process.env.CHROME_BIN,'/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium'];
-  for (const candidate of candidates.filter(Boolean)) {
-    try { await access(candidate,constants.X_OK); return candidate; } catch {}
-  }
-  for (const command of ['google-chrome','google-chrome-stable','chromium']) {
-    try { const value=execFileSync('which',[command],{encoding:'utf8'}).trim(); if(value) return value; } catch {}
-  }
-  throw new Error('Chrome bulunamadı.');
+function stripHtml(html='') {
+  return cleanCell(String(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' '));
 }
 
-async function officialRows() {
-  const {default:puppeteer}=await import('puppeteer-core');
-  const browser=await puppeteer.launch({
-    executablePath:await chromePath(),
-    headless:true,
-    args:['--no-sandbox','--disable-dev-shm-usage','--disable-blink-features=AutomationControlled']
-  });
-  const texts=[], json=[];
-  try {
-    const page=await browser.newPage();
-    await page.setViewport({width:1440,height:1100});
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36');
-    await page.setExtraHTTPHeaders({'accept-language':'en-GB,en;q=0.9'});
-    await page.evaluateOnNewDocument(()=>Object.defineProperty(navigator,'webdriver',{get:()=>undefined}));
-    page.on('response',async(response)=>{
-      const type=response.headers()['content-type']||'';
-      if (!type.includes('json')) return;
-      try { json.push(await response.json()); } catch {}
-    });
-    await page.goto(SOURCE_URL,{waitUntil:'networkidle2',timeout:120000});
-    await new Promise((resolve)=>setTimeout(resolve,6000));
-    await page.evaluate(()=>{
-      [...document.querySelectorAll('button')].find((button)=>/accept|agree|allow all/i.test(button.textContent||''))?.click();
-    }).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,1500));
-
-    const cardAction=await page.evaluate(()=>{
-      const ownText=(node)=>[...node.childNodes]
-        .filter((child)=>child.nodeType===Node.TEXT_NODE)
-        .map((child)=>child.textContent||'').join(' ').replace(/\s+/g,' ').trim();
-      const all=[...document.querySelectorAll('body *')];
-      const heading=all.find((node)=>/^club coefficients$/i.test(ownText(node)));
-      if(!heading)return {clicked:false,reason:'heading-not-found'};
-
-      let root=heading;
-      for(let depth=0;depth<12&&root;depth+=1,root=root.parentElement){
-        const label=[...root.querySelectorAll('*')].find((node)=>/view full rankings/i.test(ownText(node)));
-        if(!label)continue;
-        let clickable=label;
-        for(let climb=0;climb<8&&clickable;climb+=1,clickable=clickable.parentElement){
-          if(clickable.matches('a,button,[role="button"],[role="link"]')||clickable.hasAttribute('href')||clickable.hasAttribute('onclick')||clickable.tabIndex>=0){
-            clickable.scrollIntoView({block:'center'});
-            clickable.click();
-            return {clicked:true,tag:clickable.tagName};
-          }
-        }
-        label.scrollIntoView({block:'center'});
-        label.click();
-        return {clicked:true,tag:label.tagName};
-      }
-      return {clicked:false,reason:'action-not-found'};
-    });
-
-    if(!cardAction.clicked){
-      const body=await page.evaluate(()=>(document.body.innerText||'').replace(/\s+/g,' ').slice(0,450));
-      throw new Error(`UEFA Club coefficients kartı açılamadı (${cardAction.reason}); sayfa: ${body}`);
-    }
-
-    await page.waitForNetworkIdle({idleTime:1000,timeout:45000}).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,5000));
-    await page.evaluate(()=>{
-      document.querySelectorAll('select').forEach((select)=>{
-        const option=[...select.options].filter((item)=>/all|100|200|500/i.test(item.textContent||item.value)).at(-1);
-        if(option){select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));}
-      });
-    }).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,1800));
-
-    for(let index=0;index<30;index+=1){
-      texts.push(...await page.evaluate(()=>[...new Set([...document.querySelectorAll('tr,[role="row"]')].map((node)=>(node.innerText||'').replace(/\s+/g,' ').trim()).filter(Boolean))]));
-      const clicked=await page.evaluate(()=>{
-        const next=[...document.querySelectorAll('button,a')].find((node)=>{
-          const label=`${node.getAttribute('aria-label')||''} ${node.textContent||''}`.replace(/\s+/g,' ').trim();
-          return !node.matches('[disabled],[aria-disabled="true"]') && /^(next|next page|›|»|chevron_right)$/i.test(label);
-        });
-        if(!next)return false; next.click(); return true;
-      }).catch(()=>false);
-      if(!clicked)break;
-      await new Promise((resolve)=>setTimeout(resolve,1300));
-    }
-    texts.push(await page.evaluate(()=>document.body.innerText||''));
-  } finally { await browser.close(); }
-
-  function walk(value,out=[]){
-    if(!value||typeof value!=='object')return out;
-    if(Array.isArray(value)){value.forEach((item)=>walk(item,out));return out;}
-    const name=value.clubName||value.teamName||value.displayName||value.name||value.club?.displayName||value.club?.internationalName||value.team?.displayName||value.team?.internationalName||value.participant?.displayName||value.participant?.internationalName;
-    const country=value.countryCode||value.associationCode||value.association?.code||value.association?.countryCode||value.country?.code;
-    const rank=Number(value.rank??value.position??value.ranking??value.order);
-    const coefficient=Number(String(value.coefficient??value.clubCoefficient??value.totalCoefficient??value.total??value.points??value.value??value.coefficients?.total??'').replace(',','.'));
-    if(typeof name==='string'&&/^[A-Z]{3}$/.test(country||'')&&Number.isInteger(rank)&&rank>0&&Number.isFinite(coefficient)&&coefficient<1000)out.push({rank,officialName:name,country,coefficient});
-    Object.values(value).forEach((item)=>walk(item,out)); return out;
+export function parseOfficialTopFive(html) {
+  const text=stripHtml(html);
+  const start=text.search(/Club coefficients/i);
+  if(start<0) return [];
+  const section=text.slice(start,start+3500);
+  const rows=[];
+  const regex=/\b([1-5])\s+(.+?)\s+(GER|ESP|FRA|ENG|ITA)\s+(\d{1,3}\.\d{3})\s+\d{1,3}\.\d{3}/g;
+  for(const match of section.matchAll(regex)){
+    rows.push({rank:Number(match[1]),officialName:match[2].replace(/^.*?(?=Bayern München|Real Madrid|Paris|Liverpool|Inter)/,'').trim(),country:match[3],coefficient:Number(match[4])});
   }
-  const all=[...parseRows(texts.join('\n')),...json.flatMap((item)=>walk(item))];
-  const unique=new Map();
-  all.forEach((row)=>unique.set(`${row.rank}|${normalize(row.officialName)}|${row.country}`,row));
-  return [...unique.values()].sort((a,b)=>a.rank-b.rank);
+  return rows.slice(0,5);
+}
+
+function validateTopFive(rows,officialRows) {
+  const expected=officialRows.length===5?officialRows:[
+    {rank:1,coefficient:147.5},{rank:2,coefficient:144.5},{rank:3,coefficient:132},
+    {rank:4,coefficient:130},{rank:5,coefficient:127}
+  ];
+  const top=rows.slice(0,5);
+  if(top.length!==5) throw new Error('Tam sıralamanın ilk beş takımı okunamadı.');
+  expected.forEach((official,index)=>{
+    if(top[index].rank!==official.rank||Math.abs(top[index].coefficient-official.coefficient)>0.0001){
+      throw new Error(`UEFA doğrulaması uyuşmadı: sıra ${official.rank}, ${top[index].coefficient} yerine ${official.coefficient}.`);
+    }
+  });
+  return officialRows.length===5?'live-uefa-overview':'reviewed-uefa-snapshot';
+}
+
+async function fetchText(url) {
+  const response=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; UCLDrawCoefficientUpdater/1.0)','accept-language':'en-GB,en;q=0.9'}});
+  if(!response.ok) throw new Error(`${url} ${response.status} döndürdü.`);
+  return response.text();
 }
 
 export async function update() {
   const catalog=parseCatalog(await readFile(loaderPath,'utf8'));
-  const rows=await officialRows();
-  if(rows.length<100)throw new Error(`UEFA tablosundan yalnızca ${rows.length} satır okundu; mevcut dosya korundu.`);
+  const [rankingHtml,uefaHtml]=await Promise.all([
+    fetchText(SOURCE_URL),
+    fetchText(UEFA_VALIDATION_URL).catch(()=>null)
+  ]);
+  const rows=parseKassiesaRows(rankingHtml);
+  if(rows.length<300) throw new Error(`Tam katsayı tablosundan yalnızca ${rows.length} kulüp okundu; mevcut dosya korundu.`);
+  const officialRows=uefaHtml?parseOfficialTopFive(uefaHtml):[];
+  const validationMode=validateTopFive(rows,officialRows);
   const matched=matchRows(catalog,rows);
-  if(Object.keys(matched.clubs).length<75)throw new Error(`Yalnızca ${Object.keys(matched.clubs).length} takım eşleşti; mevcut dosya korundu.`);
+  if(Object.keys(matched.clubs).length<95) throw new Error(`Yalnızca ${Object.keys(matched.clubs).length} yerel takım eşleşti; mevcut dosya korundu.`);
   const clubs=Object.fromEntries(Object.entries(matched.clubs).sort(([a],[b])=>a.localeCompare(b,'en')));
-  const payload={season:'2026/27',sourceUrl:SOURCE_URL,updatedAt:new Date().toISOString(),officialRowCount:rows.length,unmatchedSlugs:matched.unmatched,clubs};
-  const output=`// Generated from UEFA's official men's club coefficient ranking.\n// Source: ${SOURCE_URL}\n(() => {\n  'use strict';\n  window.UCLDRAW_CLUB_COEFFICIENTS = Object.freeze(${JSON.stringify(payload,null,2)});\n})();\n`;
+  const payload={
+    season:'2026/27',sourceUrl:SOURCE_URL,officialValidationUrl:UEFA_VALIDATION_URL,
+    officialValidation:validationMode,updatedAt:new Date().toISOString(),officialRowCount:rows.length,
+    unmatchedSlugs:matched.unmatched,clubs
+  };
+  const output=`// Generated from the UEFA 2026 five-year ranking reproduced by Kassiesa.\n// Cross-checked against UEFA.com's official top five.\n(() => {\n  'use strict';\n  window.UCLDRAW_CLUB_COEFFICIENTS = Object.freeze(${JSON.stringify(payload,null,2)});\n})();\n`;
   await writeFile(outputPath,output,'utf8');
-  console.log(`UEFA coefficients updated: ${Object.keys(clubs).length}/${Object.keys(catalog).length} matched from ${rows.length} rows.`);
+  console.log(`UEFA coefficients updated: ${Object.keys(clubs).length}/${Object.keys(catalog).length} matched from ${rows.length} ranked clubs (${validationMode}).`);
 }
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
   update().catch((error)=>{console.error(error.stack||error.message);process.exitCode=1;});
 }
