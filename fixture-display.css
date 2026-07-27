@@ -1,0 +1,48 @@
+/* Fixture row hierarchy: Pot · Team · Country · Matchweek. */
+.fixture-slot:disabled {
+  opacity: 1;
+  color: #fff;
+  -webkit-text-fill-color: currentColor;
+}
+.fixture-main { min-width: 0; }
+.fixture-info-line {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+.fixture-pot,
+.fixture-country,
+.fixture-week {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+.fixture-team.fixture-team-primary {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: #fff;
+  opacity: 1;
+  font-size: 0.86rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -webkit-text-fill-color: #fff;
+}
+.fixture-slot:not(.is-filled) .fixture-team.fixture-team-primary {
+  color: rgba(255, 255, 255, 0.64);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.64);
+}
+.fixture-slot .fixture-meta { display: none; }
+
+@media (max-width: 680px) {
+  .fixture-info-line { gap: 6px; }
+  .fixture-pot,
+  .fixture-country,
+  .fixture-week { font-size: 0.58rem; }
+  .fixture-team.fixture-team-primary { font-size: 0.78rem; }
+}
