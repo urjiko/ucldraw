@@ -50,8 +50,8 @@
 }
 .roster-replacement-backdrop { z-index: 360; }
 .roster-replacement-modal {
-  width: min(680px, 100%);
-  max-height: min(780px, calc(100vh - 36px));
+  width: min(760px, 100%);
+  max-height: min(820px, calc(100vh - 36px));
   display: grid;
   gap: 14px;
   overflow: hidden;
@@ -102,7 +102,7 @@
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
-  padding: 8px 9px;
+  padding: 9px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.055);
@@ -118,25 +118,73 @@
 .roster-replacement-option > span:nth-child(2) {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
-.roster-replacement-option strong,
-.roster-replacement-option > span:nth-child(2) > span {
+.roster-replacement-option strong {
   overflow: hidden;
+  font-size: 0.76rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.roster-replacement-option strong { font-size: 0.76rem; }
-.roster-replacement-option > span:nth-child(2) > span { color: var(--muted); font-size: 0.61rem; }
+.roster-replacement-option > span:nth-child(2) > span {
+  color: var(--muted);
+  font-size: 0.61rem;
+  line-height: 1.35;
+  white-space: normal;
+}
 .roster-replacement-action {
   color: #ffbdc5;
   font-size: 0.62rem;
   font-weight: 850;
 }
 .roster-replacement-modal > .action-button { justify-self: center; }
+.roster-modal-search {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font: inherit;
+}
+.roster-modal-search:focus {
+  border-color: rgba(var(--accent-rgb), 0.72);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+.roster-modal-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+.roster-team-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+.roster-team-actions .action-button { width: 100%; }
+.roster-locked-note {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
 
 @media (max-width: 680px) {
   .roster-replacement-modal { padding: 16px; }
-  .roster-replacement-list { grid-template-columns: 1fr; }
+  .roster-replacement-list,
+  .roster-team-actions { grid-template-columns: 1fr; }
   .roster-incoming-team .crest-shell.large { width: 52px; height: 52px; }
 }
