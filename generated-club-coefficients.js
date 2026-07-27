@@ -7,7 +7,7 @@
   "sourceUrl": "https://kassiesa.net/uefa/data/method5/trank2026.html",
   "officialValidationUrl": "https://www.uefa.com/nationalassociations/uefarankings/?year=2026",
   "officialValidation": "live-uefa-overview",
-  "updatedAt": "2026-07-27T13:11:58.452Z",
+  "updatedAt": "2026-07-27T13:14:42.537Z",
   "officialRowCount": 388,
   "unmatchedSlugs": [
     "bournemouth",
