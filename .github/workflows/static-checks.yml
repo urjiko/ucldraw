@@ -7,6 +7,7 @@ on:
       - main
       - agent/global-matchdays-layout
       - agent/conference-branding
+      - agent/fixture-display-venue-sequence
 
 permissions:
   contents: read
@@ -25,14 +26,18 @@ jobs:
         run: |
           node --check app-v3.js
           node --check draw-engine-v2.js
+          node --check venue-sequence.js
           node --check schedule-ui.js
+          node --check fixture-display.js
           node --check branding-fixes.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
           node tests/ui-v4.test.js
           node tests/branding.test.js
+          node tests/fixture-display.test.js
       - name: Run draw engine simulations
         run: |
           node tests/draw-engine.test.js
           node tests/matchday-schedule.test.js
+          node tests/venue-sequence.test.js
