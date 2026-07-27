@@ -11,6 +11,7 @@ on:
       - agent/dynamic-team-pools
       - agent/uefa-coefficients-venue-icons
       - agent/league-music-roster-search
+      - agent/guaranteed-roster-replacements
 
 permissions:
   contents: read
@@ -53,14 +54,15 @@ jobs:
           node tests/uefa-coefficients.test.mjs
           node tests/generated-coefficients.test.js
           node tests/roster-manager.test.js
-      - name: Check HTML and controls
+      - name: Check base HTML and controls
         run: |
           node tests/ui-v3.test.js
           node tests/ui-v4.test.js
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
-          node tests/music-roster-ui.test.js
+      - name: Check music and roster controls
+        run: node tests/music-roster-ui.test.js
       - name: Run draw engine simulations
         run: |
           node tests/draw-engine.test.js
