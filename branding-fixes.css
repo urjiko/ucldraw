@@ -1,0 +1,15 @@
+/* Competition branding assets and locale-safe English labels. */
+body[data-league="uecl"] {
+  background:
+    linear-gradient(180deg, rgba(0, 12, 4, 0.22), rgba(0, 8, 3, 0.9)),
+    var(--league-background, url("assets/arkaplancon.jpg"));
+  background-color: #020714;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+[lang="en"].draw-kicker,
+[lang="en"].selected-club-label {
+  text-transform: uppercase;
+}

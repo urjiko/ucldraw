@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - agent/global-matchdays-layout
+      - agent/conference-branding
 
 permissions:
   contents: read
@@ -25,10 +26,12 @@ jobs:
           node --check app-v3.js
           node --check draw-engine-v2.js
           node --check schedule-ui.js
+          node --check branding-fixes.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
           node tests/ui-v4.test.js
+          node tests/branding.test.js
       - name: Run draw engine simulations
         run: |
           node tests/draw-engine.test.js
