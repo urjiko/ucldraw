@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - agent/draw-control-modes
+      - agent/global-matchdays-layout
 
 permissions:
   contents: read
@@ -23,8 +23,13 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check app-v3.js
-          node --check draw-engine.js
+          node --check draw-engine-v2.js
+          node --check schedule-ui.js
       - name: Check HTML and controls
-        run: node tests/ui-v3.test.js
+        run: |
+          node tests/ui-v3.test.js
+          node tests/ui-v4.test.js
       - name: Run draw engine simulations
-        run: node tests/draw-engine.test.js
+        run: |
+          node tests/draw-engine.test.js
+          node tests/matchday-schedule.test.js

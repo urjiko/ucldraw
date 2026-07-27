@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="fixes.css">
   <link rel="stylesheet" href="v3.css">
+  <link rel="stylesheet" href="v4.css">
 </head>
 <body data-league="ucl">
   <main class="app-shell" id="app">
@@ -52,33 +53,34 @@
         </div>
       </div>
 
-      <section class="draw-control-panel glass" id="drawControlPanel" aria-label="Kura kontrolü">
-        <div class="control-group">
-          <span class="control-label">Kura modu</span>
-          <div class="segmented-control" id="modeControl">
-            <button type="button" class="control-chip is-active" data-control-mode="auto">Otomatik</button>
-            <button type="button" class="control-chip" data-control-mode="manual">Seç tuşuyla</button>
-          </div>
-        </div>
-        <div class="control-group" id="speedControlGroup">
-          <span class="control-label">Otomatik hız</span>
-          <div class="segmented-control" id="speedControl">
-            <button type="button" class="control-chip is-active" data-speed="1">1×</button>
-            <button type="button" class="control-chip" data-speed="1.5">1.5×</button>
-            <button type="button" class="control-chip" data-speed="2">2×</button>
-          </div>
-        </div>
-        <div class="manual-control" id="manualControl" hidden>
-          <button type="button" class="manual-select-button" id="manualSelectButton">Seçimi başlat</button>
-          <div class="manual-countdown" id="manualCountdown" aria-live="polite">Hazır</div>
-        </div>
-        <button type="button" class="finish-all-button" id="finishAllButton">Her şeyi tamamla</button>
-      </section>
-
       <div class="draw-stage">
         <aside class="draw-side left" id="leftPots" aria-label="Sol torbalar"></aside>
         <section class="draw-center glass">
           <div class="selected-club-card" id="selectedClubCard"></div>
+
+          <section class="draw-control-panel glass draw-control-panel-inline" id="drawControlPanel" aria-label="Kura kontrolü">
+            <div class="control-group">
+              <span class="control-label">Kura modu</span>
+              <div class="segmented-control" id="modeControl">
+                <button type="button" class="control-chip is-active" data-control-mode="auto">Otomatik</button>
+                <button type="button" class="control-chip" data-control-mode="manual">Durdurmalı Kura</button>
+              </div>
+            </div>
+            <div class="control-group" id="speedControlGroup">
+              <span class="control-label">Otomatik hız</span>
+              <div class="segmented-control" id="speedControl">
+                <button type="button" class="control-chip is-active" data-speed="1">1×</button>
+                <button type="button" class="control-chip" data-speed="1.5">1.5×</button>
+                <button type="button" class="control-chip" data-speed="2">2×</button>
+              </div>
+            </div>
+            <div class="manual-control" id="manualControl" hidden>
+              <button type="button" class="manual-select-button" id="manualSelectButton">Seçimi başlat</button>
+              <div class="manual-countdown" id="manualCountdown" aria-live="polite">Hazır</div>
+            </div>
+            <button type="button" class="finish-all-button" id="finishAllButton">Her şeyi tamamla</button>
+          </section>
+
           <div class="draw-status" id="drawStatus" aria-live="polite">Kura hazırlanıyor.</div>
           <div class="custom-note" id="customNote" hidden>
             Bir eşleşme yuvasına, ardından ilgili torbadaki geçerli takıma bas. Aynı ülke, tekrar eden takım ve federasyon sınırları otomatik uygulanır.
@@ -103,9 +105,9 @@
       <section class="all-fixtures-section glass" id="allFixturesSection" hidden>
         <header class="all-fixtures-header">
           <div>
-            <span class="all-fixtures-kicker">Tam turnuva kurası</span>
-            <h2>Tüm takımların fikstürü</h2>
-            <p>Bir takım kartına basarak merkezde o takımın kura sonucuna geçebilirsin.</p>
+            <span class="all-fixtures-kicker">Tam turnuva fikstürü</span>
+            <h2>Tüm takımların maç haftaları</h2>
+            <p>Her satır gerçek bir maç haftasıdır. Aynı takım aynı hafta yalnızca bir maçta yer alır.</p>
           </div>
           <button type="button" class="action-button" id="hideOverviewButton">Gizle</button>
         </header>
@@ -127,8 +129,8 @@
             <span>Takımlar seçilen hızda art arda belirlenir.</span>
           </button>
           <button type="button" class="mode-choice-card" data-initial-mode="manual">
-            <strong>Seç tuşuyla</strong>
-            <span>Her rakip için seçimi sen başlatır ve durdurursun.</span>
+            <strong>Durdurmalı Kura</strong>
+            <span>Takımları akıtır; istediğin anda durdurup seçimi tamamlarsın.</span>
           </button>
         </div>
       </fieldset>
@@ -150,7 +152,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="teams.js"></script>
-  <script src="draw-engine.js"></script>
+  <script src="draw-engine-v2.js"></script>
   <script src="app-v3.js"></script>
+  <script src="schedule-ui.js"></script>
 </body>
 </html>

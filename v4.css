@@ -1,0 +1,119 @@
+/* Global matchweeks and compact centered draw controls. */
+.draw-center .draw-control-panel-inline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 16px;
+  border-color: rgba(var(--accent-rgb), 0.26);
+  background: rgba(0, 0, 0, 0.18);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.draw-center .draw-control-panel-inline .control-group { min-width: 0; }
+.draw-center .draw-control-panel-inline .segmented-control { width: 100%; }
+.draw-center .draw-control-panel-inline .control-chip { min-width: 0; flex: 1; padding-inline: 7px; font-size: 0.68rem; }
+.draw-center .draw-control-panel-inline .manual-control,
+.draw-center .draw-control-panel-inline .finish-all-button { grid-column: 1 / -1; }
+.draw-center .draw-control-panel-inline .manual-select-button { min-height: 39px; }
+.draw-center .draw-control-panel-inline .finish-all-button { min-height: 38px; }
+
+.fixture-slot[data-matchday] .fixture-meta { color: rgba(255, 255, 255, 0.72); }
+.fixture-slot[data-matchday] .fixture-index {
+  background: rgba(var(--accent-rgb), 0.2);
+  color: #fff;
+  font-size: 0.66rem;
+}
+.overview-fixture[data-matchday] .overview-meta { white-space: nowrap; }
+
+@media (min-width: 931px) {
+  body.draw-active .app-shell {
+    width: min(1580px, calc(100% - 20px));
+    padding-top: 8px;
+  }
+  body.draw-active .draw-screen { gap: 9px; }
+  body.draw-active .draw-topbar {
+    min-height: 48px;
+    padding: 8px 12px;
+  }
+  body.draw-active .draw-stage {
+    grid-template-columns: minmax(235px, 0.94fr) minmax(350px, 1.12fr) minmax(235px, 0.94fr);
+    gap: 10px;
+  }
+  body.draw-active .draw-center {
+    top: 8px;
+    gap: 8px;
+    padding: 11px;
+  }
+  body.draw-active .selected-club-card { padding: 10px 12px; }
+  body.draw-active .selected-club-card .crest-shell.large {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+  }
+  body.draw-active .selected-club-name { font-size: clamp(1.35rem, 2.7vw, 1.9rem); }
+  body.draw-active .draw-status {
+    min-height: 40px;
+    padding: 7px 9px;
+    font-size: 0.78rem;
+  }
+  body.draw-active .fixture-list { gap: 5px; }
+  body.draw-active .fixture-slot {
+    min-height: 45px;
+    grid-template-columns: 35px minmax(0, 1fr) auto;
+    gap: 7px;
+    padding: 5px 7px;
+    border-radius: 11px;
+  }
+  body.draw-active .fixture-slot .crest-shell {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  body.draw-active .fixture-team { font-size: 0.76rem; }
+  body.draw-active .fixture-meta { margin-top: 1px; font-size: 0.61rem; }
+  body.draw-active .venue-badge { min-width: 32px; padding: 5px 6px; }
+
+  body.draw-active .draw-side { gap: 7px; }
+  body.draw-active .draw-side .pot-card { border-radius: 16px; }
+  body.draw-active .draw-side .pot-card-header { padding: 8px 10px; }
+  body.draw-active .draw-side .pot-card-header h3 { font-size: 1.05rem; }
+  body.draw-active .draw-side .pot-count { font-size: 0.62rem; }
+  body.draw-active .draw-side .pot-teams { gap: 3px; padding: 5px; }
+  body.draw-active .draw-side .team-button {
+    min-height: 30px;
+    grid-template-columns: 25px minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+  body.draw-active .draw-side .crest-shell {
+    width: 23px;
+    height: 23px;
+    border-radius: 6px;
+    font-size: 0.55rem;
+  }
+  body.draw-active .draw-side .team-name { font-size: 0.72rem; }
+  body.draw-active .draw-side .team-country { display: none; }
+  body.draw-active .draw-side .team-tag {
+    padding: 2px 4px;
+    border-radius: 5px;
+    font-size: 0.52rem;
+  }
+}
+
+@media (max-width: 1180px) and (min-width: 931px) {
+  body.draw-active .draw-stage {
+    grid-template-columns: minmax(210px, 0.9fr) minmax(330px, 1.1fr) minmax(210px, 0.9fr);
+  }
+  .draw-center .draw-control-panel-inline { grid-template-columns: 1fr; }
+  .draw-center .draw-control-panel-inline .manual-control,
+  .draw-center .draw-control-panel-inline .finish-all-button { grid-column: auto; }
+}
+
+@media (max-width: 680px) {
+  .draw-center .draw-control-panel-inline { grid-template-columns: 1fr; }
+  .draw-center .draw-control-panel-inline .manual-control,
+  .draw-center .draw-control-panel-inline .finish-all-button { grid-column: auto; }
+}
