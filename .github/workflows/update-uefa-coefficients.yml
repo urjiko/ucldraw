@@ -29,8 +29,10 @@ jobs:
       update_outcome: ${{ steps.update.outcome }}
       update_error: ${{ steps.update.outputs.error }}
     steps:
-      - name: Checkout
+      - name: Checkout source branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -48,7 +50,7 @@ jobs:
           echo "error=$error" >> "$GITHUB_OUTPUT"
           exit "$status"
       - name: Commit coefficient snapshot when changed
-        if: steps.update.outcome == 'success' && github.event_name != 'pull_request'
+        if: steps.update.outcome == 'success'
         run: |
           if git diff --quiet -- generated-club-coefficients.js; then
             echo "Coefficient snapshot already up to date."
@@ -58,7 +60,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add generated-club-coefficients.js
           git commit -m "Update UEFA club coefficients [skip ci]"
-          git push
+          git push origin HEAD:${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
 
   report-failure:
     needs: update
