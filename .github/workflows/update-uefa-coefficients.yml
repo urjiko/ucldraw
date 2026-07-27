@@ -49,7 +49,8 @@ jobs:
           set +e
           node scripts/update-uefa-coefficients.mjs 2>&1 | tee uefa-update.log
           status=${PIPESTATUS[0]}
-          error=$(tail -n 1 uefa-update.log | tr '\n\r' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
+          error=$(grep -m 1 'Error:' uefa-update.log || tail -n 1 uefa-update.log)
+          error=$(printf '%s' "$error" | tr '\n\r' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
           echo "error=$error" >> "$GITHUB_OUTPUT"
           exit "$status"
       - name: Commit coefficient snapshot when changed
