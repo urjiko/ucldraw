@@ -8,6 +8,7 @@ on:
       - agent/global-matchdays-layout
       - agent/conference-branding
       - agent/fixture-display-venue-sequence
+      - agent/dynamic-team-pools
 
 permissions:
   contents: read
@@ -30,6 +31,14 @@ jobs:
           node --check schedule-ui.js
           node --check fixture-display.js
           node --check branding-fixes.js
+          node --check generated-team-pools.js
+          node --check team-pool-loader.js
+          node --check scripts/generate-team-pools.mjs
+      - name: Check generated team pools
+        run: |
+          node scripts/generate-team-pools.mjs
+          git diff --exit-code -- generated-team-pools.js
+          node tests/team-pools.test.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
