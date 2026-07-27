@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'scripts/update-uefa-coefficients.mjs'
+      - 'scripts/stabilize-coefficient-snapshot.mjs'
       - 'team-pool-loader.js'
       - 'generated-team-pools.js'
       - '.github/workflows/update-uefa-coefficients.yml'
@@ -14,6 +15,7 @@ on:
       - agent/uefa-coefficients-venue-icons
     paths:
       - 'scripts/update-uefa-coefficients.mjs'
+      - 'scripts/stabilize-coefficient-snapshot.mjs'
       - 'team-pool-loader.js'
       - 'generated-team-pools.js'
       - '.github/workflows/update-uefa-coefficients.yml'
@@ -45,6 +47,10 @@ jobs:
           set +e
           node scripts/update-uefa-coefficients.mjs 2>&1 | tee coefficient-update.log
           status=${PIPESTATUS[0]}
+          if [ "$status" -eq 0 ]; then
+            node scripts/stabilize-coefficient-snapshot.mjs
+            status=$?
+          fi
           error=$(grep -m 1 'Error:' coefficient-update.log || tail -n 1 coefficient-update.log)
           error=$(printf '%s' "$error" | tr '\n\r' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
           echo "error=$error" >> "$GITHUB_OUTPUT"
