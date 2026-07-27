@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const baseEngine = require('../draw-engine-v2.js');
-const venueSequence = require('../venue-sequence-v2.js');
+const venueSequence = require('../venue-sequence-v3.js');
 
 const engine = venueSequence.wrapEngine(baseEngine);
 const teamsSource = fs.readFileSync(path.resolve(__dirname, '..', 'teams.js'), 'utf8');
