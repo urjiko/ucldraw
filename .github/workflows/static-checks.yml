@@ -1,0 +1,30 @@
+name: Static checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - agent/draw-control-modes
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check app-v3.js
+          node --check draw-engine.js
+      - name: Check HTML and controls
+        run: node tests/ui-v3.test.js
+      - name: Run draw engine simulations
+        run: node tests/draw-engine.test.js
