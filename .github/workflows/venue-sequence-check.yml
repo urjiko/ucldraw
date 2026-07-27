@@ -16,5 +16,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check venue sequence solver
-        run: node tests/venue-sequence.test.js
+      - name: Run venue sequence solver
+        id: venue
+        continue-on-error: true
+        run: node tests/venue-sequence.test.js > venue-result.txt 2>&1
+      - name: Upload venue result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: venue-result
+          path: venue-result.txt
+      - name: Fail when solver fails
+        if: steps.venue.outcome == 'failure'
+        run: exit 1
