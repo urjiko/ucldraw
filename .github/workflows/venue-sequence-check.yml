@@ -20,12 +20,17 @@ jobs:
         id: venue
         continue-on-error: true
         run: node tests/venue-sequence.test.js > venue-result.txt 2>&1
-      - name: Upload venue result
+      - name: Upload venue diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: venue-result
-          path: venue-result.txt
+          path: |
+            venue-result.txt
+            teams.js
+            draw-engine-v2.js
+            venue-sequence-v3.js
+            tests/venue-sequence.test.js
       - name: Fail when solver fails
         if: steps.venue.outcome == 'failure'
         run: exit 1
