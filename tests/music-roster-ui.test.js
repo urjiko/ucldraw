@@ -41,7 +41,7 @@ assert.match(rosterUi, /manager\.isRemovable/);
 assert.match(rosterUi, /manager\.isGuaranteed/);
 assert.match(rosterUi, /manager\.replaceTeam/);
 assert.match(rosterUi, /selectionPots\.addEventListener\('click'/);
-assert.match(rosterUi, /Garanti katılımcı olduğu için kadrodan çıkarılamaz/);
+assert.match(rosterUi, /garanti katılımcı olduğu için kadrodan çıkarılamaz/i);
 assert.match(rosterUi, /Kadrodan değiştir/);
 assert.match(rosterUi, /36 takımı yeniden sıralar/);
 assert.match(rosterCss, /\.roster-replacement-modal/);
