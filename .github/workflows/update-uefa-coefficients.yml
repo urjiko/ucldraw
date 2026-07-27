@@ -2,8 +2,6 @@ name: Update UEFA club coefficients
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 5 * * 1'
   pull_request:
     paths:
       - 'scripts/update-uefa-coefficients.mjs'
@@ -28,8 +26,8 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
-      scrape_outcome: ${{ steps.scrape.outcome }}
-      scrape_error: ${{ steps.scrape.outputs.error }}
+      update_outcome: ${{ steps.update.outcome }}
+      update_error: ${{ steps.update.outputs.error }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,24 +35,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
-      - name: Install browser client
-        run: npm install --silent --no-save --no-package-lock puppeteer-core@24
-      - name: Read official UEFA coefficients
-        id: scrape
+      - name: Build coefficient snapshot
+        id: update
         continue-on-error: true
         shell: bash
         run: |
           set +e
-          node scripts/update-uefa-coefficients.mjs 2>&1 | tee uefa-update.log
+          node scripts/update-uefa-coefficients.mjs 2>&1 | tee coefficient-update.log
           status=${PIPESTATUS[0]}
-          error=$(grep -m 1 'Error:' uefa-update.log || tail -n 1 uefa-update.log)
+          error=$(grep -m 1 'Error:' coefficient-update.log || tail -n 1 coefficient-update.log)
           error=$(printf '%s' "$error" | tr '\n\r' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
           echo "error=$error" >> "$GITHUB_OUTPUT"
           exit "$status"
       - name: Commit coefficient snapshot when changed
-        if: steps.scrape.outcome == 'success' && github.event_name != 'pull_request'
+        if: steps.update.outcome == 'success' && github.event_name != 'pull_request'
         run: |
           if git diff --quiet -- generated-club-coefficients.js; then
             echo "Coefficient snapshot already up to date."
@@ -68,10 +62,10 @@ jobs:
 
   report-failure:
     needs: update
-    if: always() && needs.update.outputs.scrape_outcome == 'failure'
+    if: always() && needs.update.outputs.update_outcome == 'failure'
     runs-on: ubuntu-latest
     steps:
-      - name: Report scraper failure
+      - name: Report coefficient update failure
         run: |
-          echo "${{ needs.update.outputs.scrape_error }}"
+          echo "${{ needs.update.outputs.update_error }}"
           exit 1
