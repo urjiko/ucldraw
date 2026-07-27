@@ -7,7 +7,7 @@
   "sourceUrl": "https://kassiesa.net/uefa/data/method5/trank2026.html",
   "officialValidationUrl": "https://www.uefa.com/nationalassociations/uefarankings/?year=2026",
   "officialValidation": "live-uefa-overview",
-  "updatedAt": "2026-07-27T13:25:18.767Z",
+  "updatedAt": "2026-05-30T19:00:00.000Z",
   "officialRowCount": 401,
   "associationFloorSlugs": [
     "bournemouth",
