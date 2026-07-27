@@ -9,7 +9,7 @@ const script = fs.readFileSync(path.join(root, 'fixture-display.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'fixture-display.css'), 'utf8');
 
 const baseEngineIndex = html.indexOf('<script src="draw-engine-v2.js"></script>');
-const venueSequenceIndex = html.indexOf('<script src="venue-sequence-v3.js"></script>');
+const venueSequenceIndex = html.indexOf('<script src="venue-sequence-v4.js"></script>');
 const appIndex = html.indexOf('<script src="app-v3.js"></script>');
 const scheduleUiIndex = html.indexOf('<script src="schedule-ui.js"></script>');
 const fixtureDisplayIndex = html.indexOf('<script src="fixture-display.js"></script>');
