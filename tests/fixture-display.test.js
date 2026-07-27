@@ -9,7 +9,7 @@ const script = fs.readFileSync(path.join(root, 'fixture-display.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'fixture-display.css'), 'utf8');
 
 const baseEngineIndex = html.indexOf('<script src="draw-engine-v2.js"></script>');
-const venueSequenceIndex = html.indexOf('<script src="venue-sequence.js"></script>');
+const venueSequenceIndex = html.indexOf('<script src="venue-sequence-v2.js"></script>');
 const appIndex = html.indexOf('<script src="app-v3.js"></script>');
 const scheduleUiIndex = html.indexOf('<script src="schedule-ui.js"></script>');
 const fixtureDisplayIndex = html.indexOf('<script src="fixture-display.js"></script>');
@@ -25,7 +25,7 @@ if (!html.includes('<link rel="stylesheet" href="fixture-display.css">')) {
 }
 
 const potPosition = script.indexOf("metadataSpan('fixture-pot'");
-const teamPosition = script.indexOf("line.appendChild(teamName)");
+const teamPosition = script.indexOf('line.appendChild(teamName)');
 const countryPosition = script.indexOf("metadataSpan('fixture-country'");
 const weekPosition = script.indexOf("metadataSpan('fixture-week'");
 if (!(potPosition < teamPosition && teamPosition < countryPosition && countryPosition < weekPosition)) {
