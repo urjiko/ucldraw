@@ -26,7 +26,7 @@ jobs:
         run: |
           node --check app-v3.js
           node --check draw-engine-v2.js
-          node --check venue-sequence-v3.js
+          node --check venue-sequence-v4.js
           node --check schedule-ui.js
           node --check fixture-display.js
           node --check branding-fixes.js
