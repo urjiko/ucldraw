@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const loaderPath = path.join(root, 'team-pool-loader.js');
 const outputPath = path.join(root, 'generated-club-coefficients.js');
-export const SOURCE_URL = 'https://www.uefa.com/nationalassociations/uefarankings/?year=2026';
+export const SOURCE_URL = 'https://www.uefa.com/nationalassociations/uefarankings/club/#/yr/2026';
 
 const aliases = {
   psg: ['Paris', 'Paris SG'], city: ['Man City'], manu: ['Man United'],
@@ -105,45 +105,15 @@ async function officialRows() {
       try { json.push(await response.json()); } catch {}
     });
     await page.goto(SOURCE_URL,{waitUntil:'networkidle2',timeout:120000});
-    await new Promise((resolve)=>setTimeout(resolve,3500));
+    await new Promise((resolve)=>setTimeout(resolve,6000));
     await page.evaluate(()=>{
       [...document.querySelectorAll('button')].find((button)=>/accept|agree|allow all/i.test(button.textContent||''))?.click();
-    }).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,1200));
-
-    const target=await page.evaluate(()=>{
-      const headings=[...document.querySelectorAll('h1,h2,h3,h4')];
-      const heading=headings.find((node)=>/^club coefficients$/i.test((node.textContent||'').replace(/\s+/g,' ').trim()));
-      if(!heading)return null;
-      const headingBottom=heading.getBoundingClientRect().bottom;
-      const actions=[...document.querySelectorAll('a,button')]
-        .filter((node)=>/view full rankings/i.test((node.textContent||'').replace(/\s+/g,' ').trim()))
-        .map((node)=>({node,top:node.getBoundingClientRect().top}))
-        .filter((entry)=>entry.top>=headingBottom-8)
-        .sort((first,second)=>first.top-second.top);
-      const action=actions[0]?.node;
-      if(!action)return null;
-      if(action.tagName==='A'&&action.href)return {href:action.href};
-      action.click();
-      return {clicked:true};
-    });
-
-    if(target?.href){
-      await page.goto(target.href,{waitUntil:'networkidle2',timeout:120000});
-    }else if(target?.clicked){
-      await page.waitForNetworkIdle({idleTime:1000,timeout:45000}).catch(()=>{});
-    }else{
-      throw new Error('UEFA genel sıralama sayfasında Club coefficients tam sıralama bağlantısı bulunamadı.');
-    }
-
-    await new Promise((resolve)=>setTimeout(resolve,4500));
-    await page.evaluate(()=>{
       document.querySelectorAll('select').forEach((select)=>{
         const option=[...select.options].filter((item)=>/all|100|200|500/i.test(item.textContent||item.value)).at(-1);
         if(option){select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));}
       });
     }).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,1800));
+    await new Promise((resolve)=>setTimeout(resolve,2500));
 
     for(let index=0;index<30;index+=1){
       texts.push(...await page.evaluate(()=>[...new Set([...document.querySelectorAll('tr,[role="row"]')].map((node)=>(node.innerText||'').replace(/\s+/g,' ').trim()).filter(Boolean))]));
