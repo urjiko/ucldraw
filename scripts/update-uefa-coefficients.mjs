@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const loaderPath = path.join(root, 'team-pool-loader.js');
 const outputPath = path.join(root, 'generated-club-coefficients.js');
-export const SOURCE_URL = 'https://www.uefa.com/nationalassociations/uefarankings/club/#/yr/2026';
+export const SOURCE_URL = 'https://www.uefa.com/nationalassociations/uefarankings/?year=2026';
 
 const aliases = {
   psg: ['Paris', 'Paris SG'], city: ['Man City'], manu: ['Man United'],
@@ -94,11 +94,18 @@ async function chromePath() {
 
 async function officialRows() {
   const {default:puppeteer}=await import('puppeteer-core');
-  const browser=await puppeteer.launch({executablePath:await chromePath(),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+  const browser=await puppeteer.launch({
+    executablePath:await chromePath(),
+    headless:true,
+    args:['--no-sandbox','--disable-dev-shm-usage','--disable-blink-features=AutomationControlled']
+  });
   const texts=[], json=[];
   try {
     const page=await browser.newPage();
     await page.setViewport({width:1440,height:1100});
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36');
+    await page.setExtraHTTPHeaders({'accept-language':'en-GB,en;q=0.9'});
+    await page.evaluateOnNewDocument(()=>Object.defineProperty(navigator,'webdriver',{get:()=>undefined}));
     page.on('response',async(response)=>{
       const type=response.headers()['content-type']||'';
       if (!type.includes('json')) return;
@@ -108,12 +115,50 @@ async function officialRows() {
     await new Promise((resolve)=>setTimeout(resolve,6000));
     await page.evaluate(()=>{
       [...document.querySelectorAll('button')].find((button)=>/accept|agree|allow all/i.test(button.textContent||''))?.click();
+    }).catch(()=>{});
+    await new Promise((resolve)=>setTimeout(resolve,1500));
+
+    const cardAction=await page.evaluate(()=>{
+      const ownText=(node)=>[...node.childNodes]
+        .filter((child)=>child.nodeType===Node.TEXT_NODE)
+        .map((child)=>child.textContent||'').join(' ').replace(/\s+/g,' ').trim();
+      const all=[...document.querySelectorAll('body *')];
+      const heading=all.find((node)=>/^club coefficients$/i.test(ownText(node)));
+      if(!heading)return {clicked:false,reason:'heading-not-found'};
+
+      let root=heading;
+      for(let depth=0;depth<12&&root;depth+=1,root=root.parentElement){
+        const label=[...root.querySelectorAll('*')].find((node)=>/view full rankings/i.test(ownText(node)));
+        if(!label)continue;
+        let clickable=label;
+        for(let climb=0;climb<8&&clickable;climb+=1,clickable=clickable.parentElement){
+          if(clickable.matches('a,button,[role="button"],[role="link"]')||clickable.hasAttribute('href')||clickable.hasAttribute('onclick')||clickable.tabIndex>=0){
+            clickable.scrollIntoView({block:'center'});
+            clickable.click();
+            return {clicked:true,tag:clickable.tagName};
+          }
+        }
+        label.scrollIntoView({block:'center'});
+        label.click();
+        return {clicked:true,tag:label.tagName};
+      }
+      return {clicked:false,reason:'action-not-found'};
+    });
+
+    if(!cardAction.clicked){
+      const body=await page.evaluate(()=>(document.body.innerText||'').replace(/\s+/g,' ').slice(0,450));
+      throw new Error(`UEFA Club coefficients kartı açılamadı (${cardAction.reason}); sayfa: ${body}`);
+    }
+
+    await page.waitForNetworkIdle({idleTime:1000,timeout:45000}).catch(()=>{});
+    await new Promise((resolve)=>setTimeout(resolve,5000));
+    await page.evaluate(()=>{
       document.querySelectorAll('select').forEach((select)=>{
         const option=[...select.options].filter((item)=>/all|100|200|500/i.test(item.textContent||item.value)).at(-1);
         if(option){select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));}
       });
     }).catch(()=>{});
-    await new Promise((resolve)=>setTimeout(resolve,2500));
+    await new Promise((resolve)=>setTimeout(resolve,1800));
 
     for(let index=0;index<30;index+=1){
       texts.push(...await page.evaluate(()=>[...new Set([...document.querySelectorAll('tr,[role="row"]')].map((node)=>(node.innerText||'').replace(/\s+/g,' ').trim()).filter(Boolean))]));
