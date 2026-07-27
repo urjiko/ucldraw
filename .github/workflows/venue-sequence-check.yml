@@ -29,7 +29,7 @@ jobs:
             venue-result.txt
             teams.js
             draw-engine-v2.js
-            venue-sequence-v3.js
+            venue-sequence-v4.js
             tests/venue-sequence.test.js
       - name: Fail when solver fails
         if: steps.venue.outcome == 'failure'
