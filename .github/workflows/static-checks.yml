@@ -10,6 +10,7 @@ on:
       - agent/fixture-display-venue-sequence
       - agent/dynamic-team-pools
       - agent/uefa-coefficients-venue-icons
+      - agent/league-music-roster-search
 
 permissions:
   contents: read
@@ -32,6 +33,9 @@ jobs:
           node --check schedule-ui.js
           node --check fixture-display.js
           node --check venue-icons.js
+          node --check roster-manager.js
+          node --check roster-search-ui.js
+          node --check league-music.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
           node --check generated-club-coefficients.js
@@ -48,6 +52,7 @@ jobs:
           node tests/coefficient-pots.test.js
           node tests/uefa-coefficients.test.mjs
           node tests/generated-coefficients.test.js
+          node tests/roster-manager.test.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
@@ -55,6 +60,7 @@ jobs:
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
+          node tests/music-roster-ui.test.js
       - name: Run draw engine simulations
         run: |
           node tests/draw-engine.test.js

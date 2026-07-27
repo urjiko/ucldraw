@@ -1,0 +1,142 @@
+.roster-search-result {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.roster-search-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.roster-search-copy strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roster-search-copy span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roster-search-result.is-reserve-roster {
+  border-color: rgba(var(--accent-rgb), 0.28);
+  background: rgba(var(--accent-rgb), 0.09);
+}
+.roster-search-result.is-reserve-roster:hover {
+  border-color: rgba(var(--accent-rgb), 0.72);
+  background: rgba(var(--accent-rgb), 0.18);
+}
+.roster-search-badge {
+  min-width: 27px;
+  min-height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+.roster-search-result.is-reserve-roster .roster-search-badge {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  background: rgba(var(--accent-rgb), 0.2);
+  font-size: 1rem;
+}
+.roster-replacement-backdrop { z-index: 360; }
+.roster-replacement-modal {
+  width: min(680px, 100%);
+  max-height: min(780px, calc(100vh - 36px));
+  display: grid;
+  gap: 14px;
+  overflow: hidden;
+  text-align: left;
+}
+.roster-incoming-team {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.roster-incoming-team > div { min-width: 0; }
+.roster-incoming-team span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.roster-incoming-team h2 {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: #fff;
+  font-family: "Barlow Condensed", Inter, sans-serif;
+  font-size: clamp(1.45rem, 4vw, 2.1rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roster-incoming-team p {
+  margin: 5px 0 0;
+  max-width: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.roster-replacement-list {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+.roster-replacement-option {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 9px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.roster-replacement-option:hover {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  background: rgba(var(--accent-rgb), 0.15);
+}
+.roster-replacement-option:disabled { cursor: progress; opacity: 0.48; }
+.roster-replacement-option > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.roster-replacement-option strong,
+.roster-replacement-option > span:nth-child(2) > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roster-replacement-option strong { font-size: 0.76rem; }
+.roster-replacement-option > span:nth-child(2) > span { color: var(--muted); font-size: 0.61rem; }
+.roster-replacement-action {
+  color: #ffbdc5;
+  font-size: 0.62rem;
+  font-weight: 850;
+}
+.roster-replacement-modal > .action-button { justify-self: center; }
+
+@media (max-width: 680px) {
+  .roster-replacement-modal { padding: 16px; }
+  .roster-replacement-list { grid-template-columns: 1fr; }
+  .roster-incoming-team .crest-shell.large { width: 52px; height: 52px; }
+}
