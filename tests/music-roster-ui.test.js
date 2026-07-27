@@ -34,20 +34,25 @@ assert.match(music, /localStorage/);
 assert.match(musicCss, /\.league-music-toggle/);
 
 assert.match(rosterUi, /Kadroda olmasa da takım ara/);
-assert.match(rosterUi, /manager\.projectedPot/);
-assert.match(rosterUi, /manager\.replacementCandidates/);
+assert.match(rosterUi, /manager\.possiblePots/);
+assert.match(rosterUi, /manager\.replacementScenarios/);
+assert.match(rosterUi, /manager\.incomingScenarios/);
+assert.match(rosterUi, /manager\.isRemovable/);
+assert.match(rosterUi, /manager\.isGuaranteed/);
 assert.match(rosterUi, /manager\.replaceTeam/);
-assert.match(rosterUi, /aynı pottaki takımla değiştir/i);
+assert.match(rosterUi, /selectionPots\.addEventListener\('click'/);
+assert.match(rosterUi, /Garanti katılımcı olduğu için kadrodan çıkarılamaz/);
+assert.match(rosterUi, /Kadrodan değiştir/);
+assert.match(rosterUi, /36 takımı yeniden sıralar/);
 assert.match(rosterCss, /\.roster-replacement-modal/);
 assert.match(rosterCss, /\.roster-search-result\.is-reserve-roster/);
+assert.match(rosterCss, /\.roster-team-actions/);
+assert.match(rosterCss, /\.roster-locked-note/);
+assert.match(rosterCss, /\.roster-modal-search/);
 
 const musicDirectory = path.join(root, 'music');
-if (fs.existsSync(musicDirectory)) {
-  for (const file of ['ucl_anthem.mp3', 'uel_anthem.mp3', 'con_anthem.mp3']) {
-    assert.ok(fs.existsSync(path.join(musicDirectory, file)), `music/${file} must exist with exact casing`);
-  }
-} else {
-  console.warn('music/ directory is not present on this branch yet; runtime keeps the integration ready and shows an unavailable state.');
+for (const file of ['ucl_anthem.mp3', 'uel_anthem.mp3', 'con_anthem.mp3']) {
+  assert.ok(fs.existsSync(path.join(musicDirectory, file)), `music/${file} must exist with exact casing`);
 }
 
-console.log('League music and reserve search UI checks passed.');
+console.log('League music, guaranteed locks and pre-draw roster UI checks passed.');
