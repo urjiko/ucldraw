@@ -39,13 +39,14 @@ jobs:
           node --check coefficient-pots.js
           node --check scripts/generate-team-pools.mjs
           node --check scripts/update-uefa-coefficients.mjs
-      - name: Check generated team pools
+      - name: Check generated team pools and coefficients
         run: |
           node scripts/generate-team-pools.mjs
           git diff --exit-code -- generated-team-pools.js
           node tests/team-pools.test.js
           node tests/coefficient-pots.test.js
           node tests/uefa-coefficients.test.mjs
+          node tests/generated-coefficients.test.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
