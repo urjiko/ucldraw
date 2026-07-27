@@ -13,6 +13,7 @@ vm.runInNewContext(teamsSource, sandbox, { filename: 'teams.js' });
 const competitions = sandbox.window.UCLDRAW_DATA.competitions;
 
 for (const competition of Object.values(competitions)) {
+  console.log(`testing ${competition.id}...`);
   const matchdayCount = competition.potCount * competition.opponentsPerPot;
   const table = engine.generateCompetitionDraw(competition);
   const validation = engine.validateCompetitionDraw(competition, table);
