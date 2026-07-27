@@ -9,6 +9,7 @@ on:
       - agent/conference-branding
       - agent/fixture-display-venue-sequence
       - agent/dynamic-team-pools
+      - agent/uefa-coefficients-venue-icons
 
 permissions:
   contents: read
@@ -30,21 +31,30 @@ jobs:
           node --check venue-sequence-v4.js
           node --check schedule-ui.js
           node --check fixture-display.js
+          node --check venue-icons.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
+          node --check generated-club-coefficients.js
           node --check team-pool-loader.js
+          node --check coefficient-pots.js
           node --check scripts/generate-team-pools.mjs
-      - name: Check generated team pools
+          node --check scripts/update-uefa-coefficients.mjs
+          node --check scripts/stabilize-coefficient-snapshot.mjs
+      - name: Check generated team pools and coefficients
         run: |
           node scripts/generate-team-pools.mjs
           git diff --exit-code -- generated-team-pools.js
           node tests/team-pools.test.js
+          node tests/coefficient-pots.test.js
+          node tests/uefa-coefficients.test.mjs
+          node tests/generated-coefficients.test.js
       - name: Check HTML and controls
         run: |
           node tests/ui-v3.test.js
           node tests/ui-v4.test.js
           node tests/branding.test.js
           node tests/fixture-display.test.js
+          node tests/venue-icons.test.js
       - name: Run draw engine simulations
         run: |
           node tests/draw-engine.test.js
