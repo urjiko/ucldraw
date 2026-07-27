@@ -39,6 +39,7 @@ jobs:
           node --check coefficient-pots.js
           node --check scripts/generate-team-pools.mjs
           node --check scripts/update-uefa-coefficients.mjs
+          node --check scripts/stabilize-coefficient-snapshot.mjs
       - name: Check generated team pools and coefficients
         run: |
           node scripts/generate-team-pools.mjs
