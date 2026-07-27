@@ -9,6 +9,7 @@ const javascript = fs.readFileSync(path.join(root, 'branding-fixes.js'), 'utf8')
 const css = fs.readFileSync(path.join(root, 'branding-fixes.css'), 'utf8');
 
 for (const asset of [
+  'crests/pools/uefa_logo.png',
   'crests/pools/champions/ucl_logo.png',
   'crests/pools/champions/arkaplanucl.jpg',
   'crests/pools/europa/europaleague.png',
@@ -30,6 +31,14 @@ if (!javascript.includes("element.lang = 'en'")) {
 }
 if (!css.includes('var(--league-background')) {
   throw new Error('Conference theme still ignores its image background.');
+}
+
+for (const faviconLink of [
+  '<link rel="icon" type="image/png" href="crests/pools/uefa_logo.png">',
+  '<link rel="shortcut icon" type="image/png" href="crests/pools/uefa_logo.png">',
+  '<link rel="apple-touch-icon" href="crests/pools/uefa_logo.png">'
+]) {
+  if (!html.includes(faviconLink)) throw new Error(`Missing site icon link: ${faviconLink}`);
 }
 
 const teamsIndex = html.indexOf('<script src="teams.js"></script>');
