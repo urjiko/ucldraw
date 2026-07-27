@@ -162,7 +162,7 @@
   }
 
   function frame() {
-    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
   async function refreshLeagueAndSelect(targetLeagueId, incomingSlug) {
