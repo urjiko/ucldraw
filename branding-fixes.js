@@ -3,8 +3,8 @@
 
   const competitions = window.UCLDRAW_DATA?.competitions;
   if (competitions?.uecl) {
-    competitions.uecl.logo = 'crests/ConferenceLeague.png';
-    competitions.uecl.background = 'assets/arkaplancon.jpg';
+    competitions.uecl.logo = 'crests/pools/conference/ConferenceLeague.png';
+    competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg';
   }
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
@@ -21,8 +21,8 @@
 
   function refreshConferenceLogo(root = document) {
     root.querySelectorAll?.('[data-league="uecl"] .league-icon img').forEach((image) => {
-      if (!image.src.endsWith('/crests/ConferenceLeague.png')) {
-        image.src = 'crests/ConferenceLeague.png';
+      if (!image.src.endsWith('/crests/pools/conference/ConferenceLeague.png')) {
+        image.src = 'crests/pools/conference/ConferenceLeague.png';
       }
     });
   }
