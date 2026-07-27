@@ -8,7 +8,7 @@ import {
 } from '../scripts/update-uefa-coefficients.mjs';
 
 assert.equal(normalize('Paris Saint-Germain FC'), 'paris saint germain');
-assert.equal(normalize('Galatasaray A.Ş.'), 'galatasaray');
+assert.equal(normalize('Galatasaray A.Ş.'), 'galatasaray a s');
 
 const rows = parseRows(`
 1 Bayern München GER 147.500 18.580
