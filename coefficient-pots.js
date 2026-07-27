@@ -12,14 +12,34 @@
     uecl: Object.freeze({ titleHolderSlug: null })
   });
 
+  // Kassiesa uses Bls/Sma association codes; these two reviewed rows keep
+  // their exact 2026 coefficients even before the next generated alias refresh.
+  const reviewedFallbacks = Object.freeze({
+    dinamominsk: Object.freeze({
+      coefficient: 6.5,
+      rank: 232,
+      officialName: 'Dinamo Minsk',
+      country: 'BLR'
+    }),
+    fiori: Object.freeze({
+      coefficient: 2.5,
+      rank: 377,
+      officialName: 'Tre Fiori',
+      country: 'SMR'
+    })
+  });
+
+  function recordFor(team) {
+    return coefficientData.clubs?.[team.poolSlug] || reviewedFallbacks[team.poolSlug] || null;
+  }
+
   function coefficientFor(team) {
-    const record = coefficientData.clubs?.[team.poolSlug];
-    const coefficient = Number(record?.coefficient);
+    const coefficient = Number(recordFor(team)?.coefficient);
     return Number.isFinite(coefficient) ? coefficient : null;
   }
 
   function rankFor(team) {
-    const rank = Number(coefficientData.clubs?.[team.poolSlug]?.rank);
+    const rank = Number(recordFor(team)?.rank);
     return Number.isInteger(rank) && rank > 0 ? rank : Number.POSITIVE_INFINITY;
   }
 
@@ -30,7 +50,7 @@
     }
 
     const decorated = competition.teams.map((team) => {
-      const record = coefficientData.clubs?.[team.poolSlug];
+      const record = recordFor(team);
       const coefficient = coefficientFor(team);
       return {
         ...team,
