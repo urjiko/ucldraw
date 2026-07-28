@@ -1,0 +1,122 @@
+body.prediction-active .prediction-section {
+  width: min(1120px, calc(100% - 24px));
+}
+
+.prediction-layout {
+  grid-template-columns: minmax(360px, 520px) minmax(420px, 480px);
+  justify-content: center;
+  gap: 14px;
+}
+
+.prediction-fixtures-panel,
+.prediction-standings-panel {
+  min-width: 0;
+}
+
+.prediction-standings-panel {
+  width: 100%;
+  max-width: 480px;
+  justify-self: end;
+  padding: 10px;
+}
+
+.prediction-standing-labels,
+.prediction-standing-row {
+  grid-template-columns: 24px minmax(142px, 190px) repeat(5, 30px);
+  justify-content: center;
+  gap: 2px;
+}
+
+.prediction-standing-labels {
+  padding: 4px 5px;
+}
+
+.prediction-standing-row {
+  min-height: 32px;
+  padding: 3px 5px;
+  font-size: 0.61rem;
+}
+
+.prediction-standing-team {
+  gap: 5px;
+}
+
+.prediction-standing-team .crest-shell {
+  width: 22px;
+  height: 22px;
+}
+
+.prediction-standing-team strong {
+  font-size: 0.63rem;
+}
+
+.prediction-outcome-team > small {
+  display: none !important;
+}
+
+@media (max-width: 980px) {
+  body.prediction-active .prediction-section {
+    width: min(680px, calc(100% - 20px));
+  }
+
+  .prediction-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .prediction-fixtures-panel,
+  .prediction-standings-panel {
+    width: 100%;
+    max-width: 620px;
+    justify-self: center;
+  }
+
+  .prediction-standings-panel {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 640px) {
+  body.prediction-active .prediction-section {
+    width: calc(100% - 12px);
+    margin-top: 10px;
+  }
+
+  .prediction-layout {
+    gap: 10px;
+  }
+
+  .prediction-standings-panel {
+    max-width: none;
+    padding: 8px 5px;
+  }
+
+  .prediction-standing-labels,
+  .prediction-standing-row {
+    grid-template-columns: 22px minmax(108px, 1fr) repeat(5, 26px);
+    gap: 1px;
+  }
+
+  .prediction-standing-labels {
+    padding: 3px;
+    font-size: 0.52rem;
+  }
+
+  .prediction-standing-row {
+    min-height: 30px;
+    padding: 3px;
+    font-size: 0.57rem;
+  }
+
+  .prediction-standing-team .crest-shell {
+    width: 20px;
+    height: 20px;
+  }
+
+  .prediction-standing-team strong {
+    font-size: 0.59rem;
+  }
+
+  .prediction-panel-heading span {
+    display: none;
+  }
+}
