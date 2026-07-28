@@ -73,14 +73,15 @@ jobs:
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
-      - name: Check music roster and prediction controls
+      - name: Check existing music roster and prediction controls
         run: |
           node tests/music-roster-ui.test.js
           node tests/prediction-ui.test.js
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
           node tests/prediction-share-v3.test.js
-          node tests/champions-font.test.js
+      - name: Check Champions webfont integration
+        run: node tests/champions-font.test.js
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
