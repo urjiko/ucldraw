@@ -3,7 +3,7 @@
 
   function installPredictionBridge() {
     const engine = window.UCLDRAW_ENGINE;
-    if (!engine?.generateCompetitionDraw || engine.__predictionWrapped) return;
+    if (!engine?.generateCompetitionDraw || engine.__predictionWrapped) return false;
 
     const originalGenerate = engine.generateCompetitionDraw.bind(engine);
     engine.generateCompetitionDraw = function generateCompetitionDrawWithPredictionBridge(competition, options) {
@@ -20,7 +20,13 @@
       return table;
     };
     engine.__predictionWrapped = true;
+    return true;
   }
 
-  window.setTimeout(installPredictionBridge, 0);
+  window.UCLDRAW_INSTALL_PREDICTION_BRIDGE = installPredictionBridge;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installPredictionBridge, { once: true });
+  } else {
+    installPredictionBridge();
+  }
 })();
