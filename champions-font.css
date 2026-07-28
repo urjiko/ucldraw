@@ -1,0 +1,15 @@
+/* Licensed Champions webfont, supplied by the repository owner. */
+.champions-font-ready .draw-header-identity .draw-title,
+.champions-font-ready .prediction-header-identity h2,
+.champions-font-ready .brand-copy h1,
+.champions-font-ready .all-fixtures-header h2,
+.champions-font-ready .prediction-panel-heading h3 {
+  font-family: "Champions Sans", "Barlow Condensed", Inter, sans-serif;
+  font-weight: 700;
+}
+
+.champions-font-ready .draw-header-identity .draw-kicker,
+.champions-font-ready .prediction-header-identity .prediction-kicker {
+  font-family: "Champions Sans", Inter, sans-serif;
+  font-weight: 400;
+}
