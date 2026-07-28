@@ -1,3 +1,20 @@
+/* Final visual overrides for fixture settling and compact predictions. */
+.fixture-slot.is-entering.from-left,
+.fixture-slot.is-entering.from-right {
+  animation: fixtureSettle 180ms ease-out both !important;
+}
+
+@keyframes fixtureSettle {
+  from {
+    opacity: 0.82;
+    filter: brightness(1.08);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
 body.prediction-active .prediction-section {
   width: min(1120px, calc(100% - 24px));
 }
@@ -18,6 +35,10 @@ body.prediction-active .prediction-section {
   max-width: 480px;
   justify-self: end;
   padding: 10px;
+}
+
+.prediction-zone-legend {
+  display: none !important;
 }
 
 .prediction-standing-labels,
@@ -77,7 +98,7 @@ body.prediction-active .prediction-section {
 
 @media (max-width: 640px) {
   body.prediction-active .prediction-section {
-    width: calc(100% - 12px);
+    width: calc(100% - 10px);
     margin-top: 10px;
   }
 
@@ -86,34 +107,67 @@ body.prediction-active .prediction-section {
   }
 
   .prediction-standings-panel {
+    width: 100%;
     max-width: none;
+    min-width: 0;
+    overflow: hidden !important;
     padding: 8px 5px;
+  }
+
+  .prediction-standings-table {
+    width: 100%;
+    min-width: 0 !important;
+    overflow: hidden;
   }
 
   .prediction-standing-labels,
   .prediction-standing-row {
-    grid-template-columns: 22px minmax(108px, 1fr) repeat(5, 26px);
-    gap: 1px;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: 26px minmax(0, 1fr) 40px 40px !important;
+    justify-content: stretch;
+    gap: 2px;
+  }
+
+  .prediction-standing-labels > :nth-child(3),
+  .prediction-standing-labels > :nth-child(4),
+  .prediction-standing-labels > :nth-child(5),
+  .prediction-standing-row > :nth-child(3),
+  .prediction-standing-row > :nth-child(4),
+  .prediction-standing-row > :nth-child(5) {
+    display: none;
   }
 
   .prediction-standing-labels {
-    padding: 3px;
-    font-size: 0.52rem;
+    padding: 4px 5px;
+    font-size: 0.62rem;
   }
 
   .prediction-standing-row {
-    min-height: 30px;
-    padding: 3px;
-    font-size: 0.57rem;
+    min-height: 40px;
+    padding: 4px 5px;
+    font-size: 0.7rem;
+  }
+
+  .prediction-standing-team {
+    min-width: 0;
+    gap: 7px;
   }
 
   .prediction-standing-team .crest-shell {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
   }
 
   .prediction-standing-team strong {
-    font-size: 0.59rem;
+    min-width: 0;
+    font-size: 0.72rem;
+  }
+
+  .prediction-rank,
+  .prediction-standing-points {
+    font-size: 0.75rem;
   }
 
   .prediction-panel-heading span {

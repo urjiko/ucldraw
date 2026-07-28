@@ -9,6 +9,11 @@
   const drawCopy = drawTopbar?.querySelector('.draw-topbar-copy');
   const progressTrack = drawTopbar?.querySelector('.progress-track');
   const predictionSection = document.getElementById('predictionSection');
+  const drawActions = document.getElementById('drawActions');
+  const drawStatus = document.getElementById('drawStatus');
+  const allFixturesSection = document.getElementById('allFixturesSection');
+  const showOverviewButton = document.getElementById('showOverviewButton');
+  const hideOverviewButton = document.getElementById('hideOverviewButton');
 
   function setText(element, value) {
     if (element && element.textContent !== value) element.textContent = value;
@@ -143,16 +148,35 @@
     setText(document.getElementById('resetCustomButton'), 'Sıfırla');
   }
 
+  function syncCompletedDrawUi() {
+    const completed = Boolean(drawActions && !drawActions.hidden);
+    if (drawStatus) drawStatus.hidden = completed;
+    if (!allFixturesSection) return;
+
+    if (!completed) {
+      delete allFixturesSection.dataset.openedByUser;
+      return;
+    }
+
+    if (allFixturesSection.dataset.openedByUser !== 'true') {
+      allFixturesSection.hidden = true;
+    }
+  }
+
   function refresh() {
     simplifyCopy();
     decorateDrawHeader();
     decoratePredictionHeaders(predictionSection || document);
+    syncCompletedDrawUi();
   }
 
   refresh();
 
   if (drawTitle) {
-    new MutationObserver(decorateDrawHeader).observe(drawTitle, {
+    new MutationObserver(() => {
+      decorateDrawHeader();
+      syncCompletedDrawUi();
+    }).observe(drawTitle, {
       childList: true,
       characterData: true,
       subtree: true
@@ -165,6 +189,29 @@
       subtree: true
     });
   }
+
+  if (drawActions) {
+    new MutationObserver(syncCompletedDrawUi).observe(drawActions, {
+      attributes: true,
+      attributeFilter: ['hidden']
+    });
+  }
+
+  if (drawStatus) {
+    new MutationObserver(syncCompletedDrawUi).observe(drawStatus, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    });
+  }
+
+  showOverviewButton?.addEventListener('click', () => {
+    if (allFixturesSection) allFixturesSection.dataset.openedByUser = 'true';
+  });
+
+  hideOverviewButton?.addEventListener('click', () => {
+    if (allFixturesSection) delete allFixturesSection.dataset.openedByUser;
+  });
 
   new MutationObserver(refresh).observe(body, {
     attributes: true,
