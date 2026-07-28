@@ -32,6 +32,12 @@ if (!javascript.includes("element.lang = 'en'")) {
 if (!css.includes('var(--league-background')) {
   throw new Error('Conference theme still ignores its image background.');
 }
+if (!css.includes('body[data-league="uel"] .pot-card-header') || !css.includes('body[data-league="uecl"] .pot-card-header')) {
+  throw new Error('Europa and Conference pot title strips do not have league-specific gradients.');
+}
+if (!css.includes('rgba(0, 0, 0, 0.84)')) {
+  throw new Error('Europa and Conference pot title gradients must fade into black.');
+}
 
 for (const faviconLink of [
   '<link rel="icon" type="image/png" href="crests/pools/uefa_logo.png">',
