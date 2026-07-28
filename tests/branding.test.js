@@ -38,11 +38,20 @@ if (javascript.includes("'[data-league=\"uecl\"] .league-icon img'")) {
 if (!css.includes('var(--league-background')) {
   throw new Error('Conference theme still ignores its image background.');
 }
+if (!css.includes('body[data-league="uel"] .glass') || !css.includes('body[data-league="uecl"] .glass')) {
+  throw new Error('Europa and Conference full glass cards do not have league-specific gradients.');
+}
+if (!css.includes('--surface: rgba(0, 0, 0, 0.74)') || !css.includes('--surface-strong: rgba(0, 0, 0, 0.93)')) {
+  throw new Error('Europa and Conference shared translucent surfaces must use neutral black instead of navy.');
+}
+if (!css.includes('rgba(0, 0, 0, 0.8)')) {
+  throw new Error('Europa and Conference full-card gradients must fade into black.');
+}
+if (css.includes('body[data-league="ucl"] .glass')) {
+  throw new Error('Champions League glass cards must retain their original blue-navy treatment.');
+}
 if (!css.includes('body[data-league="uel"] .pot-card-header') || !css.includes('body[data-league="uecl"] .pot-card-header')) {
   throw new Error('Europa and Conference pot title strips do not have league-specific gradients.');
-}
-if (!css.includes('rgba(0, 0, 0, 0.84)')) {
-  throw new Error('Europa and Conference pot title gradients must fade into black.');
 }
 
 for (const faviconLink of [
