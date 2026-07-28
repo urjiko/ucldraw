@@ -12,6 +12,7 @@ on:
       - agent/uefa-coefficients-venue-icons
       - agent/league-music-roster-search
       - agent/guaranteed-roster-replacements
+      - agent/league-phase-predictions
 
 permissions:
   contents: read
@@ -37,6 +38,9 @@ jobs:
           node --check roster-manager.js
           node --check roster-search-ui.js
           node --check league-music.js
+          node --check prediction-engine.js
+          node --check prediction-bridge.js
+          node --check prediction-ui.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
           node --check generated-club-coefficients.js
@@ -61,10 +65,13 @@ jobs:
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
-      - name: Check music and roster controls
-        run: node tests/music-roster-ui.test.js
-      - name: Run draw engine simulations
+      - name: Check music roster and prediction controls
+        run: |
+          node tests/music-roster-ui.test.js
+          node tests/prediction-ui.test.js
+      - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
           node tests/matchday-schedule.test.js
           node tests/venue-sequence.test.js
+          node tests/prediction-engine.test.js
