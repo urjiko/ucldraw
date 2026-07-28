@@ -29,6 +29,12 @@ if (!javascript.includes("competitions.uecl.background = 'crests/pools/conferenc
 if (!javascript.includes("element.lang = 'en'")) {
   throw new Error('English competition names are not locale protected.');
 }
+if (!javascript.includes('#competitionPicker button[data-league="uecl"] > .league-icon img')) {
+  throw new Error('Conference logo refresh is not scoped to the Conference picker button.');
+}
+if (javascript.includes("'[data-league=\"uecl\"] .league-icon img'")) {
+  throw new Error('Conference logo selector is broad enough to rewrite every league icon.');
+}
 if (!css.includes('var(--league-background')) {
   throw new Error('Conference theme still ignores its image background.');
 }

@@ -8,6 +8,7 @@
   }
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
+  const conferenceLogoSelector = '#competitionPicker button[data-league="uecl"] > .league-icon img';
   const actionLabels = Object.freeze({
     retryButton: 'Yeni Kura',
     showOverviewButton: 'Tüm Maçlar',
@@ -26,7 +27,7 @@
   }
 
   function refreshConferenceLogo(root = document) {
-    root.querySelectorAll?.('[data-league="uecl"] .league-icon img').forEach((image) => {
+    root.querySelectorAll?.(conferenceLogoSelector).forEach((image) => {
       if (!image.src.endsWith('/crests/pools/conference/ConferenceLeague.png')) {
         image.src = 'crests/pools/conference/ConferenceLeague.png';
       }
