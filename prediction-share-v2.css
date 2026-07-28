@@ -1,0 +1,62 @@
+#predictionSection .prediction-standings-panel > .prediction-share-button {
+  display: none !important;
+}
+
+.prediction-share-actions-v2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.prediction-share-actions-v2.has-share {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.prediction-share-actions-v2 .action-button {
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.prediction-ai-button {
+  border-color: rgba(255, 255, 255, 0.22);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.11), transparent 52%),
+    rgba(255, 255, 255, 0.07);
+}
+
+.prediction-ai-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.17), transparent 52%),
+    rgba(255, 255, 255, 0.11);
+}
+
+.prediction-share-v2-button {
+  border-color: rgba(var(--accent-rgb), 0.68);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.13), transparent 48%),
+    rgba(var(--accent-rgb), 0.38);
+  box-shadow: 0 12px 32px rgba(var(--accent-rgb), 0.18);
+}
+
+.prediction-share-actions-v2 button:disabled {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+@media (max-width: 640px) {
+  .prediction-share-actions-v2 {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .prediction-share-actions-v2 .action-button {
+    min-height: 52px;
+    padding-inline: 9px;
+    font-size: 0.72rem;
+  }
+}
