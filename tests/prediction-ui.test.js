@@ -10,6 +10,8 @@ const html = read('index.html');
 const bridge = read('prediction-bridge.js');
 const ui = read('prediction-ui.js');
 const css = read('prediction.css');
+const compactCss = read('prediction-compact.css');
+const branding = read('branding-fixes.js');
 
 for (const file of ['prediction.css', 'prediction-engine.js', 'prediction-bridge.js', 'prediction-ui.js']) {
   assert.ok(html.includes(file), `${file} must be loaded by index.html`);
@@ -21,8 +23,6 @@ assert.ok(html.indexOf('app-v3.js') < html.indexOf('prediction-ui.js'), 'predict
 assert.match(bridge, /UCLDRAW_LAST_DRAW/);
 assert.match(bridge, /ucldraw:draw-generated/);
 assert.match(bridge, /DOMContentLoaded/);
-assert.match(ui, /changeTeamButton\.textContent\s*=\s*'Başa Dön'/);
-assert.match(ui, /Tahminlere Geç/);
 assert.match(ui, /prediction-outcome-team/);
 assert.match(ui, /prediction-draw-choice/);
 assert.match(ui, /ENGINE\.applyOutcome/);
@@ -39,5 +39,14 @@ assert.match(css, /\.prediction-draw-choice/);
 assert.match(css, /\.prediction-team-lock/);
 assert.match(css, /body\.prediction-active \.draw-stage/);
 assert.match(css, /\.prediction-standing-row/);
+assert.match(compactCss, /\.prediction-outcome-team > small/);
+assert.match(compactCss, /max-width:\s*480px/);
+assert.match(compactCss, /minmax\(108px, 1fr\)/);
+assert.match(branding, /retryButton:\s*'Yeni Kura'/);
+assert.match(branding, /showOverviewButton:\s*'Tüm Maçlar'/);
+assert.match(branding, /customizeButton:\s*'Kurayı Düzenle'/);
+assert.match(branding, /changeTeamButton:\s*'Başa Dön'/);
+assert.match(branding, /Tahmin Yap/);
+assert.match(branding, /prediction-compact\.css/);
 
-console.log('Minimal logo prediction UI checks passed.');
+console.log('Compact logo prediction UI checks passed.');
