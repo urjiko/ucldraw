@@ -1,0 +1,22 @@
+/* Keep the interface visual-first: the surrounding layout already explains these values. */
+.rules-chip,
+.pot-count {
+  display: none !important;
+}
+
+/* Prediction cards only need the actual date above the result choices. */
+.prediction-fixture-top {
+  justify-content: center !important;
+}
+
+.prediction-fixture-top > span,
+.prediction-fixture-top > small {
+  display: none !important;
+}
+
+.prediction-fixture-top > time {
+  display: block;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
