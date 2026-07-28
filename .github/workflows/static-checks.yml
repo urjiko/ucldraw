@@ -80,8 +80,12 @@ jobs:
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
           node tests/prediction-share-v3.test.js
-      - name: Check Champions webfont integration
-        run: node tests/champions-font.test.js
+      - name: Check Champions regular font bytes
+        run: node tests/champions-font.test.js regular
+      - name: Check Champions bold font bytes
+        run: node tests/champions-font.test.js bold
+      - name: Check Champions font UI integration
+        run: node tests/champions-font.test.js ui
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
