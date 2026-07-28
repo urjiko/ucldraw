@@ -41,6 +41,7 @@ jobs:
           node --check prediction-engine.js
           node --check prediction-bridge.js
           node --check prediction-ui.js
+          node --check interface-polish.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
           node --check generated-club-coefficients.js
