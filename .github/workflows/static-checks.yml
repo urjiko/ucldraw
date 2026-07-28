@@ -80,6 +80,14 @@ jobs:
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
           node tests/prediction-share-v3.test.js
+      - name: Check Champions regular part 1
+        run: node tests/champions-font-part.test.js regular 1 6000
+      - name: Check Champions regular part 2
+        run: node tests/champions-font-part.test.js regular 2 6000
+      - name: Check Champions regular part 3
+        run: node tests/champions-font-part.test.js regular 3 6000
+      - name: Check Champions regular part 4
+        run: node tests/champions-font-part.test.js regular 4 4936
       - name: Check Champions regular font bytes
         run: node tests/champions-font.test.js regular
       - name: Check Champions bold font bytes
