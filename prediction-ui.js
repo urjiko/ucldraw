@@ -5,15 +5,18 @@
   const drawScreen = document.getElementById('drawScreen');
   const drawActions = document.getElementById('drawActions');
   const drawTitle = document.getElementById('drawTitle');
+  const changeTeamButton = document.getElementById('changeTeamButton');
   if (!ENGINE || !drawScreen || !drawActions || !drawTitle) return;
+  if (changeTeamButton) changeTeamButton.textContent = 'Başa Dön';
 
   let predictionState = null;
   let predictionKey = null;
+  let activeTeamName = null;
 
   const entryButton = document.createElement('button');
   entryButton.type = 'button';
   entryButton.className = 'action-button primary prediction-entry-button';
-  entryButton.textContent = 'Tahmin kısmına geç';
+  entryButton.textContent = 'Tahminlere Geç';
   entryButton.hidden = true;
   drawActions.appendChild(entryButton);
 
@@ -23,13 +26,18 @@
   section.hidden = true;
   drawScreen.appendChild(section);
 
-  function createCrest(team, size = 'normal') {
+  function initials(name) {
+    return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+  }
+
+  function createCrest(team, large = false) {
     const shell = document.createElement('span');
-    shell.className = `crest-shell prediction-crest${size === 'large' ? ' large' : ''}`;
+    shell.className = `crest-shell prediction-crest${large ? ' large' : ''}`;
     const fallback = document.createElement('span');
     fallback.className = 'crest-fallback';
-    fallback.textContent = String(team.name).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+    fallback.textContent = initials(team.name);
     shell.appendChild(fallback);
+
     if (team.crest) {
       const image = document.createElement('img');
       image.src = `crests/${team.crest}.png`;
@@ -43,11 +51,11 @@
   }
 
   function formatDate(value) {
-    if (!value) return 'Tarih daha sonra';
+    if (!value) return 'Tarih bekleniyor';
     return new Intl.DateTimeFormat('tr-TR', {
-      weekday: 'long',
+      weekday: 'short',
       day: 'numeric',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
       timeZone: 'UTC'
     }).format(new Date(`${value}T12:00:00Z`));
@@ -59,123 +67,117 @@
     return 'Elendi';
   }
 
-  function resultText(points) {
-    if (points === 3) return 'Galibiyet';
-    if (points === 1) return 'Beraberlik';
-    return 'Mağlubiyet';
+  function activeTeam() {
+    return predictionState?.comp.teams.find((team) => team.name === activeTeamName) || null;
   }
 
-  function selectedMatches() {
-    if (!predictionState) return [];
+  function matchesForTeam(teamName = activeTeamName) {
+    if (!predictionState || !teamName) return [];
     return predictionState.matches
-      .filter((match) => match.home.name === predictionState.selectedTeamName || match.away.name === predictionState.selectedTeamName)
+      .filter((match) => match.home.name === teamName || match.away.name === teamName)
       .sort((first, second) => first.matchday - second.matchday);
   }
 
-  function scoreForTeam(fixture) {
-    const score = fixture.score;
-    return fixture.home
-      ? `${score.homeGoals}-${score.awayGoals}`
-      : `${score.awayGoals}-${score.homeGoals}`;
-  }
-
   function buildHeader(rows) {
-    const selectedRow = rows.find((row) => row.team.name === predictionState.selectedTeamName);
-    const completion = ENGINE.progress(predictionState);
+    const row = rows.find((candidate) => candidate.team.name === activeTeamName);
+    const teamProgress = ENGINE.progress(predictionState, activeTeamName);
+    const tournament = ENGINE.tournamentProgress(predictionState);
     const header = document.createElement('header');
     header.className = 'prediction-header glass';
 
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'action-button prediction-back-button';
-    back.textContent = 'Kura sonuçlarına dön';
+    back.textContent = 'Kura Sonuçları';
     back.addEventListener('click', leavePrediction);
 
     const copy = document.createElement('div');
     copy.className = 'prediction-header-copy';
     const kicker = document.createElement('span');
     kicker.className = 'prediction-kicker';
-    kicker.textContent = `${predictionState.comp.shortName} · Lig aşaması tahmini`;
+    kicker.textContent = `${predictionState.comp.shortName} · Tahmin`;
     const title = document.createElement('h2');
-    title.textContent = predictionState.selectedTeamName;
+    title.textContent = activeTeamName;
     const description = document.createElement('p');
-    description.textContent = 'Her maç için 3, 1 veya 0 puanı seç. Skoru değiştirdiğinde aynı haftadaki diğer maçlar yeniden simüle edilir.';
+    description.textContent = 'Kazanan takımın logosuna bas. Beraberlik için ortadaki X’i seç.';
     copy.append(kicker, title, description);
 
+    const controls = document.createElement('div');
+    controls.className = 'prediction-header-controls';
+
+    const lock = document.createElement('button');
+    lock.type = 'button';
+    lock.className = `prediction-team-lock${ENGINE.isTeamLocked(predictionState, activeTeamName) ? ' is-locked' : ''}`;
+    lock.textContent = ENGINE.isTeamLocked(predictionState, activeTeamName) ? 'Kilidi Aç' : 'Takımı Kilitle';
+    lock.setAttribute('aria-pressed', String(ENGINE.isTeamLocked(predictionState, activeTeamName)));
+    lock.addEventListener('click', () => {
+      ENGINE.toggleTeamLock(predictionState, activeTeamName);
+      render();
+    });
+
     const summary = document.createElement('div');
-    summary.className = `prediction-summary zone-${selectedRow.zone}`;
+    summary.className = `prediction-summary zone-${row.zone}`;
     const rank = document.createElement('strong');
-    rank.textContent = `${selectedRow.rank}. sıra`;
+    rank.textContent = tournament.completed ? `${row.rank}. sıra` : `${row.points} puan`;
     const stats = document.createElement('span');
-    stats.textContent = `${selectedRow.points} puan · ${selectedRow.goalDifference >= 0 ? '+' : ''}${selectedRow.goalDifference} averaj`;
+    stats.textContent = `${teamProgress.completed}/${teamProgress.total} maç · ${row.goalDifference >= 0 ? '+' : ''}${row.goalDifference} AV`;
     const status = document.createElement('span');
     status.className = 'prediction-summary-status';
-    status.textContent = completion.done
-      ? zoneText(selectedRow.zone)
-      : `${completion.completed}/${completion.total} kişisel tahmin · geçici olarak ${zoneText(selectedRow.zone)}`;
+    status.textContent = tournament.done
+      ? zoneText(row.zone)
+      : tournament.completed
+        ? `${tournament.completed}/${tournament.total} maç işlendi`
+        : 'Henüz maç oynanmadı';
     summary.append(rank, stats, status);
 
-    header.append(back, copy, summary);
+    controls.append(lock, summary);
+    header.append(back, copy, controls);
     return header;
   }
 
-  function createPointsControl(match, score) {
-    const control = document.createElement('div');
-    control.className = 'prediction-points-control';
-    const locked = Boolean(predictionState.locked[match.id]);
-    const currentPoints = ENGINE.selectedPoints(match, score, predictionState.selectedTeamName);
-    [3, 1, 0].forEach((points) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'prediction-points-button';
-      button.textContent = String(points);
-      button.title = `${resultText(points)} tahmini`;
-      button.setAttribute('aria-label', `${resultText(points)}: ${points} puan`);
-      button.classList.toggle('is-active', locked && currentPoints === points);
-      button.addEventListener('click', () => {
-        ENGINE.applyPoints(predictionState, match.id, points);
-        render();
-      });
-      control.appendChild(button);
+  function outcomeButton(match, team, outcome, currentOutcome) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `prediction-outcome-team${currentOutcome === outcome ? ' is-active' : ''}${team.name === activeTeamName ? ' is-focus-team' : ''}`;
+    button.setAttribute('aria-label', `${team.name} kazanır`);
+    button.appendChild(createCrest(team, true));
+    const name = document.createElement('strong');
+    name.textContent = team.name;
+    const venue = document.createElement('small');
+    venue.textContent = outcome === 'home' ? 'Ev' : 'Dep';
+    button.append(name, venue);
+    button.addEventListener('click', () => {
+      ENGINE.applyOutcome(predictionState, match.id, outcome);
+      render();
     });
-    return control;
+    return button;
   }
 
-  function createFixtureCard(match) {
-    const score = predictionState.scores[match.id];
-    const selectedHome = match.home.name === predictionState.selectedTeamName;
-    const opponent = selectedHome ? match.away : match.home;
-    const card = document.createElement('article');
-    card.className = `prediction-fixture-card glass${predictionState.locked[match.id] ? ' is-confirmed' : ''}`;
+  function drawButton(match, currentOutcome) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `prediction-draw-choice${currentOutcome === 'draw' ? ' is-active' : ''}`;
+    button.textContent = 'X';
+    button.title = 'Beraberlik';
+    button.setAttribute('aria-label', 'Beraberlik');
+    button.addEventListener('click', () => {
+      ENGINE.applyOutcome(predictionState, match.id, 'draw');
+      render();
+    });
+    return button;
+  }
 
-    const top = document.createElement('div');
-    top.className = 'prediction-fixture-top';
-    const week = document.createElement('span');
-    week.textContent = `Hafta ${match.matchday}`;
-    const date = document.createElement('time');
-    date.dateTime = match.date || '';
-    date.textContent = formatDate(match.date);
-    top.append(week, date);
-
-    const teams = document.createElement('div');
-    teams.className = 'prediction-fixture-teams';
-    function teamSide(team, home) {
-      const side = document.createElement('div');
-      side.className = `prediction-team-side${team.name === predictionState.selectedTeamName ? ' is-user-team' : ''}`;
-      side.appendChild(createCrest(team));
-      const copy = document.createElement('span');
-      const name = document.createElement('strong');
-      name.textContent = team.name;
-      const venue = document.createElement('small');
-      venue.textContent = home ? 'İç saha' : 'Deplasman';
-      copy.append(name, venue);
-      side.appendChild(copy);
-      return side;
+  function scoreEditor(match, score) {
+    const editor = document.createElement('div');
+    editor.className = 'prediction-score-editor';
+    if (!score) {
+      const pending = document.createElement('span');
+      pending.className = 'prediction-score-pending';
+      pending.textContent = '– : –';
+      editor.appendChild(pending);
+      return editor;
     }
-    teams.append(teamSide(match.home, true), teamSide(match.away, false));
 
-    const scoreEditor = document.createElement('div');
-    scoreEditor.className = 'prediction-score-editor';
     const homeInput = document.createElement('input');
     homeInput.type = 'number';
     homeInput.min = '0';
@@ -183,8 +185,10 @@
     homeInput.inputMode = 'numeric';
     homeInput.value = String(score.homeGoals);
     homeInput.setAttribute('aria-label', `${match.home.name} gol sayısı`);
+
     const separator = document.createElement('span');
     separator.textContent = '–';
+
     const awayInput = document.createElement('input');
     awayInput.type = 'number';
     awayInput.min = '0';
@@ -192,33 +196,49 @@
     awayInput.inputMode = 'numeric';
     awayInput.value = String(score.awayGoals);
     awayInput.setAttribute('aria-label', `${match.away.name} gol sayısı`);
+
     const apply = document.createElement('button');
     apply.type = 'button';
     apply.className = 'prediction-score-apply';
-    apply.textContent = 'Skoru uygula';
+    apply.textContent = 'Uygula';
     apply.addEventListener('click', () => {
       ENGINE.setManualScore(predictionState, match.id, homeInput.value, awayInput.value);
       render();
     });
-    scoreEditor.append(homeInput, separator, awayInput, apply);
 
-    const footer = document.createElement('div');
-    footer.className = 'prediction-fixture-footer';
-    footer.appendChild(createPointsControl(match, score));
-    const context = document.createElement('span');
-    context.className = 'prediction-travel-context';
-    context.textContent = selectedHome
-      ? `${opponent.country} rakibi · ev sahibi avantajı`
-      : ENGINE.travelContext(opponent, match.date);
-    footer.appendChild(context);
+    editor.append(homeInput, separator, awayInput, apply);
+    return editor;
+  }
 
-    const modelLabel = document.createElement('span');
-    modelLabel.className = 'prediction-model-label';
-    modelLabel.textContent = predictionState.locked[match.id]
-      ? `${ENGINE.selectedPoints(match, score, predictionState.selectedTeamName)} puan seçildi`
-      : 'Model tahmini · henüz kişisel seçim yapılmadı';
+  function createFixtureCard(match) {
+    const score = predictionState.scores[match.id] || null;
+    const outcome = ENGINE.outcomeFromScore(score);
+    const card = document.createElement('article');
+    const matchLocked = Boolean(predictionState.matchLocks[match.id]);
+    const teamLocked = ENGINE.isTeamLocked(predictionState, match.home.name)
+      || ENGINE.isTeamLocked(predictionState, match.away.name);
+    card.className = `prediction-fixture-card glass${score ? ' is-resolved' : ''}${matchLocked ? ' is-locked' : ''}`;
 
-    card.append(top, teams, scoreEditor, footer, modelLabel);
+    const top = document.createElement('div');
+    top.className = 'prediction-fixture-top';
+    const week = document.createElement('span');
+    week.textContent = `H${match.matchday}`;
+    const date = document.createElement('time');
+    date.dateTime = match.date || '';
+    date.textContent = formatDate(match.date);
+    const stateLabel = document.createElement('small');
+    stateLabel.textContent = matchLocked ? 'Kilitli' : teamLocked && score ? 'Takım kilidi' : score ? 'Tahmin edildi' : 'Bekliyor';
+    top.append(week, date, stateLabel);
+
+    const choices = document.createElement('div');
+    choices.className = 'prediction-outcome-picker';
+    choices.append(
+      outcomeButton(match, match.home, 'home', outcome),
+      drawButton(match, outcome),
+      outcomeButton(match, match.away, 'away', outcome)
+    );
+
+    card.append(top, choices, scoreEditor(match, score));
     return card;
   }
 
@@ -228,44 +248,35 @@
     const heading = document.createElement('div');
     heading.className = 'prediction-panel-heading';
     const title = document.createElement('h3');
-    title.textContent = 'Maç tahminleri';
+    title.textContent = 'Maçlar';
     const note = document.createElement('span');
-    note.textContent = '3 galibiyet · 1 beraberlik · 0 mağlubiyet';
+    note.textContent = ENGINE.isTeamLocked(predictionState, activeTeamName) ? 'Takım kilitli' : 'Sonuç seçmek için logoya bas';
     heading.append(title, note);
+
     const list = document.createElement('div');
     list.className = 'prediction-fixture-list';
-    selectedMatches().forEach((match) => list.appendChild(createFixtureCard(match)));
+    matchesForTeam().forEach((match) => list.appendChild(createFixtureCard(match)));
     panel.append(heading, list);
     return panel;
   }
 
-  function createHoverFixture(fixture) {
-    const row = document.createElement('div');
-    row.className = 'prediction-hover-fixture';
-    const week = document.createElement('span');
-    week.textContent = `H${fixture.match.matchday}`;
-    const opponent = document.createElement('span');
-    opponent.textContent = `${fixture.home ? 'Ev' : 'Dep'} · ${fixture.opponent.name}`;
-    const score = document.createElement('strong');
-    score.textContent = scoreForTeam(fixture);
-    row.append(week, opponent, score);
-    return row;
-  }
-
   function createStandingRow(row) {
-    const element = document.createElement('div');
-    element.className = `prediction-standing-row zone-${row.zone}${row.team.name === predictionState.selectedTeamName ? ' is-selected-team' : ''}`;
-    element.tabIndex = 0;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `prediction-standing-row zone-${row.zone}${row.team.name === activeTeamName ? ' is-selected-team' : ''}${ENGINE.isTeamLocked(predictionState, row.team.name) ? ' is-locked-team' : ''}`;
+    button.setAttribute('aria-label', `${row.team.name} maçlarını düzenle`);
 
     const rank = document.createElement('span');
     rank.className = 'prediction-rank';
     rank.textContent = String(row.rank);
+
     const team = document.createElement('span');
     team.className = 'prediction-standing-team';
     team.appendChild(createCrest(row.team));
     const name = document.createElement('strong');
     name.textContent = row.team.name;
     team.appendChild(name);
+
     const played = document.createElement('span');
     played.textContent = String(row.played);
     const goalsFor = document.createElement('span');
@@ -277,16 +288,14 @@
     const points = document.createElement('strong');
     points.className = 'prediction-standing-points';
     points.textContent = String(row.points);
-    element.append(rank, team, played, goalsFor, goalsAgainst, difference, points);
 
-    const hover = document.createElement('aside');
-    hover.className = 'prediction-hover-card';
-    const hoverTitle = document.createElement('strong');
-    hoverTitle.textContent = `${row.team.name} tahmini fikstürü`;
-    hover.appendChild(hoverTitle);
-    row.fixtures.forEach((fixture) => hover.appendChild(createHoverFixture(fixture)));
-    element.appendChild(hover);
-    return element;
+    button.append(rank, team, played, goalsFor, goalsAgainst, difference, points);
+    button.addEventListener('click', () => {
+      activeTeamName = row.team.name;
+      render();
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return button;
   }
 
   function buildStandingsPanel(rows) {
@@ -295,14 +304,14 @@
     const heading = document.createElement('div');
     heading.className = 'prediction-panel-heading';
     const title = document.createElement('h3');
-    title.textContent = 'Canlı tahmini puan durumu';
+    title.textContent = 'Puan Durumu';
     const note = document.createElement('span');
-    note.textContent = 'Takımın üstüne gelerek tahmini fikstürü gör';
+    note.textContent = 'Takıma basarak maçlarını düzenle';
     heading.append(title, note);
 
     const legend = document.createElement('div');
     legend.className = 'prediction-zone-legend';
-    legend.innerHTML = '<span class="zone-direct">1–8 Son 16</span><span class="zone-playoff">9–24 Play-off</span><span class="zone-eliminated">25–36 Elendi</span>';
+    legend.innerHTML = '<span class="zone-direct">1–8</span><span class="zone-playoff">9–24</span><span class="zone-eliminated">25–36</span>';
 
     const table = document.createElement('div');
     table.className = 'prediction-standings-table';
@@ -311,15 +320,15 @@
     labels.innerHTML = '<span>#</span><span>Takım</span><span>O</span><span>A</span><span>Y</span><span>AV</span><span>P</span>';
     table.appendChild(labels);
     rows.forEach((row) => table.appendChild(createStandingRow(row)));
+
     panel.append(heading, legend, table);
     return panel;
   }
 
   function render() {
-    if (!predictionState) return;
+    if (!predictionState || !activeTeam()) return;
     const rows = ENGINE.standings(predictionState);
-    section.replaceChildren();
-    section.appendChild(buildHeader(rows));
+    section.replaceChildren(buildHeader(rows));
     const layout = document.createElement('div');
     layout.className = 'prediction-layout';
     layout.append(buildFixturesPanel(), buildStandingsPanel(rows));
@@ -330,11 +339,13 @@
     const draw = window.UCLDRAW_LAST_DRAW;
     const selectedName = drawTitle.textContent.trim();
     if (!draw?.competition || !draw?.table || !draw.competition.teams.some((team) => team.name === selectedName)) return;
-    const nextKey = `${draw.generatedAt}:${selectedName}`;
+
+    const nextKey = String(draw.generatedAt);
     if (!predictionState || predictionKey !== nextKey) {
       predictionState = ENGINE.createState(draw.competition, draw.table, draw.leagueId, selectedName, nextKey);
       predictionKey = nextKey;
     }
+    activeTeamName = selectedName;
     document.body.classList.add('prediction-active');
     section.hidden = false;
     render();
@@ -356,14 +367,18 @@
   new MutationObserver(() => {
     if (section.hidden) updateEntryVisibility();
   }).observe(drawTitle, { childList: true, characterData: true, subtree: true });
+
   window.addEventListener('ucldraw:draw-generated', () => {
     predictionState = null;
     predictionKey = null;
+    activeTeamName = null;
     leavePrediction();
     updateEntryVisibility();
   });
+
   new MutationObserver(() => {
     if (document.body.dataset.league !== window.UCLDRAW_LAST_DRAW?.leagueId) leavePrediction();
   }).observe(document.body, { attributes: true, attributeFilter: ['data-league'] });
+
   updateEntryVisibility();
 })();
