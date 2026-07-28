@@ -35,7 +35,7 @@ assert.match(share, /drawRotatedCover\(context, background\)/);
 assert.match(share, /if \(leagueId === 'ucl'\)/);
 assert.match(share, /uel:[\s\S]*header: 'rgba\(83, 29, 3/);
 assert.match(share, /uecl:[\s\S]*header: 'rgba\(4, 61, 18/);
-assert.match(share, /Inter, \\"Segoe UI\\", Arial, sans-serif/);
+assert.ok(share.includes('Inter, "Segoe UI", Arial, sans-serif'));
 assert.doesNotMatch(share, /`“\$\{snapshot\.activeName\}”`/);
 assert.doesNotMatch(share, /activeRow\.rank/);
 assert.match(css, /prediction-share-button[\s\S]*display: none !important/);
