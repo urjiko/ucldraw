@@ -6,22 +6,31 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const javascript = fs.readFileSync(path.join(root, 'branding-fixes.js'), 'utf8');
+const teams = fs.readFileSync(path.join(root, 'teams.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'branding-fixes.css'), 'utf8');
 
 for (const asset of [
   'crests/pools/uefa_logo.png',
-  'crests/pools/champions/ucl_logo.png',
+  'crests/pools/champions/UCL_Logo.svg',
   'crests/pools/champions/arkaplanucl.jpg',
-  'crests/pools/europa/europaleague.png',
+  'crests/pools/europa/UEL_Logo.svg',
   'crests/pools/europa/arkaplanuel.jpg',
-  'crests/pools/conference/ConferenceLeague.png',
+  'crests/pools/conference/CON_Logo.svg',
   'crests/pools/conference/arkaplancon.jpg'
 ]) {
   if (!fs.existsSync(path.join(root, asset))) throw new Error(`Missing branding asset: ${asset}`);
 }
 
-if (!javascript.includes("competitions.uecl.logo = 'crests/pools/conference/ConferenceLeague.png'")) {
-  throw new Error('Conference League logo is not connected.');
+for (const [league, asset] of [
+  ['Champions League', 'crests/pools/champions/UCL_Logo.svg'],
+  ['Europa League', 'crests/pools/europa/UEL_Logo.svg'],
+  ['Conference League', 'crests/pools/conference/CON_Logo.svg']
+]) {
+  if (!teams.includes(`logo: '${asset}'`)) throw new Error(`${league} SVG logo is not connected in competition data.`);
+}
+
+if (!javascript.includes("competitions.uecl.logo = 'crests/pools/conference/CON_Logo.svg'")) {
+  throw new Error('Conference League SVG logo override is not connected.');
 }
 if (!javascript.includes("competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg'")) {
   throw new Error('Conference League background is not connected.');

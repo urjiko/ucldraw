@@ -3,7 +3,7 @@
 
   const competitions = window.UCLDRAW_DATA?.competitions;
   if (competitions?.uecl) {
-    competitions.uecl.logo = 'crests/pools/conference/ConferenceLeague.png';
+    competitions.uecl.logo = 'crests/pools/conference/CON_Logo.svg';
     competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg';
   }
 
@@ -28,8 +28,8 @@
 
   function refreshConferenceLogo(root = document) {
     root.querySelectorAll?.(conferenceLogoSelector).forEach((image) => {
-      if (!image.src.endsWith('/crests/pools/conference/ConferenceLeague.png')) {
-        image.src = 'crests/pools/conference/ConferenceLeague.png';
+      if (!image.src.endsWith('/crests/pools/conference/CON_Logo.svg')) {
+        image.src = 'crests/pools/conference/CON_Logo.svg';
       }
     });
   }

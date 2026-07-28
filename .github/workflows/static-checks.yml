@@ -14,6 +14,7 @@ on:
       - agent/guaranteed-roster-replacements
       - agent/league-phase-predictions
       - agent/integrate-champions-webfonts
+      - agent/svg-logos-minimal-copy
 
 permissions:
   contents: read
@@ -47,6 +48,7 @@ jobs:
           node --check prediction-share-v2.js
           node --check prediction-share-v3.js
           node --check prediction-share-v4.js
+          node --check prediction-share-v5.js
           node --check champions-font-loader.js
           node --check interface-polish.js
           node --check branding-fixes.js
@@ -73,6 +75,7 @@ jobs:
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
+          node tests/svg-minimal-ui.test.js
       - name: Check existing music roster and prediction controls
         run: |
           node tests/music-roster-ui.test.js
