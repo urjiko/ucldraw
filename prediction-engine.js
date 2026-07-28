@@ -113,13 +113,7 @@
         const away = fixture.home ? opponent : team;
         const matchday = Number(fixture.matchday);
         const id = `${matchday}:${slug(home.name)}:${slug(away.name)}`;
-        matches.push({
-          id,
-          matchday,
-          home,
-          away,
-          date: matchDate(leagueId, matchday, id, seed)
-        });
+        matches.push({ id, matchday, home, away, date: matchDate(leagueId, matchday, id, seed) });
       }
     }
     return matches.sort((first, second) => first.matchday - second.matchday
@@ -250,6 +244,11 @@
       const home = rows.get(match.home.name);
       const away = rows.get(match.away.name);
       if (!home || !away) continue;
+      const selectedMatch = match.home.name === state.selectedTeamName || match.away.name === state.selectedTeamName;
+      const pending = selectedMatch && !state.locked[match.id];
+      home.fixtures.push({ match, score, opponent: match.away, home: true, pending });
+      away.fixtures.push({ match, score, opponent: match.home, home: false, pending });
+      if (pending) continue;
       home.played += 1;
       away.played += 1;
       home.goalsFor += score.homeGoals;
@@ -272,12 +271,10 @@
         home.points += 1;
         away.points += 1;
       }
-      home.fixtures.push({ match, score, opponent: match.away, home: true });
-      away.fixtures.push({ match, score, opponent: match.home, home: false });
     }
     rows.forEach((row) => { row.goalDifference = row.goalsFor - row.goalsAgainst; });
     rows.forEach((row) => {
-      for (const fixture of row.fixtures) {
+      for (const fixture of row.fixtures.filter((item) => !item.pending)) {
         const opponent = rows.get(fixture.opponent.name);
         row.opponentPoints += opponent?.points || 0;
         row.opponentGoalDifference += opponent?.goalDifference || 0;
