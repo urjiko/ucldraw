@@ -1,0 +1,284 @@
+/* Focused headers and concise interface copy. */
+.selection-heading,
+.all-fixtures-kicker,
+.all-fixtures-header p,
+.prediction-panel-heading > span {
+  display: none !important;
+}
+
+.selection-toolbar {
+  padding: 12px;
+}
+
+.team-search {
+  min-height: 58px;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+body.draw-active .selected-club-card {
+  display: none !important;
+}
+
+.draw-topbar.themed-hero,
+.prediction-header.themed-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(105deg, rgba(var(--accent-rgb), 0.38), rgba(0, 0, 0, 0.8) 48%, rgba(var(--accent-rgb), 0.18)),
+    var(--surface);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.draw-topbar.themed-hero::before,
+.prediction-header.themed-hero::before,
+.draw-topbar.themed-hero::after,
+.prediction-header.themed-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.draw-topbar.themed-hero::before,
+.prediction-header.themed-hero::before {
+  z-index: -2;
+  opacity: 0.34;
+}
+
+.draw-topbar.themed-hero::after,
+.prediction-header.themed-hero::after {
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 120%, rgba(var(--accent-rgb), 0.32), transparent 52%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.5), transparent 27%, transparent 73%, rgba(0, 0, 0, 0.5));
+}
+
+body[data-league="ucl"] .themed-hero::before {
+  background:
+    linear-gradient(30deg, transparent 45%, rgba(255, 255, 255, 0.16) 48%, transparent 51%) 0 0 / 96px 96px,
+    linear-gradient(-30deg, transparent 45%, rgba(255, 255, 255, 0.11) 48%, transparent 51%) 48px 0 / 96px 96px;
+}
+
+body[data-league="uel"] .themed-hero::before {
+  background:
+    repeating-linear-gradient(116deg, transparent 0 32px, rgba(255, 255, 255, 0.13) 33px 35px, transparent 36px 64px),
+    repeating-linear-gradient(64deg, transparent 0 48px, rgba(255, 255, 255, 0.07) 49px 51px, transparent 52px 96px);
+}
+
+body[data-league="uecl"] .themed-hero::before {
+  background:
+    radial-gradient(circle at 12% 50%, transparent 0 28px, rgba(255, 255, 255, 0.16) 29px 31px, transparent 32px 52px, rgba(255, 255, 255, 0.08) 53px 55px, transparent 56px),
+    radial-gradient(circle at 88% 50%, transparent 0 34px, rgba(255, 255, 255, 0.14) 35px 37px, transparent 38px 62px, rgba(255, 255, 255, 0.07) 63px 65px, transparent 66px);
+}
+
+.draw-topbar.themed-hero > *,
+.prediction-header.themed-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.draw-active .draw-topbar.themed-hero {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) auto minmax(180px, 1fr);
+  align-items: center;
+  padding: 18px 22px 22px;
+  border-radius: 24px;
+}
+
+.draw-header-identity,
+.prediction-header-identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.draw-header-identity {
+  grid-column: 2;
+}
+
+.draw-hero-crest,
+.prediction-hero-crest {
+  flex: 0 0 auto;
+}
+
+.polished-hero-crest {
+  width: 76px !important;
+  height: 76px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 22px !important;
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.42),
+    0 0 32px rgba(var(--accent-rgb), 0.28);
+}
+
+.draw-topbar-copy,
+.prediction-header-copy {
+  min-width: 0;
+}
+
+.draw-header-identity .draw-kicker,
+.prediction-header-identity .prediction-kicker {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.draw-header-identity .draw-title,
+.prediction-header-identity h2 {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: #fff;
+  font-family: "Barlow Condensed", Inter, sans-serif;
+  font-size: clamp(1.95rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 3px 14px rgba(0, 0, 0, 0.96),
+    0 0 24px rgba(var(--accent-rgb), 0.42);
+  white-space: nowrap;
+}
+
+body.draw-active .draw-topbar .progress-track {
+  grid-column: 3;
+  justify-self: end;
+  width: min(190px, 18vw);
+  height: 7px;
+}
+
+.prediction-header.themed-hero {
+  min-height: 126px;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(230px, 1fr);
+  padding: 18px 20px;
+  border-radius: 24px;
+}
+
+.prediction-header-identity {
+  grid-column: 2;
+}
+
+.prediction-header .prediction-back-button {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.prediction-header .prediction-header-controls {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.prediction-header .prediction-team-lock,
+.prediction-header .prediction-summary {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.all-fixtures-header {
+  align-items: center;
+}
+
+.all-fixtures-header h2 {
+  margin: 0;
+}
+
+.mode-choice-card {
+  min-height: 86px;
+}
+
+.mode-choice-card span {
+  line-height: 1.3;
+}
+
+@media (max-width: 900px) {
+  body.draw-active .draw-topbar.themed-hero {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .draw-header-identity,
+  body.draw-active .draw-topbar .progress-track {
+    grid-column: 1;
+  }
+
+  body.draw-active .draw-topbar .progress-track {
+    width: min(360px, 100%);
+    justify-self: center;
+  }
+
+  .prediction-header.themed-hero {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .prediction-header .prediction-back-button {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .prediction-header .prediction-header-controls {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .prediction-header-identity {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 620px) {
+  .polished-hero-crest {
+    width: 62px !important;
+    height: 62px !important;
+    border-radius: 18px !important;
+  }
+
+  .draw-header-identity,
+  .prediction-header-identity {
+    gap: 11px;
+  }
+
+  .draw-header-identity .draw-title,
+  .prediction-header-identity h2 {
+    max-width: 64vw;
+    font-size: clamp(1.55rem, 8vw, 2.15rem);
+  }
+
+  .prediction-header.themed-hero {
+    min-height: 154px;
+    padding: 13px;
+  }
+
+  .prediction-header .prediction-header-controls {
+    gap: 5px;
+  }
+
+  .prediction-header .prediction-team-lock {
+    min-width: 72px;
+    padding-inline: 8px;
+  }
+
+  .prediction-header .prediction-summary {
+    min-width: 112px;
+    padding: 8px;
+  }
+
+  .prediction-header .prediction-summary span:not(.prediction-summary-status) {
+    display: none;
+  }
+}

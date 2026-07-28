@@ -11,7 +11,7 @@ const css = fs.readFileSync(path.join(root, 'v4.css'), 'utf8');
 if (!html.includes('<script src="draw-engine-v2.js"></script>')) throw new Error('Scheduled draw engine is not loaded.');
 if (!html.includes('<script src="schedule-ui.js"></script>')) throw new Error('Schedule UI layer is not loaded.');
 if (!html.includes('<link rel="stylesheet" href="v4.css">')) throw new Error('v4.css is not loaded.');
-if (!html.includes('Durdurmalı Kura')) throw new Error('Controlled mode label was not renamed.');
+if (!html.includes('data-control-mode="manual">Manuel</button>')) throw new Error('Controlled mode label is not concise.');
 
 const selectedIndex = html.indexOf('id="selectedClubCard"');
 const controlIndex = html.indexOf('id="drawControlPanel"');

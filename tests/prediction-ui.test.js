@@ -12,6 +12,8 @@ const ui = read('prediction-ui.js');
 const css = read('prediction.css');
 const compactCss = read('prediction-compact.css');
 const branding = read('branding-fixes.js');
+const polish = read('interface-polish.js');
+const polishCss = read('interface-polish.css');
 
 for (const file of ['prediction.css', 'prediction-engine.js', 'prediction-bridge.js', 'prediction-ui.js']) {
   assert.ok(html.includes(file), `${file} must be loaded by index.html`);
@@ -20,6 +22,7 @@ for (const file of ['prediction.css', 'prediction-engine.js', 'prediction-bridge
 assert.ok(html.indexOf('draw-engine-v2.js') < html.indexOf('prediction-bridge.js'), 'prediction bridge must load after the draw engine');
 assert.ok(html.indexOf('prediction-bridge.js') < html.indexOf('app-v3.js'), 'prediction bridge must be available before the app starts');
 assert.ok(html.indexOf('app-v3.js') < html.indexOf('prediction-ui.js'), 'prediction UI must load after the draw app');
+assert.ok(html.indexOf('prediction-ui.js') < html.indexOf('interface-polish.js'), 'prediction header polish must load after prediction UI');
 assert.match(bridge, /UCLDRAW_LAST_DRAW/);
 assert.match(bridge, /ucldraw:draw-generated/);
 assert.match(bridge, /DOMContentLoaded/);
@@ -29,7 +32,6 @@ assert.match(ui, /ENGINE\.applyOutcome/);
 assert.match(ui, /ENGINE\.setManualScore/);
 assert.match(ui, /ENGINE\.toggleTeamLock/);
 assert.match(ui, /Takımı Kilitle/);
-assert.match(ui, /Takıma basarak maçlarını düzenle/);
 assert.match(ui, /button\.addEventListener\('click'/);
 assert.doesNotMatch(ui, /\[3,\s*1,\s*0\]/);
 assert.doesNotMatch(ui, /travelContext|Akdeniz|Kuzey deplasmanı/);
@@ -48,5 +50,11 @@ assert.match(branding, /customizeButton:\s*'Kurayı Düzenle'/);
 assert.match(branding, /changeTeamButton:\s*'Başa Dön'/);
 assert.match(branding, /Tahmin Yap/);
 assert.match(branding, /prediction-compact\.css/);
+assert.match(polish, /prediction-header-identity/);
+assert.match(polish, /copy\.querySelector\('p'\)\?\.remove\(\)/);
+assert.match(polish, /Kuraya Dön/);
+assert.match(polishCss, /\.prediction-panel-heading > span/);
+assert.match(polishCss, /\.prediction-header\.themed-hero/);
+assert.match(polishCss, /text-shadow:/);
 
 console.log('Compact logo prediction UI checks passed.');
