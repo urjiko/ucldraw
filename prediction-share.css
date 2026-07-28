@@ -1,0 +1,58 @@
+.prediction-share-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  border-color: rgba(var(--accent-rgb), 0.68);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 48%),
+    rgba(var(--accent-rgb), 0.34);
+  box-shadow: 0 12px 32px rgba(var(--accent-rgb), 0.18);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.prediction-share-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.18), transparent 48%),
+    rgba(var(--accent-rgb), 0.48);
+}
+
+.prediction-share-button:disabled {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+.draw-header-identity .draw-title,
+.prediction-header-identity h2 {
+  line-height: 1.08 !important;
+  padding-bottom: 0.11em;
+}
+
+.draw-topbar-copy,
+.prediction-header-copy {
+  padding-bottom: 0.06em;
+}
+
+.draw-topbar .progress-track {
+  transform-origin: center;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    visibility 220ms ease;
+}
+
+.draw-topbar .progress-track.is-complete {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px) scaleX(0.96);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .prediction-share-button {
+    min-height: 52px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+  }
+}
