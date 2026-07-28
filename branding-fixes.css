@@ -1,4 +1,10 @@
 /* Competition branding assets and locale-safe English labels. */
+body[data-league="uel"],
+body[data-league="uecl"] {
+  --surface: rgba(0, 0, 0, 0.74);
+  --surface-strong: rgba(0, 0, 0, 0.93);
+}
+
 body[data-league="uecl"] {
   background:
     linear-gradient(180deg, rgba(0, 12, 4, 0.22), rgba(0, 8, 3, 0.9)),
@@ -9,7 +15,20 @@ body[data-league="uecl"] {
   background-attachment: fixed;
 }
 
-/* The pot title strips read better when non-blue competition colors fade into neutral black. */
+/* All major glass cards in the non-blue competitions fade from the theme accent into neutral black. */
+body[data-league="uel"] .glass,
+body[data-league="uecl"] .glass {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--accent-rgb), 0.18) 0%,
+      rgba(var(--accent-rgb), 0.08) 34%,
+      rgba(0, 0, 0, 0.56) 70%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  background-color: rgba(0, 0, 0, 0.74);
+}
+
 body[data-league="uel"] .pot-card-header,
 body[data-league="uecl"] .pot-card-header {
   background:
