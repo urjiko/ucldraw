@@ -39,46 +39,68 @@ const state = prediction.createState(competition, table, 'ucl', selected.name, '
 assert.equal(state.matches.length, 144, '36 teams playing eight matches must create 144 unique matches');
 assert.equal(new Set(state.matches.map((match) => match.id)).size, 144, 'match IDs must stay unique');
 assert.ok(state.matches.every((match) => prediction.MATCHDAY_DATES.ucl[match.matchday - 1].includes(match.date)), 'every match date must use its official UEFA matchday window');
+assert.equal(Object.keys(state.scores).length, 0, 'prediction screen must start with no simulated scores');
 
-const selectedMatches = state.matches.filter((match) => match.home.name === selected.name || match.away.name === selected.name);
+const selectedMatches = state.matches
+  .filter((match) => match.home.name === selected.name || match.away.name === selected.name)
+  .sort((first, second) => first.matchday - second.matchday);
 assert.equal(selectedMatches.length, 8);
-assert.deepEqual(prediction.progress(state), { completed: 0, total: 8, done: false });
+assert.deepEqual(prediction.progress(state, selected.name), { completed: 0, total: 8, done: false });
+assert.deepEqual(prediction.tournamentProgress(state), { completed: 0, total: 144, done: false });
 
 let rows = prediction.standings(state);
-let selectedRow = rows.find((row) => row.team.name === selected.name);
-assert.equal(selectedRow.played, 0, 'model previews for the selected team must not count before confirmation');
-assert.equal(selectedRow.points, 0, 'the selected team starts on zero confirmed points');
 assert.equal(rows.length, 36);
+assert.ok(rows.every((row) => row.played === 0 && row.points === 0), 'nobody has played before the first click');
 
 const firstMatch = selectedMatches[0];
-const firstDayVersion = state.rerollVersion[firstMatch.matchday];
-prediction.applyPoints(state, firstMatch.id, 3);
+const selectedWinsFirst = firstMatch.home.name === selected.name ? 'home' : 'away';
+prediction.applyOutcome(state, firstMatch.id, selectedWinsFirst);
 assert.equal(prediction.selectedPoints(firstMatch, state.scores[firstMatch.id], selected.name), 3);
-assert.equal(state.rerollVersion[firstMatch.matchday], firstDayVersion + 1, 'other matches on the same matchday must be re-simulated');
+assert.equal(Object.keys(state.scores).length, 18, 'first click must simulate only that 18-match matchday');
+assert.equal(Object.keys(state.activeMatchdays).length, 1);
+
 rows = prediction.standings(state);
-selectedRow = rows.find((row) => row.team.name === selected.name);
-assert.equal(selectedRow.played, 1);
-assert.equal(selectedRow.points, 3, 'pressing 3 must add exactly three confirmed points');
+assert.ok(rows.every((row) => row.played === 1), 'one activated matchday gives every club one played match');
+assert.equal(rows.find((row) => row.team.name === selected.name).points, 3);
+
+const sameDayMatches = state.matches.filter((match) => match.matchday === firstMatch.matchday);
+const firstScore = { ...state.scores[firstMatch.id] };
+const otherMatch = sameDayMatches.find((match) => match.id !== firstMatch.id);
+prediction.applyOutcome(state, otherMatch.id, 'draw');
+assert.deepEqual(state.scores[firstMatch.id], firstScore, 'a manually edited match stays locked during later rerolls');
+
+const lockCandidate = sameDayMatches.find((match) => ![firstMatch.id, otherMatch.id].includes(match.id));
+const lockScore = { ...state.scores[lockCandidate.id] };
+prediction.toggleTeamLock(state, lockCandidate.home.name, true);
+const rerollTrigger = sameDayMatches.find((match) => ![firstMatch.id, otherMatch.id, lockCandidate.id].includes(match.id)
+  && match.home.name !== lockCandidate.home.name
+  && match.away.name !== lockCandidate.home.name);
+prediction.applyOutcome(state, rerollTrigger.id, 'home');
+assert.deepEqual(state.scores[lockCandidate.id], lockScore, 'team lock must preserve existing model results');
+assert.equal(prediction.isTeamLocked(state, lockCandidate.home.name), true);
 
 const secondMatch = selectedMatches[1];
-const selectedHome = secondMatch.home.name === selected.name;
-prediction.setManualScore(state, secondMatch.id, selectedHome ? 2 : 0, selectedHome ? 0 : 2);
-assert.equal(prediction.selectedPoints(secondMatch, state.scores[secondMatch.id], selected.name), 3, 'manual score must determine the active points choice');
+prediction.setManualScore(state, secondMatch.id, secondMatch.home.name === selected.name ? 2 : 0, secondMatch.home.name === selected.name ? 0 : 2);
+assert.equal(prediction.selectedPoints(secondMatch, state.scores[secondMatch.id], selected.name), 3);
+assert.equal(state.matchLocks[secondMatch.id], true, 'manual score changes lock the match');
 
-for (const match of selectedMatches.slice(2)) prediction.applyPoints(state, match.id, 3);
-assert.deepEqual(prediction.progress(state), { completed: 8, total: 8, done: true });
+for (const match of selectedMatches.slice(2)) {
+  prediction.applyOutcome(state, match.id, match.home.name === selected.name ? 'home' : 'away');
+}
+
+assert.deepEqual(prediction.progress(state, selected.name), { completed: 8, total: 8, done: true });
+assert.deepEqual(prediction.tournamentProgress(state), { completed: 144, total: 144, done: true });
 rows = prediction.standings(state);
-selectedRow = rows.find((row) => row.team.name === selected.name);
-assert.equal(selectedRow.played, 8);
-assert.equal(selectedRow.points, 24);
+assert.ok(rows.every((row) => row.played === 8), 'activating all eight matchdays completes the entire league phase');
 assert.equal(rows.filter((row) => row.zone === 'direct').length, 8);
 assert.equal(rows.filter((row) => row.zone === 'playoff').length, 16);
 assert.equal(rows.filter((row) => row.zone === 'eliminated').length, 12);
-assert.ok(rows.every((row) => row.played === 8), 'all teams must have eight counted matches after all personal predictions are complete');
 assert.ok(rows.every((row) => Number.isInteger(row.goalDifference)));
 
-assert.match(prediction.travelContext({ country: 'NOR' }, '2027-01-20'), /Kuzey|soğuk/);
+assert.equal(prediction.outcomeFromScore({ homeGoals: 2, awayGoals: 1 }), 'home');
+assert.equal(prediction.outcomeFromScore({ homeGoals: 1, awayGoals: 1 }), 'draw');
+assert.equal(prediction.outcomeFromScore({ homeGoals: 0, awayGoals: 1 }), 'away');
 assert.equal(prediction.MATCHDAY_DATES.uel.length, 8);
 assert.equal(prediction.MATCHDAY_DATES.uecl.length, 6);
 
-console.log('League-phase prediction engine checks passed.');
+console.log('Progressive locked prediction engine checks passed.');
