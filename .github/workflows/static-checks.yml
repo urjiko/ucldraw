@@ -13,6 +13,7 @@ on:
       - agent/league-music-roster-search
       - agent/guaranteed-roster-replacements
       - agent/league-phase-predictions
+      - agent/integrate-champions-webfonts
 
 permissions:
   contents: read
@@ -45,6 +46,8 @@ jobs:
           node --check prediction-share.js
           node --check prediction-share-v2.js
           node --check prediction-share-v3.js
+          node --check prediction-share-v4.js
+          node --check champions-font-loader.js
           node --check interface-polish.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
@@ -70,13 +73,27 @@ jobs:
           node tests/branding.test.js
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
-      - name: Check music roster and prediction controls
+      - name: Check existing music roster and prediction controls
         run: |
           node tests/music-roster-ui.test.js
           node tests/prediction-ui.test.js
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
           node tests/prediction-share-v3.test.js
+      - name: Check Champions regular part 1
+        run: node tests/champions-font-part.test.js regular 1 6000
+      - name: Check Champions regular part 2
+        run: node tests/champions-font-part.test.js regular 2 6000
+      - name: Check Champions regular part 3
+        run: node tests/champions-font-part.test.js regular 3 6000
+      - name: Check Champions regular part 4
+        run: node tests/champions-font-part.test.js regular 4 4936
+      - name: Check Champions regular font bytes
+        run: node tests/champions-font.test.js regular
+      - name: Check Champions bold font bytes
+        run: node tests/champions-font.test.js bold
+      - name: Check Champions font UI integration
+        run: node tests/champions-font.test.js ui
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
