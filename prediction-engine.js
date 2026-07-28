@@ -32,19 +32,14 @@
     ])
   });
 
-  const NORTHERN = new Set(['NOR', 'SWE', 'FIN', 'ISL', 'DEN', 'SCO', 'EST', 'LVA', 'LTU']);
-  const WET_WEST = new Set(['ENG', 'SCO', 'WAL', 'NIR', 'IRL', 'NED', 'BEL', 'POR']);
-  const MEDITERRANEAN = new Set(['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'CYP', 'CRO', 'ISR']);
-
   function clamp(value, minimum, maximum) {
     return Math.max(minimum, Math.min(maximum, value));
   }
 
   function hashString(value) {
     let hash = 2166136261;
-    const text = String(value);
-    for (let index = 0; index < text.length; index += 1) {
-      hash ^= text.charCodeAt(index);
+    for (const character of String(value)) {
+      hash ^= character.charCodeAt(0);
       hash = Math.imul(hash, 16777619);
     }
     return hash >>> 0;
@@ -102,8 +97,7 @@
     const seen = new Set();
     const matches = [];
     for (const team of comp.teams) {
-      const fixtures = table?.[team.name] || [];
-      for (const fixture of fixtures) {
+      for (const fixture of table?.[team.name] || []) {
         const opponent = fixture.opponent;
         if (!opponent) continue;
         const pair = [team.name, opponent.name].sort().join('::');
@@ -133,27 +127,22 @@
     };
   }
 
-  function forceOutcome(match, selectedTeamName, points, seed) {
-    const random = seededRandom(`${seed}:${match.id}:forced:${points}`);
-    const selectedHome = match.home.name === selectedTeamName;
-    let selectedGoals;
-    let opponentGoals;
-    if (points === 1) {
-      selectedGoals = Math.floor(random() * 4);
-      opponentGoals = selectedGoals;
-    } else {
-      const winnerGoals = 1 + Math.floor(random() * 4);
-      const loserGoals = Math.floor(random() * winnerGoals);
-      const selectedWins = points === 3;
-      selectedGoals = selectedWins ? winnerGoals : loserGoals;
-      opponentGoals = selectedWins ? loserGoals : winnerGoals;
+  function forcedScore(match, outcome, seed) {
+    if (!['home', 'draw', 'away'].includes(outcome)) throw new Error('Geçersiz maç sonucu seçimi.');
+    const random = seededRandom(`${seed}:${match.id}:${outcome}`);
+    if (outcome === 'draw') {
+      const goals = Math.floor(random() * 4);
+      return { homeGoals: goals, awayGoals: goals, source: 'user-outcome' };
     }
-    return selectedHome
-      ? { homeGoals: selectedGoals, awayGoals: opponentGoals, source: 'user-points' }
-      : { homeGoals: opponentGoals, awayGoals: selectedGoals, source: 'user-points' };
+    const winnerGoals = 1 + Math.floor(random() * 4);
+    const loserGoals = Math.floor(random() * winnerGoals);
+    return outcome === 'home'
+      ? { homeGoals: winnerGoals, awayGoals: loserGoals, source: 'user-outcome' }
+      : { homeGoals: loserGoals, awayGoals: winnerGoals, source: 'user-outcome' };
   }
 
   function selectedPoints(match, score, selectedTeamName) {
+    if (!score) return null;
     const selectedHome = match.home.name === selectedTeamName;
     const selectedGoals = selectedHome ? score.homeGoals : score.awayGoals;
     const opponentGoals = selectedHome ? score.awayGoals : score.homeGoals;
@@ -162,14 +151,19 @@
     return 0;
   }
 
+  function outcomeFromScore(score) {
+    if (!score) return null;
+    if (score.homeGoals > score.awayGoals) return 'home';
+    if (score.homeGoals < score.awayGoals) return 'away';
+    return 'draw';
+  }
+
   function createState(comp, table, leagueId, selectedTeamName, seed = Date.now()) {
     const matches = uniqueMatches(comp, table, leagueId, seed);
-    const scores = {};
     const rerollVersion = {};
-    matches.forEach((match) => {
-      rerollVersion[match.matchday] = 0;
-      scores[match.id] = simulateScore(match, comp, seed, 0);
-    });
+    for (let matchday = 1; matchday <= comp.potCount * comp.opponentsPerPot; matchday += 1) {
+      rerollVersion[matchday] = 0;
+    }
     return {
       comp,
       table,
@@ -177,43 +171,75 @@
       selectedTeamName,
       seed: String(seed),
       matches,
-      scores,
-      locked: {},
+      scores: {},
+      matchLocks: {},
+      teamLocks: {},
+      activeMatchdays: {},
       rerollVersion
     };
   }
 
-  function rerollMatchday(state, matchday, protectedMatchId) {
+  function matchHasLockedTeam(state, match) {
+    return Boolean(state.teamLocks[match.home.name] || state.teamLocks[match.away.name]);
+  }
+
+  function isProtectedResult(state, match) {
+    return Boolean(state.scores[match.id] && (state.matchLocks[match.id] || matchHasLockedTeam(state, match)));
+  }
+
+  function simulateMatchday(state, matchday, protectedMatchId = null) {
     state.rerollVersion[matchday] = Number(state.rerollVersion[matchday] || 0) + 1;
     const version = state.rerollVersion[matchday];
-    state.matches
-      .filter((match) => match.matchday === matchday && match.id !== protectedMatchId && !state.locked[match.id])
-      .forEach((match) => {
-        state.scores[match.id] = simulateScore(match, state.comp, state.seed, version);
-      });
+    state.activeMatchdays[matchday] = true;
+
+    for (const match of state.matches.filter((candidate) => candidate.matchday === matchday)) {
+      if (match.id === protectedMatchId || isProtectedResult(state, match)) continue;
+      state.scores[match.id] = simulateScore(match, state.comp, state.seed, version);
+    }
+  }
+
+  function applyOutcome(state, matchId, outcome) {
+    const match = state.matches.find((candidate) => candidate.id === matchId);
+    if (!match) throw new Error('Tahmin edilecek maç bulunamadı.');
+    state.scores[matchId] = forcedScore(match, outcome, `${state.seed}:${Date.now()}`);
+    state.matchLocks[matchId] = true;
+    simulateMatchday(state, match.matchday, matchId);
+    return state.scores[matchId];
   }
 
   function applyPoints(state, matchId, points) {
-    if (![0, 1, 3].includes(Number(points))) throw new Error('Puan seçimi 3, 1 veya 0 olmalı.');
     const match = state.matches.find((candidate) => candidate.id === matchId);
-    if (!match || (match.home.name !== state.selectedTeamName && match.away.name !== state.selectedTeamName)) {
-      throw new Error('Seçilen takımın maçı bulunamadı.');
-    }
-    state.scores[matchId] = forceOutcome(match, state.selectedTeamName, Number(points), `${state.seed}:${Date.now()}`);
-    state.locked[matchId] = true;
-    rerollMatchday(state, match.matchday, matchId);
-    return state.scores[matchId];
+    if (!match) throw new Error('Tahmin edilecek maç bulunamadı.');
+    const selectedHome = match.home.name === state.selectedTeamName;
+    const value = Number(points);
+    if (![0, 1, 3].includes(value)) throw new Error('Puan seçimi 3, 1 veya 0 olmalı.');
+    const outcome = value === 1 ? 'draw' : value === 3
+      ? (selectedHome ? 'home' : 'away')
+      : (selectedHome ? 'away' : 'home');
+    return applyOutcome(state, matchId, outcome);
   }
 
   function setManualScore(state, matchId, homeGoals, awayGoals) {
     const match = state.matches.find((candidate) => candidate.id === matchId);
+    if (!match) throw new Error('Skoru değiştirilecek maç bulunamadı.');
     const home = clamp(Number.parseInt(homeGoals, 10) || 0, 0, 15);
     const away = clamp(Number.parseInt(awayGoals, 10) || 0, 0, 15);
-    if (!match) throw new Error('Skoru değiştirilecek maç bulunamadı.');
     state.scores[matchId] = { homeGoals: home, awayGoals: away, source: 'user-score' };
-    state.locked[matchId] = true;
-    rerollMatchday(state, match.matchday, matchId);
+    state.matchLocks[matchId] = true;
+    simulateMatchday(state, match.matchday, matchId);
     return state.scores[matchId];
+  }
+
+  function toggleTeamLock(state, teamName, nextValue) {
+    if (!state.comp.teams.some((team) => team.name === teamName)) throw new Error('Kilitlenecek takım bulunamadı.');
+    const next = typeof nextValue === 'boolean' ? nextValue : !state.teamLocks[teamName];
+    if (next) state.teamLocks[teamName] = true;
+    else delete state.teamLocks[teamName];
+    return next;
+  }
+
+  function isTeamLocked(state, teamName) {
+    return Boolean(state.teamLocks[teamName]);
   }
 
   function blankRow(team) {
@@ -239,16 +265,14 @@
   function standings(state) {
     const rows = new Map(state.comp.teams.map((team) => [team.name, blankRow(team)]));
     for (const match of state.matches) {
-      const score = state.scores[match.id];
-      if (!score) continue;
+      const score = state.scores[match.id] || null;
       const home = rows.get(match.home.name);
       const away = rows.get(match.away.name);
       if (!home || !away) continue;
-      const selectedMatch = match.home.name === state.selectedTeamName || match.away.name === state.selectedTeamName;
-      const pending = selectedMatch && !state.locked[match.id];
-      home.fixtures.push({ match, score, opponent: match.away, home: true, pending });
-      away.fixtures.push({ match, score, opponent: match.home, home: false, pending });
-      if (pending) continue;
+      home.fixtures.push({ match, score, opponent: match.away, home: true, pending: !score });
+      away.fixtures.push({ match, score, opponent: match.home, home: false, pending: !score });
+      if (!score) continue;
+
       home.played += 1;
       away.played += 1;
       home.goalsFor += score.homeGoals;
@@ -256,6 +280,7 @@
       away.goalsFor += score.awayGoals;
       away.goalsAgainst += score.homeGoals;
       away.awayGoals += score.awayGoals;
+
       if (score.homeGoals > score.awayGoals) {
         home.wins += 1;
         away.losses += 1;
@@ -272,6 +297,7 @@
         away.points += 1;
       }
     }
+
     rows.forEach((row) => { row.goalDifference = row.goalsFor - row.goalsAgainst; });
     rows.forEach((row) => {
       for (const fixture of row.fixtures.filter((item) => !item.pending)) {
@@ -281,6 +307,7 @@
         row.opponentGoalsFor += opponent?.goalsFor || 0;
       }
     });
+
     const ordered = [...rows.values()].sort((first, second) => second.points - first.points
       || second.goalDifference - first.goalDifference
       || second.goalsFor - first.goalsFor
@@ -292,6 +319,7 @@
       || second.opponentGoalsFor - first.opponentGoalsFor
       || coefficient(second.team) - coefficient(first.team)
       || first.team.name.localeCompare(second.team.name, 'tr'));
+
     ordered.forEach((row, index) => {
       row.rank = index + 1;
       row.zone = row.rank <= 8 ? 'direct' : row.rank <= 24 ? 'playoff' : 'eliminated';
@@ -300,19 +328,15 @@
     return ordered;
   }
 
-  function progress(state) {
-    const selectedMatches = state.matches.filter((match) => match.home.name === state.selectedTeamName || match.away.name === state.selectedTeamName);
-    const completed = selectedMatches.filter((match) => state.locked[match.id]).length;
-    return { completed, total: selectedMatches.length, done: completed === selectedMatches.length };
+  function progress(state, teamName = state.selectedTeamName) {
+    const teamMatches = state.matches.filter((match) => match.home.name === teamName || match.away.name === teamName);
+    const completed = teamMatches.filter((match) => Boolean(state.scores[match.id])).length;
+    return { completed, total: teamMatches.length, done: completed === teamMatches.length };
   }
 
-  function travelContext(team, dateValue) {
-    const month = Number(String(dateValue || '').slice(5, 7));
-    const winter = month === 12 || month === 1 || month === 2;
-    if (NORTHERN.has(team.country)) return winter ? 'Kuzey deplasmanı · soğuk/kış koşulları' : 'Kuzey deplasmanı · serin hava olası';
-    if (WET_WEST.has(team.country)) return 'Batı Avrupa · yağış ve rüzgâr olası';
-    if (MEDITERRANEAN.has(team.country)) return month >= 10 ? 'Akdeniz iklimi · ılık/yağışlı dönem' : 'Akdeniz iklimi · ılıman koşullar';
-    return winter ? 'Kış dönemi · soğuk hava olası' : 'Sonbahar/kış fikstürü';
+  function tournamentProgress(state) {
+    const completed = Object.keys(state.scores).length;
+    return { completed, total: state.matches.length, done: completed === state.matches.length };
   }
 
   const api = {
@@ -320,12 +344,17 @@
     uniqueMatches,
     simulateScore,
     createState,
+    simulateMatchday,
+    applyOutcome,
     applyPoints,
     setManualScore,
     selectedPoints,
+    outcomeFromScore,
+    toggleTeamLock,
+    isTeamLocked,
     standings,
     progress,
-    travelContext
+    tournamentProgress
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
