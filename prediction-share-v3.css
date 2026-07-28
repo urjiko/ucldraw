@@ -1,0 +1,35 @@
+.prediction-share-actions-v2 {
+  display: none !important;
+}
+
+.prediction-share-actions-v3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.prediction-share-actions-v3.has-share {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.prediction-share-actions-v3 .action-button {
+  width: 100%;
+  min-height: 48px;
+  font-weight: 850;
+}
+
+.prediction-kicker.prediction-kicker-exact-case {
+  text-transform: none !important;
+}
+
+@media (max-width: 520px) {
+  .prediction-share-actions-v3,
+  .prediction-share-actions-v3.has-share {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .prediction-share-actions-v3 .action-button {
+    min-height: 50px;
+  }
+}
