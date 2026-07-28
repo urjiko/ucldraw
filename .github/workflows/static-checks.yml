@@ -44,6 +44,7 @@ jobs:
           node --check prediction-ui.js
           node --check prediction-share.js
           node --check prediction-share-v2.js
+          node --check prediction-share-v3.js
           node --check interface-polish.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
@@ -75,6 +76,7 @@ jobs:
           node tests/prediction-ui.test.js
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
+          node tests/prediction-share-v3.test.js
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
