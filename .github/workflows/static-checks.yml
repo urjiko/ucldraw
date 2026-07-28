@@ -39,9 +39,11 @@ jobs:
           node --check roster-search-ui.js
           node --check league-music.js
           node --check prediction-engine.js
+          node --check prediction-ai-controller.js
           node --check prediction-bridge.js
           node --check prediction-ui.js
           node --check prediction-share.js
+          node --check prediction-share-v2.js
           node --check interface-polish.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
@@ -72,6 +74,7 @@ jobs:
           node tests/music-roster-ui.test.js
           node tests/prediction-ui.test.js
           node tests/prediction-share.test.js
+          node tests/prediction-share-v2.test.js
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
