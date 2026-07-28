@@ -13,6 +13,7 @@ on:
       - agent/league-music-roster-search
       - agent/guaranteed-roster-replacements
       - agent/league-phase-predictions
+      - agent/integrate-champions-webfonts
 
 permissions:
   contents: read
@@ -45,6 +46,8 @@ jobs:
           node --check prediction-share.js
           node --check prediction-share-v2.js
           node --check prediction-share-v3.js
+          node --check prediction-share-v4.js
+          node --check champions-font-loader.js
           node --check interface-polish.js
           node --check branding-fixes.js
           node --check generated-team-pools.js
@@ -77,6 +80,7 @@ jobs:
           node tests/prediction-share.test.js
           node tests/prediction-share-v2.test.js
           node tests/prediction-share-v3.test.js
+          node tests/champions-font.test.js
       - name: Run draw and prediction simulations
         run: |
           node tests/draw-engine.test.js
