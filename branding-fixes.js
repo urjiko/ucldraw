@@ -8,6 +8,12 @@
   }
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
+  const actionLabels = Object.freeze({
+    retryButton: 'Yeni Kura',
+    showOverviewButton: 'Tüm Maçlar',
+    customizeButton: 'Kurayı Düzenle',
+    changeTeamButton: 'Başa Dön'
+  });
 
   function applyCompetitionLanguages(root = document) {
     root.querySelectorAll?.(
@@ -27,12 +33,34 @@
     });
   }
 
+  function installCompactPredictionStyles() {
+    if (document.querySelector('link[data-prediction-compact]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'prediction-compact.css';
+    link.dataset.predictionCompact = 'true';
+    document.head.appendChild(link);
+  }
+
+  function applyInterfaceCopy(root = document) {
+    Object.entries(actionLabels).forEach(([id, label]) => {
+      const button = root.getElementById?.(id) || document.getElementById(id);
+      if (button && button.textContent !== label) button.textContent = label;
+    });
+
+    root.querySelectorAll?.('.prediction-entry-button').forEach((button) => {
+      if (button.textContent !== 'Tahmin Yap') button.textContent = 'Tahmin Yap';
+    });
+  }
+
   function refreshBranding() {
     applyCompetitionLanguages();
     refreshConferenceLogo();
+    applyInterfaceCopy();
   }
 
   function startObserver() {
+    installCompactPredictionStyles();
     refreshBranding();
     const observer = new MutationObserver(refreshBranding);
     observer.observe(document.body, {
