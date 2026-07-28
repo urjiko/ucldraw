@@ -16,21 +16,28 @@ for (const file of ['prediction.css', 'prediction-engine.js', 'prediction-bridge
 }
 
 assert.ok(html.indexOf('draw-engine-v2.js') < html.indexOf('prediction-bridge.js'), 'prediction bridge must load after the draw engine');
-assert.ok(html.indexOf('prediction-bridge.js') < html.indexOf('app-v3.js'), 'prediction bridge must wrap draw generation before the app starts');
+assert.ok(html.indexOf('prediction-bridge.js') < html.indexOf('app-v3.js'), 'prediction bridge must be available before the app starts');
 assert.ok(html.indexOf('app-v3.js') < html.indexOf('prediction-ui.js'), 'prediction UI must load after the draw app');
 assert.match(bridge, /UCLDRAW_LAST_DRAW/);
 assert.match(bridge, /ucldraw:draw-generated/);
-assert.match(ui, /Tahmin kısmına geç/);
-assert.match(ui, /\[3, 1, 0\]/);
-assert.match(ui, /ENGINE\.applyPoints/);
+assert.match(bridge, /DOMContentLoaded/);
+assert.match(ui, /changeTeamButton\.textContent\s*=\s*'Başa Dön'/);
+assert.match(ui, /Tahminlere Geç/);
+assert.match(ui, /prediction-outcome-team/);
+assert.match(ui, /prediction-draw-choice/);
+assert.match(ui, /ENGINE\.applyOutcome/);
 assert.match(ui, /ENGINE\.setManualScore/);
-assert.match(ui, /ENGINE\.standings/);
-assert.match(ui, /Skoru uygula/);
-assert.match(ui, /Takımın üstüne gelerek tahmini fikstürü gör/);
-assert.match(ui, /Kura sonuçlarına dön/);
-assert.match(css, /\.prediction-standing-row:hover \.prediction-hover-card/);
+assert.match(ui, /ENGINE\.toggleTeamLock/);
+assert.match(ui, /Takımı Kilitle/);
+assert.match(ui, /Takıma basarak maçlarını düzenle/);
+assert.match(ui, /button\.addEventListener\('click'/);
+assert.doesNotMatch(ui, /\[3,\s*1,\s*0\]/);
+assert.doesNotMatch(ui, /travelContext|Akdeniz|Kuzey deplasmanı/);
+assert.doesNotMatch(css, /prediction-hover-card/);
+assert.match(css, /\.prediction-outcome-team/);
+assert.match(css, /\.prediction-draw-choice/);
+assert.match(css, /\.prediction-team-lock/);
 assert.match(css, /body\.prediction-active \.draw-stage/);
-assert.match(css, /\.prediction-score-editor/);
-assert.match(css, /\.prediction-zone-legend/);
+assert.match(css, /\.prediction-standing-row/);
 
-console.log('Prediction UI wiring checks passed.');
+console.log('Minimal logo prediction UI checks passed.');
