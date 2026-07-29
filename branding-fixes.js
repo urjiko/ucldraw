@@ -54,13 +54,27 @@
   }
 
   function installUiRefinementStyles() {
-    for (const version of ['v4', 'v5', 'v6']) {
-      const attribute = `data-ui-refinement-${version}`;
-      if (document.querySelector(`link[${attribute}]`)) continue;
+    if (!document.querySelector('link[data-ui-refinement-v4]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = `ui-refinement-${version}.css`;
-      link.setAttribute(attribute, 'true');
+      link.href = 'ui-refinement-v4.css';
+      link.dataset.uiRefinementV4 = 'true';
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('link[data-ui-refinement-v5]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'ui-refinement-v5.css';
+      link.dataset.uiRefinementV5 = 'true';
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('link[data-ui-refinement-v6]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'ui-refinement-v6.css';
+      link.dataset.uiRefinementV6 = 'true';
       document.head.appendChild(link);
     }
   }
