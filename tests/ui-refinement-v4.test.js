@@ -1,0 +1,52 @@
+'use strict';
+
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+
+const root = path.resolve(__dirname, '..');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
+const css = read('ui-refinement-v4.css');
+const ui = read('ui-refinement-v4.js');
+const branding = read('branding-fixes.js');
+const ai = read('prediction-ai-controller.js');
+
+assert.match(branding, /ui-refinement-v4\.css/);
+assert.match(branding, /ui-refinement-v4\.js/);
+assert.match(branding, /retryButton:\s*'Tekrar Dene'/);
+assert.match(branding, /customizeButton:\s*'Düzenle'/);
+assert.match(branding, /changeTeamButton:\s*'Çıkış'/);
+assert.match(branding, /Devam Et/);
+
+assert.match(css, /html,[\s\S]*body[\s\S]*background-color:\s*#000\s*!important/);
+assert.match(css, /#brandSubtitle[\s\S]*display:\s*none\s*!important/);
+assert.match(css, /\.brand-copy h1[\s\S]*font-size:\s*clamp\(2\.45rem/);
+assert.match(css, /\.team-search[\s\S]*rgba\(var\(--accent-rgb\), 0\.28\)/);
+assert.match(css, /\.roster-team-action-simple[\s\S]*\.crest-shell\.large[\s\S]*width:\s*104px/);
+assert.match(css, /\.draw-actions\.draw-actions-refined[\s\S]*grid-template-columns:\s*repeat\(6/);
+assert.match(css, /\.prediction-entry-button\.primary[\s\S]*background:\s*var\(--accent\)/);
+assert.match(css, /draw-header-refined[\s\S]*grid-template-columns:\s*1fr/);
+assert.match(css, /draw-header-refined[\s\S]*\.progress-track\.is-complete[\s\S]*display:\s*none\s*!important/);
+assert.match(css, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*position:\s*sticky/);
+assert.match(css, /\.prediction-header-refined \.prediction-back-button[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*1/);
+assert.match(css, /\.prediction-outcome-team[\s\S]*flex-direction:\s*column/);
+assert.match(css, /\.prediction-outcome-team \.prediction-crest[\s\S]*width:\s*94px/);
+assert.match(css, /\.prediction-outcome-team strong[\s\S]*text-align:\s*center/);
+
+assert.match(ui, /brandSubtitle\.hidden = true/);
+assert.match(ui, /querySelectorAll\('\.league-state'\)/);
+assert.match(ui, /setText\(ready, 'Hazır'\)/);
+assert.match(ui, /roster-locked-note/);
+assert.match(ui, /replace\(\/\\s\+hazır\$\/i/);
+assert.match(ui, /const desired = \[retry, continueButton, customize, overview, exit\]/);
+assert.match(ui, /retry\?\.classList\.remove\('primary'\)/);
+assert.match(ui, /continueButton\?\.classList\.add\('primary'\)/);
+assert.match(ui, /prediction-team-lock/);
+assert.match(ui, /locked \? 'Kilitli' : 'Kilitle'/);
+assert.match(ui, /button\.disabled !== locked/);
+
+assert.match(ai, /function applyOutcome\(state, matchId, outcome\)/);
+assert.match(ai, /delete state\.matchLocks\[matchId\]/);
+assert.match(ai, /__explicitMatchLock:\s*true/);
+
+console.log('Full UI flow refinement checks passed.');
