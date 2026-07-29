@@ -51,6 +51,7 @@ jobs:
           node --check prediction-share-v4.js
           node --check prediction-share-v5.js
           node --check prediction-share-v6.js
+          node --check ui-refinement-v4.js
           node --check champions-font-loader.js
           node --check interface-polish.js
           node --check branding-fixes.js
@@ -79,6 +80,7 @@ jobs:
           node tests/venue-icons.test.js
           node tests/svg-minimal-ui.test.js
           node tests/share-card-v6-header-v2.test.js
+          node tests/ui-refinement-v4.test.js
       - name: Check existing music roster and prediction controls
         run: |
           node tests/music-roster-ui.test.js
