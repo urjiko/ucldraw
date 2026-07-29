@@ -28,6 +28,22 @@ function createContext() {
   return context;
 }
 
+const manifestContext = createContext();
+load('generated-team-pools.js', manifestContext);
+const manifest = manifestContext.window.UCLDRAW_POOL_MANIFEST;
+for (const [competitionKey, stages] of Object.entries(manifest)) {
+  for (const [stage, entries] of Object.entries(stages)) {
+    for (const entry of entries) {
+      const file = typeof entry === 'string' ? entry : entry.file;
+      const crestPath = path.join(root, 'crests', 'pools', competitionKey, stage, file);
+      assert.ok(
+        fs.existsSync(crestPath),
+        `${competitionKey}/${stage}/${file} is still in generated-team-pools.js but the crest file was deleted; run node scripts/generate-team-pools.mjs`
+      );
+    }
+  }
+}
+
 for (let run = 0; run < 20; run += 1) {
   const context = createContext();
   load('teams.js', context);
