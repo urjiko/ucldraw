@@ -44,11 +44,13 @@ jobs:
           node --check prediction-ai-controller.js
           node --check prediction-bridge.js
           node --check prediction-ui.js
+          node --check prediction-header-v2.js
           node --check prediction-share.js
           node --check prediction-share-v2.js
           node --check prediction-share-v3.js
           node --check prediction-share-v4.js
           node --check prediction-share-v5.js
+          node --check prediction-share-v6.js
           node --check champions-font-loader.js
           node --check interface-polish.js
           node --check branding-fixes.js
@@ -76,6 +78,7 @@ jobs:
           node tests/fixture-display.test.js
           node tests/venue-icons.test.js
           node tests/svg-minimal-ui.test.js
+          node tests/share-card-v6-header-v2.test.js
       - name: Check existing music roster and prediction controls
         run: |
           node tests/music-roster-ui.test.js
