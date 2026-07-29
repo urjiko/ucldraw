@@ -53,7 +53,7 @@
     document.head.appendChild(link);
   }
 
-  function installUiRefinementAssets() {
+  function installUiRefinementStyles() {
     if (!document.querySelector('link[data-ui-refinement-v4]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -68,14 +68,6 @@
       link.href = 'ui-refinement-v5.css';
       link.dataset.uiRefinementV5 = 'true';
       document.head.appendChild(link);
-    }
-
-    if (!document.querySelector('script[data-ui-refinement-v4]')) {
-      const script = document.createElement('script');
-      script.src = 'ui-refinement-v4.js';
-      script.async = false;
-      script.dataset.uiRefinementV4 = 'true';
-      document.body.appendChild(script);
     }
   }
 
@@ -98,7 +90,7 @@
 
   function startObserver() {
     installCompactPredictionStyles();
-    installUiRefinementAssets();
+    installUiRefinementStyles();
     refreshBranding();
     const observer = new MutationObserver(refreshBranding);
     observer.observe(document.body, {
