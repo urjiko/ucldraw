@@ -15,10 +15,10 @@
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
   const actionLabels = Object.freeze({
-    retryButton: 'Yeni Kura',
+    retryButton: 'Tekrar Dene',
     showOverviewButton: 'Tüm Maçlar',
-    customizeButton: 'Kurayı Düzenle',
-    changeTeamButton: 'Başa Dön'
+    customizeButton: 'Düzenle',
+    changeTeamButton: 'Çıkış'
   });
 
   function applyCompetitionLanguages(root = document) {
@@ -60,7 +60,7 @@
     });
 
     root.querySelectorAll?.('.prediction-entry-button').forEach((button) => {
-      if (button.textContent !== 'Tahmin Yap') button.textContent = 'Tahmin Yap';
+      if (button.textContent !== 'Devam Et') button.textContent = 'Devam Et';
     });
   }
 
