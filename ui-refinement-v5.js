@@ -18,7 +18,7 @@
     const name = String(competition?.name || competition?.shortName || 'UEFA')
       .replace(/^UEFA\s+/i, '')
       .trim()
-      .toLocaleUpperCase('tr-TR');
+      .toLocaleUpperCase('en-US');
     return `${name} - KURA`;
   }
 
