@@ -18,21 +18,35 @@ assert.ok(html.indexOf('ui-refinement-v5.js') < html.indexOf('prediction-share-v
 assert.ok(html.indexOf('prediction-share-v6.js') < html.indexOf('prediction-share-v7.js'), 'v7 must render after v6');
 assert.match(branding, /ui-refinement-v5\.css/);
 
+assert.match(css, /body\[data-league="uel"\][\s\S]*linear-gradient\(145deg, #2a0d02 0%, #100401 46%, #000 100%\)/);
+assert.doesNotMatch(css, /body\[data-league="uel"\][\s\S]*arkaplanuel\.jpg/);
 assert.match(css, /\.draw-topbar\.themed-hero::before[\s\S]*content:\s*none\s*!important/);
 assert.match(css, /\.prediction-header\.themed-hero::after[\s\S]*display:\s*none\s*!important/);
 assert.match(css, /\.roster-team-action-simple \.roster-incoming-team[\s\S]*gap:\s*0\s*!important/);
+assert.match(css, /\.roster-team-action-simple\.is-simple-action-modal[\s\S]*grid-template-columns:\s*repeat\(2/);
 assert.match(css, /padding:\s*3px 12px\s*!important/);
 assert.match(css, /width:\s*102px\s*!important/);
 assert.match(css, /\.draw-header-refined \.draw-kicker[\s\S]*display:\s*block\s*!important/);
-assert.match(css, /0 0 88px rgba\(0, 0, 0, 0\.82\)/);
-assert.match(css, /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(190px, 245px\) auto\s*!important/);
-assert.match(css, /\.prediction-header-refined \.prediction-header-controls[\s\S]*grid-column:\s*2\s*!important/);
-assert.match(css, /\.prediction-header-refined \.prediction-back-button[\s\S]*grid-column:\s*3\s*!important/);
+assert.match(css, /\.draw-header-refined \.draw-title[\s\S]*text-shadow:\s*none\s*!important/);
+assert.match(css, /\.prediction-header-refined \.prediction-header-identity h2[\s\S]*text-shadow:\s*none\s*!important/);
+assert.match(css, /width:\s*min\(1014px, 100%\)\s*!important/);
+assert.match(css, /--prediction-header-control-height:\s*64px/);
+assert.match(css, /\.prediction-header-refined \.prediction-back-button[\s\S]*height:\s*var\(--prediction-header-control-height\)/);
+assert.match(css, /\.prediction-header-refined \.prediction-summary[\s\S]*align-content:\s*center/);
+assert.match(css, /\.prediction-standings-panel[\s\S]*background:\s*none\s*!important/);
+assert.match(css, /\.prediction-standings-card[\s\S]*padding:\s*10px/);
+assert.match(css, /\.prediction-outcome-team[\s\S]*min-height:\s*108px\s*!important/);
+assert.match(css, /\.prediction-outcome-team \.prediction-crest[\s\S]*width:\s*74px\s*!important/);
 assert.match(css, /\.prediction-outcome-team:disabled[\s\S]*opacity:\s*1\s*!important/);
 assert.match(css, /\.prediction-share-floating[\s\S]*position:\s*fixed/);
 assert.match(css, /bottom:\s*max\(14px, env\(safe-area-inset-bottom\)\)/);
 
 assert.match(ui, /return `\$\{name\} - KURA`/);
+assert.match(ui, /refineTeamActionButtons/);
+assert.match(ui, /is-simple-action-modal/);
+assert.match(ui, /refineStandingsPanel/);
+assert.match(ui, /prediction-standings-card glass/);
+assert.match(ui, /panel\.classList\.remove\('glass'\)/);
 assert.match(ui, /delete state\.matchLocks\[match\.id\]/);
 assert.match(ui, /button\.classList\.remove\('is-match-locked'\)/);
 assert.match(ui, /setText\(button, 'Kilitle'\)/);
@@ -57,4 +71,4 @@ assert.match(share, /await redrawAlignedHeader\(canvas, snapshot\)/);
 assert.match(share, /await redrawConferenceFixtures\(canvas, snapshot\)/);
 assert.doesNotMatch(share, /repeating-linear-gradient|radial-gradient/);
 
-console.log('Header, unlockable lock, floating share and v7 output checks passed.');
+console.log('Compact prediction layout, reversible locks and v7 output checks passed.');
