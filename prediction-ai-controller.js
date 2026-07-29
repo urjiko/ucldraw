@@ -11,6 +11,18 @@
     return latestState;
   }
 
+  function applyOutcome(state, matchId, outcome) {
+    const score = base.applyOutcome(state, matchId, outcome);
+    delete state.matchLocks[matchId];
+    return score;
+  }
+
+  function applyPoints(state, matchId, points) {
+    const score = base.applyPoints(state, matchId, points);
+    delete state.matchLocks[matchId];
+    return score;
+  }
+
   function resetState(state) {
     state.scores = {};
     state.matchLocks = {};
@@ -37,7 +49,10 @@
 
   window.UCLDRAW_PREDICTION_ENGINE = Object.freeze({
     ...base,
-    createState
+    createState,
+    applyOutcome,
+    applyPoints,
+    __explicitMatchLock: true
   });
 
   window.UCLDRAW_PREDICTION_AI = Object.freeze({

@@ -1,0 +1,387 @@
+/* Final interface flow refinements. Loaded last on purpose. */
+html,
+body {
+  background-color: #000 !important;
+}
+
+#brandSubtitle,
+.league-state,
+#confirmText[hidden] {
+  display: none !important;
+}
+
+.brand-lockup {
+  align-items: center;
+}
+
+.brand-copy {
+  display: flex;
+  align-items: center;
+}
+
+.brand-copy h1 {
+  margin: 0;
+  font-size: clamp(2.45rem, 6vw, 3.8rem);
+  line-height: 0.9;
+}
+
+.selection-toolbar.glass {
+  background:
+    linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(0, 0, 0, 0.76) 62%),
+    rgba(0, 0, 0, 0.72) !important;
+}
+
+.team-search {
+  border-color: rgba(var(--accent-rgb), 0.36) !important;
+  background:
+    linear-gradient(120deg, rgba(var(--accent-rgb), 0.28), rgba(0, 0, 0, 0.72) 72%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.search-results {
+  background:
+    linear-gradient(145deg, rgba(var(--accent-rgb), 0.13), rgba(0, 0, 0, 0.94) 52%),
+    rgba(0, 0, 0, 0.94) !important;
+}
+
+.roster-team-action-simple {
+  width: min(520px, 100%);
+  text-align: center;
+}
+
+.roster-team-action-simple .roster-incoming-team {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 0;
+}
+
+.roster-team-action-simple .roster-incoming-team > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roster-team-action-simple .roster-incoming-team h2 {
+  order: 1;
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3rem);
+  white-space: normal;
+  text-align: center;
+}
+
+.roster-team-action-simple .roster-incoming-team > div > span {
+  order: 2;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+}
+
+.roster-team-action-simple .crest-shell.large,
+.confirm-modal-simple #confirmCrest .crest-shell.large {
+  width: 104px;
+  height: 104px;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+}
+
+.roster-team-action-simple .crest-shell img,
+.confirm-modal-simple #confirmCrest .crest-shell img {
+  width: 100%;
+  height: 100%;
+  filter:
+    drop-shadow(0 12px 16px rgba(0, 0, 0, 0.68))
+    drop-shadow(0 0 16px rgba(var(--accent-rgb), 0.28));
+}
+
+.roster-team-action-simple .roster-team-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.roster-team-action-simple .roster-team-actions:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
+.confirm-modal-simple {
+  width: min(500px, 100%);
+}
+
+.confirm-modal-simple h2 {
+  margin-bottom: 16px;
+}
+
+.confirm-modal-simple .mode-choice-fieldset {
+  margin-top: 0;
+}
+
+.draw-topbar.themed-hero.draw-header-refined .polished-hero-crest,
+.prediction-header-refined .polished-hero-crest {
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.draw-topbar.themed-hero.draw-header-refined .polished-hero-crest img,
+.prediction-header-refined .polished-hero-crest img {
+  width: 100%;
+  height: 100%;
+  filter:
+    drop-shadow(0 10px 14px rgba(0, 0, 0, 0.72))
+    drop-shadow(0 0 16px rgba(var(--accent-rgb), 0.3));
+}
+
+.draw-actions.draw-actions-refined {
+  width: min(760px, 100%);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  margin-inline: auto;
+}
+
+.draw-actions-refined #retryButton,
+.draw-actions-refined .prediction-entry-button,
+.draw-actions-refined #customizeButton {
+  grid-column: span 2;
+}
+
+.draw-actions-refined #showOverviewButton,
+.draw-actions-refined #changeTeamButton {
+  grid-column: span 3;
+}
+
+.draw-actions-refined .action-button {
+  width: 100%;
+}
+
+.draw-actions-refined #retryButton {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: none;
+}
+
+.draw-actions-refined .prediction-entry-button.primary {
+  border-color: transparent;
+  background: var(--accent);
+  box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.3);
+}
+
+@media (min-width: 901px) {
+  body.draw-active .draw-topbar.themed-hero.draw-header-refined {
+    width: min(920px, 100%);
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    margin-inline: auto;
+    padding: 10px 16px;
+    border-radius: 20px;
+  }
+
+  .draw-header-refined .draw-header-identity {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+    gap: 15px;
+  }
+
+  .draw-header-refined .draw-kicker {
+    display: none;
+  }
+
+  .draw-header-refined .polished-hero-crest {
+    width: 82px !important;
+    height: 82px !important;
+  }
+
+  .draw-header-refined .draw-title {
+    font-size: clamp(2.25rem, 3.6vw, 3.15rem);
+    line-height: 0.96;
+  }
+
+  body.draw-active .draw-topbar.draw-header-refined .progress-track {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    width: min(420px, 72%);
+    height: 6px;
+  }
+
+  body.draw-active .draw-topbar.draw-header-refined .progress-track.is-complete {
+    display: none !important;
+  }
+
+  body.draw-active .draw-topbar.draw-header-refined.is-complete {
+    padding-block: 10px;
+  }
+}
+
+body.prediction-active .prediction-header.prediction-header-refined {
+  position: sticky;
+  z-index: 140;
+  top: 8px;
+  width: min(1120px, 100%);
+  min-height: 92px;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 245px);
+  grid-template-rows: auto auto;
+  gap: 4px 14px;
+  padding: 10px 12px;
+}
+
+.prediction-header-refined .prediction-header-identity {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  justify-self: start;
+  justify-content: flex-start;
+}
+
+.prediction-header-refined .prediction-hero-crest .polished-hero-crest {
+  width: 68px !important;
+  height: 68px !important;
+}
+
+.prediction-header-refined .prediction-back-button {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 0.68rem;
+}
+
+.prediction-header-refined .prediction-header-controls {
+  grid-column: 2;
+  grid-row: 2;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr !important;
+  justify-self: stretch;
+}
+
+.prediction-header-refined .prediction-summary {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+}
+
+.prediction-outcome-team {
+  min-height: 150px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 10px !important;
+  text-align: center !important;
+}
+
+.prediction-outcome-team .prediction-crest {
+  width: 94px !important;
+  height: 94px !important;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+}
+
+.prediction-outcome-team .prediction-crest img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.58));
+}
+
+.prediction-outcome-team strong {
+  width: 100%;
+  overflow: visible;
+  align-self: auto;
+  font-size: 0.82rem;
+  line-height: 1.15;
+  text-align: center;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.prediction-outcome-team small {
+  display: none;
+}
+
+.prediction-outcome-team:disabled,
+.prediction-draw-choice:disabled {
+  cursor: not-allowed;
+  opacity: 0.66;
+  transform: none !important;
+}
+
+.prediction-score-apply {
+  min-width: 72px;
+}
+
+.prediction-score-apply.is-match-locked,
+.prediction-score-apply:disabled {
+  border-color: rgba(var(--accent-rgb), 0.56);
+  background: rgba(var(--accent-rgb), 0.18);
+  color: rgba(255, 255, 255, 0.82);
+  opacity: 1;
+}
+
+.prediction-score-editor input:disabled {
+  opacity: 0.74;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  body.prediction-active .prediction-header.prediction-header-refined {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  .prediction-header-refined .prediction-back-button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .prediction-header-refined .prediction-header-identity {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .prediction-header-refined .prediction-header-controls {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 680px) {
+  .brand-row {
+    align-items: center;
+  }
+
+  .brand-copy h1 {
+    font-size: clamp(2.2rem, 11vw, 3rem);
+  }
+
+  .draw-actions.draw-actions-refined {
+    gap: 7px;
+  }
+
+  .draw-actions-refined .action-button {
+    min-height: 42px;
+    padding-inline: 8px;
+    font-size: 0.72rem;
+  }
+
+  .roster-team-action-simple .roster-team-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .prediction-outcome-team {
+    min-height: 138px;
+  }
+
+  .prediction-outcome-team .prediction-crest {
+    width: 84px !important;
+    height: 84px !important;
+  }
+}

@@ -15,10 +15,10 @@
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
   const actionLabels = Object.freeze({
-    retryButton: 'Yeni Kura',
+    retryButton: 'Tekrar Dene',
     showOverviewButton: 'Tüm Maçlar',
-    customizeButton: 'Kurayı Düzenle',
-    changeTeamButton: 'Başa Dön'
+    customizeButton: 'Düzenle',
+    changeTeamButton: 'Çıkış'
   });
 
   function applyCompetitionLanguages(root = document) {
@@ -53,6 +53,23 @@
     document.head.appendChild(link);
   }
 
+  function installUiRefinementAssets() {
+    if (!document.querySelector('link[data-ui-refinement-v4]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'ui-refinement-v4.css';
+      link.dataset.uiRefinementV4 = 'true';
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('script[data-ui-refinement-v4]')) {
+      const script = document.createElement('script');
+      script.src = 'ui-refinement-v4.js';
+      script.dataset.uiRefinementV4 = 'true';
+      document.body.appendChild(script);
+    }
+  }
+
   function applyInterfaceCopy(root = document) {
     Object.entries(actionLabels).forEach(([id, label]) => {
       const button = root.getElementById?.(id) || document.getElementById(id);
@@ -60,7 +77,7 @@
     });
 
     root.querySelectorAll?.('.prediction-entry-button').forEach((button) => {
-      if (button.textContent !== 'Tahmin Yap') button.textContent = 'Tahmin Yap';
+      if (button.textContent !== 'Devam Et') button.textContent = 'Devam Et';
     });
   }
 
@@ -72,6 +89,7 @@
 
   function startObserver() {
     installCompactPredictionStyles();
+    installUiRefinementAssets();
     refreshBranding();
     const observer = new MutationObserver(refreshBranding);
     observer.observe(document.body, {
