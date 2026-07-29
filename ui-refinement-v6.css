@@ -39,47 +39,70 @@ body[data-league="uel"] {
 
 @media (min-width: 901px) {
   body.draw-active .draw-topbar.themed-hero.draw-header-refined {
+    position: relative;
     width: min(1014px, 100%) !important;
-    min-height: 70px !important;
-    gap: 2px !important;
-    padding: 4px 8px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 2px 8px !important;
+    box-sizing: border-box;
+    border-radius: 16px;
   }
 
   .draw-header-refined .draw-header-identity {
-    gap: 8px !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    height: 58px;
+    min-height: 58px;
+    align-items: center;
+    align-self: center;
+    justify-self: center;
+    gap: 7px !important;
   }
 
   .draw-header-refined .polished-hero-crest {
-    width: 64px !important;
-    height: 64px !important;
+    width: 58px !important;
+    height: 58px !important;
   }
 
   .draw-header-refined .draw-kicker {
-    margin-bottom: 1px !important;
-    font-size: 0.58rem !important;
+    margin-bottom: 0 !important;
+    font-size: 0.54rem !important;
+    line-height: 1 !important;
   }
 
   .draw-header-refined .draw-title {
-    font-size: clamp(1.75rem, 2.8vw, 2.35rem) !important;
-    line-height: 0.94 !important;
+    font-size: clamp(1.62rem, 2.45vw, 2.12rem) !important;
+    line-height: 0.92 !important;
   }
 
   body.draw-active .draw-topbar.draw-header-refined .progress-track {
-    width: min(360px, 58%) !important;
-    height: 5px !important;
-    margin-top: -1px !important;
+    position: absolute !important;
+    z-index: 2;
+    left: 50%;
+    bottom: 1px;
+    width: min(340px, 55%) !important;
+    height: 3px !important;
+    margin: 0 !important;
+    transform: translateX(-50%);
   }
 
   body.draw-active .draw-topbar.themed-hero.draw-header-refined.is-complete {
-    min-height: 70px !important;
-    padding-block: 4px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    padding-block: 2px !important;
   }
 }
 
 .draw-topbar.themed-hero.draw-header-refined .polished-hero-crest img {
   filter:
-    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.8))
-    drop-shadow(0 0 13px rgba(0, 0, 0, 0.52)) !important;
+    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.78))
+    drop-shadow(0 0 10px rgba(0, 0, 0, 0.46)) !important;
 }
 
 body.prediction-active .prediction-header.prediction-header-refined {
