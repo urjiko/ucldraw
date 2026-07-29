@@ -13,10 +13,7 @@
   }
 
   function refineBrand() {
-    if (brandSubtitle) {
-      setText(brandSubtitle, '');
-      brandSubtitle.hidden = true;
-    }
+    if (brandSubtitle && !brandSubtitle.hidden) brandSubtitle.hidden = true;
     document.querySelectorAll('.league-state').forEach((label) => label.remove());
   }
 
@@ -27,7 +24,7 @@
       const kicker = header?.querySelector(':scope > div > span');
       const description = header?.querySelector('p');
       const country = kicker?.textContent?.split('·').at(-1)?.trim();
-      if (kicker && country) kicker.textContent = country;
+      if (kicker && country) setText(kicker, country);
       description?.remove();
 
       const ready = modal.querySelector('.roster-team-actions .action-button.primary');
@@ -67,7 +64,11 @@
 
     retry?.classList.remove('primary');
     continueButton?.classList.add('primary');
-    [retry, continueButton, customize, overview, exit].filter(Boolean).forEach((button) => drawActions.appendChild(button));
+    const desired = [retry, continueButton, customize, overview, exit].filter(Boolean);
+    const current = [...drawActions.children].filter((button) => desired.includes(button));
+    if (desired.some((button, index) => current[index] !== button)) {
+      desired.forEach((button) => drawActions.appendChild(button));
+    }
     drawActions.classList.add('draw-actions-refined');
   }
 
@@ -90,14 +91,16 @@
     document.querySelectorAll('#predictionSection .prediction-fixture-card').forEach((card) => {
       const locked = card.classList.contains('is-locked');
       card.querySelectorAll('.prediction-outcome-team, .prediction-draw-choice').forEach((button) => {
-        button.disabled = locked;
-        button.setAttribute('aria-disabled', String(locked));
+        if (button.disabled !== locked) button.disabled = locked;
+        if (button.getAttribute('aria-disabled') !== String(locked)) button.setAttribute('aria-disabled', String(locked));
       });
-      card.querySelectorAll('.prediction-score-editor input').forEach((input) => { input.disabled = locked; });
+      card.querySelectorAll('.prediction-score-editor input').forEach((input) => {
+        if (input.disabled !== locked) input.disabled = locked;
+      });
       const lockButton = card.querySelector('.prediction-score-apply');
       if (lockButton) {
         setText(lockButton, locked ? 'Kilitli' : 'Kilitle');
-        lockButton.disabled = locked;
+        if (lockButton.disabled !== locked) lockButton.disabled = locked;
         lockButton.classList.toggle('is-match-locked', locked);
       }
     });
