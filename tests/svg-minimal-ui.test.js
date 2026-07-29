@@ -36,15 +36,18 @@ assert.match(share, /prediction-share-v4-button/);
 assert.match(share, /stopImmediatePropagation/);
 assert.match(share, /image\/png/);
 
-assert.match(share, /uel:\s*Object\.freeze\([\s\S]*neutral:\s*0\.88/);
-assert.match(share, /uecl:\s*Object\.freeze\([\s\S]*neutral:\s*0\.86/);
-assert.match(share, /function applyLeagueTone\(canvas, snapshot\)/);
-assert.match(share, /function isLeagueAccent\(leagueId, red, green, blue\)/);
-assert.match(share, /context\.getImageData\(0, 0, canvas\.width, canvas\.height\)/);
-assert.match(share, /context\.putImageData\(image, 0, 0\)/);
+assert.match(share, /uel:\s*Object\.freeze\([\s\S]*accent:\s*'rgba\(82, 25, 2, 0\.82\)'/);
+assert.match(share, /uecl:\s*Object\.freeze\([\s\S]*accent:\s*'rgba\(3, 54, 17, 0\.80\)'/);
+assert.match(share, /black:\s*'rgba\(0, 0, 0, 0\.98\)'/);
+assert.match(share, /function applyLeagueGradient\(canvas, snapshot\)/);
+assert.match(share, /context\.globalCompositeOperation = 'overlay'/);
+assert.match(share, /context\.createLinearGradient\(0, 0, canvas\.width, canvas\.height\)/);
+assert.match(share, /leagueGradient\.addColorStop\(0\.68, profile\.black\)/);
+assert.match(share, /context\.createRadialGradient\(/);
+assert.match(share, /function restoreLightDetails\(original, toned\)/);
 assert.match(share, /if \(!profile\) return canvas/);
-assert.match(share, /applyLeagueTone\(canvas, snapshot\);[\s\S]*redrawFixtureDates\(canvas, snapshot\)/);
-assert.match(share, /minimum > 185 && maximum > 215/);
-assert.match(share, /maximum > 145 && chroma < 35/);
+assert.match(share, /applyLeagueGradient\(canvas, snapshot\);[\s\S]*redrawFixtureDates\(canvas, snapshot\)/);
+assert.doesNotMatch(share, /function applyLeagueTone/);
+assert.doesNotMatch(share, /function isLeagueAccent/);
 
-console.log('SVG branding, minimal metadata and dark share-tone checks passed.');
+console.log('SVG branding, minimal metadata and black league-gradient checks passed.');
