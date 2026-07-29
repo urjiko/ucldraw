@@ -162,6 +162,18 @@
     return true;
   }
 
+  function installShareRendererV8() {
+    if (window.UCLDRAW_PREDICTION_SHARE_V8) return true;
+    if (document.querySelector('script[data-prediction-share-v8]')) return true;
+    if (!window.UCLDRAW_PREDICTION_SHARE_V7) return false;
+    const script = document.createElement('script');
+    script.src = 'prediction-share-v8.js';
+    script.async = false;
+    script.dataset.predictionShareV8 = 'true';
+    document.body.appendChild(script);
+    return true;
+  }
+
   document.addEventListener('click', (event) => {
     const lockedButton = event.target.closest?.('.prediction-score-apply.is-match-locked');
     if (lockedButton) {
@@ -174,7 +186,7 @@
     }
 
     const shareButton = event.target.closest?.('.prediction-share-v4-button');
-    const renderer = window.UCLDRAW_PREDICTION_SHARE_V7;
+    const renderer = window.UCLDRAW_PREDICTION_SHARE_V8 || window.UCLDRAW_PREDICTION_SHARE_V7;
     if (!shareButton || shareButton.hidden || !renderer?.shareCurrent) return;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -201,6 +213,7 @@
     refinePredictionLocks();
     syncFloatingShare();
     installShareRendererV7();
+    installShareRendererV8();
   }
 
   let queued = false;
@@ -215,7 +228,8 @@
 
   refresh();
   const rendererTimer = window.setInterval(() => {
-    if (installShareRendererV7()) window.clearInterval(rendererTimer);
+    installShareRendererV7();
+    if (installShareRendererV8()) window.clearInterval(rendererTimer);
   }, 60);
   window.setTimeout(() => window.clearInterval(rendererTimer), 12000);
 

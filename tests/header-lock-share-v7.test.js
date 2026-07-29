@@ -9,14 +9,17 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const html = read('index.html');
 const branding = read('branding-fixes.js');
 const css = read('ui-refinement-v5.css');
+const css6 = read('ui-refinement-v6.css');
 const ui = read('ui-refinement-v5.js');
 const share = read('prediction-share-v7.js');
+const share8 = read('prediction-share-v8.js');
 
 assert.ok(html.includes('<script src="ui-refinement-v5.js"></script>'));
 assert.ok(html.includes('<script src="prediction-share-v7.js" data-prediction-share-v7="true"></script>'));
 assert.ok(html.indexOf('ui-refinement-v5.js') < html.indexOf('prediction-share-v4.js'), 'share interception must register before legacy share listeners');
 assert.ok(html.indexOf('prediction-share-v6.js') < html.indexOf('prediction-share-v7.js'), 'v7 must render after v6');
 assert.match(branding, /ui-refinement-v5\.css/);
+assert.match(branding, /ui-refinement-v6\.css/);
 
 assert.match(css, /body\[data-league="uel"\][\s\S]*linear-gradient\(145deg, #2a0d02 0%, #100401 46%, #000 100%\)/);
 assert.doesNotMatch(css, /body\[data-league="uel"\][\s\S]*arkaplanuel\.jpg/);
@@ -41,6 +44,11 @@ assert.match(css, /\.prediction-outcome-team:disabled[\s\S]*opacity:\s*1\s*!impo
 assert.match(css, /\.prediction-share-floating[\s\S]*position:\s*fixed/);
 assert.match(css, /bottom:\s*max\(14px, env\(safe-area-inset-bottom\)\)/);
 
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*min-height:\s*70px/);
+assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*64px/);
+assert.match(css6, /--prediction-header-column-gap:\s*clamp\(18px, 2\.4vw, 28px\)/);
+assert.match(css6, /column-gap:\s*var\(--prediction-header-column-gap\)/);
+
 assert.match(ui, /return `\$\{name\} - KURA`/);
 assert.match(ui, /refineTeamActionButtons/);
 assert.match(ui, /is-simple-action-modal/);
@@ -54,7 +62,8 @@ assert.match(ui, /button\.disabled = false/);
 assert.match(ui, /IntersectionObserver/);
 assert.match(ui, /prediction-share-floating-button/);
 assert.match(ui, /event\.stopImmediatePropagation\(\)/);
-assert.match(ui, /UCLDRAW_PREDICTION_SHARE_V7/);
+assert.match(ui, /UCLDRAW_PREDICTION_SHARE_V8 \|\| window\.UCLDRAW_PREDICTION_SHARE_V7/);
+assert.match(ui, /function installShareRendererV8\(\)/);
 
 assert.match(share, /const V6 = window\.UCLDRAW_PREDICTION_SHARE_V6/);
 assert.match(share, /async function redrawAlignedHeader/);
@@ -71,4 +80,12 @@ assert.match(share, /await redrawAlignedHeader\(canvas, snapshot\)/);
 assert.match(share, /await redrawConferenceFixtures\(canvas, snapshot\)/);
 assert.doesNotMatch(share, /repeating-linear-gradient|radial-gradient/);
 
-console.log('Compact prediction layout, reversible locks and v7 output checks passed.');
+assert.match(share8, /const V7 = window\.UCLDRAW_PREDICTION_SHARE_V7/);
+assert.match(share8, /async function redrawClubCrestWithBlackShadow/);
+assert.match(share8, /context\.shadowColor = 'rgba\(0, 0, 0, 0\.96\)'/);
+assert.match(share8, /context\.shadowBlur = 42/);
+assert.match(share8, /context\.fillRect\(HEADER\.x, HEADER\.y, CLUB\.repaintRight - HEADER\.x, HEADER\.height\)/);
+assert.match(share8, /await redrawClubCrestWithBlackShadow\(canvas, snapshot\)/);
+assert.doesNotMatch(share8, /theme\.glow/);
+
+console.log('Matched live headers, reversible locks and black-shadow v8 output checks passed.');
