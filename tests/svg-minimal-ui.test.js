@@ -12,17 +12,20 @@ const branding = read('branding-fixes.js');
 const css = read('minimal-copy-v2.css');
 const share = read('prediction-share-v5.js');
 
-for (const asset of [
-  'crests/pools/champions/UCL_Logo.svg',
-  'crests/pools/europa/UEL_Logo.svg',
-  'crests/pools/conference/CON_Logo.svg'
-]) {
+for (const [leagueId, asset] of Object.entries({
+  ucl: 'crests/pools/champions/UCL_Logo.svg',
+  uel: 'crests/pools/europa/UEL_Logo.svg',
+  uecl: 'crests/pools/conference/CON_Logo.svg'
+})) {
   assert.ok(fs.existsSync(path.join(root, asset)), `SVG logo missing: ${asset}`);
   assert.ok(teams.includes(`logo: '${asset}'`), `Competition data does not use ${asset}`);
+  assert.ok(branding.includes(`${leagueId}: '${asset}'`), `Branding map does not use ${asset}`);
 }
 
-assert.ok(branding.includes("competitions.uecl.logo = 'crests/pools/conference/CON_Logo.svg'"));
-assert.ok(branding.includes("image.src = 'crests/pools/conference/CON_Logo.svg'"));
+assert.match(branding, /Object\.entries\(svgLogos\)\.forEach/);
+assert.match(branding, /competitions\?\.\[leagueId\]/);
+assert.match(branding, /#competitionPicker button\[data-league\]/);
+assert.match(branding, /#brandMark img/);
 assert.match(css, /\.rules-chip,[\s\S]*\.pot-count[\s\S]*display:\s*none\s*!important/);
 assert.match(css, /\.prediction-fixture-top\s*>\s*span/);
 assert.match(css, /\.prediction-fixture-top\s*>\s*small/);
