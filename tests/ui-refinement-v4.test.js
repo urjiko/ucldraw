@@ -8,11 +8,15 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const html = read('index.html');
 const css = read('ui-refinement-v4.css');
+const css6 = read('ui-refinement-v6.css');
 const ui = read('ui-refinement-v4.js');
+const ui5 = read('ui-refinement-v5.js');
 const branding = read('branding-fixes.js');
 const ai = read('prediction-ai-controller.js');
 
 assert.match(branding, /ui-refinement-v4\.css/);
+assert.match(branding, /ui-refinement-v5\.css/);
+assert.match(branding, /ui-refinement-v6\.css/);
 assert.ok(html.includes('<script src="ui-refinement-v4.js"></script>'));
 assert.ok(html.indexOf('ui-refinement-v4.js') < html.indexOf('ui-refinement-v5.js'));
 assert.match(branding, /retryButton:\s*'Tekrar Dene'/);
@@ -35,6 +39,14 @@ assert.match(css, /\.prediction-outcome-team[\s\S]*flex-direction:\s*column/);
 assert.match(css, /\.prediction-outcome-team \.prediction-crest[\s\S]*width:\s*94px/);
 assert.match(css, /\.prediction-outcome-team strong[\s\S]*text-align:\s*center/);
 
+assert.match(css6, /body\[data-league="uel"\][\s\S]*var\(--league-background, url\("assets\/arkaplanuel\.jpg"\)\)/);
+assert.match(css6, /background-blend-mode:\s*color, multiply, normal/);
+assert.match(css6, /\.team-search[\s\S]*rgba\(var\(--accent-rgb\), 0\.42\)[\s\S]*rgba\(0, 0, 0, 0\.34\)/);
+assert.match(css6, /\.selection-toolbar\.glass[\s\S]*rgba\(0, 0, 0, 0\.42\)/);
+assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*92px/);
+assert.match(css6, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*min-height:\s*70px/);
+assert.match(css6, /\.prediction-header-refined \.prediction-hero-crest \.polished-hero-crest[\s\S]*width:\s*60px/);
+
 assert.match(ui, /brandSubtitle\.hidden = true/);
 assert.match(ui, /querySelectorAll\('\.league-state'\)/);
 assert.match(ui, /setText\(ready, 'Hazır'\)/);
@@ -46,6 +58,9 @@ assert.match(ui, /continueButton\?\.classList\.add\('primary'\)/);
 assert.match(ui, /prediction-team-lock/);
 assert.match(ui, /locked \? 'Kilitli' : 'Kilitle'/);
 assert.match(ui, /button\.disabled !== locked/);
+
+assert.match(ui5, /toLocaleUpperCase\('en-US'\)/);
+assert.doesNotMatch(ui5, /toLocaleUpperCase\('tr-TR'\)/);
 
 assert.match(ai, /function applyOutcome\(state, matchId, outcome\)/);
 assert.match(ai, /delete state\.matchLocks\[matchId\]/);
