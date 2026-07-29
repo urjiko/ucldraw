@@ -8,23 +8,28 @@
   const CARD_WIDTH = 1200;
   const CARD_HEIGHT = 1600;
   const SITE_LINK = 'urjiko.github.io/UEFA';
+  const HEADER = Object.freeze({ x: 48, y: 36, width: 1104, height: 236, radius: 30 });
+  const BODY = Object.freeze({ y: 306, height: 1230, leftX: 48, leftWidth: 680, rightX: 752, rightWidth: 400, radius: 28 });
+  const imageCache = new Map();
   const journeyTitles = Object.freeze({
     ucl: 'Şampiyonlar Ligi Yolculuğu',
     uel: 'Avrupa Ligi Yolculuğu',
     uecl: 'Konferans Ligi Yolculuğu'
   });
-  const gradientProfiles = Object.freeze({
+  const componentThemes = Object.freeze({
     uel: Object.freeze({
-      accent: 'rgba(82, 25, 2, 0.82)',
-      middle: 'rgba(25, 7, 1, 0.90)',
-      black: 'rgba(0, 0, 0, 0.98)',
-      edgeAlpha: 0.34
+      header: Object.freeze({ start: [76, 24, 4], end: [4, 4, 4], strength: 0.82 }),
+      panel: Object.freeze({ start: [42, 12, 2], end: [5, 5, 5], strength: 0.80 }),
+      fixture: Object.freeze({ start: [55, 17, 3], end: [8, 8, 8], strength: 0.76 }),
+      tile: 'rgba(0, 0, 0, 0.58)',
+      tileBorder: 'rgba(255, 126, 48, 0.22)'
     }),
     uecl: Object.freeze({
-      accent: 'rgba(3, 54, 17, 0.80)',
-      middle: 'rgba(1, 18, 6, 0.91)',
-      black: 'rgba(0, 0, 0, 0.98)',
-      edgeAlpha: 0.36
+      header: Object.freeze({ start: [7, 61, 21], end: [4, 4, 4], strength: 0.82 }),
+      panel: Object.freeze({ start: [5, 39, 14], end: [5, 5, 5], strength: 0.80 }),
+      fixture: Object.freeze({ start: [6, 48, 17], end: [8, 8, 8], strength: 0.76 }),
+      tile: 'rgba(0, 0, 0, 0.58)',
+      tileBorder: 'rgba(77, 213, 112, 0.20)'
     })
   });
 
@@ -47,70 +52,172 @@
     }).format(new Date(`${value}T12:00:00Z`));
   }
 
-  function clampChannel(value) {
-    return Math.max(0, Math.min(255, Math.round(value)));
+  function absoluteAsset(source) {
+    if (!source) return null;
+    try { return new URL(source, document.baseURI).href; } catch { return source; }
   }
 
-  function restoreLightDetails(original, toned) {
-    for (let index = 0; index < original.length; index += 4) {
-      if (original[index + 3] === 0) continue;
+  function loadImage(source) {
+    const url = absoluteAsset(source);
+    if (!url) return Promise.resolve(null);
+    if (imageCache.has(url)) return imageCache.get(url);
+    const request = new Promise((resolve) => {
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.decoding = 'async';
+      image.addEventListener('load', () => resolve(image), { once: true });
+      image.addEventListener('error', () => resolve(null), { once: true });
+      image.src = url;
+    });
+    imageCache.set(url, request);
+    return request;
+  }
 
-      const red = original[index];
-      const green = original[index + 1];
-      const blue = original[index + 2];
-      const maximum = Math.max(red, green, blue);
-      const minimum = Math.min(red, green, blue);
-      const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
-      const neutralLight = maximum > 150 && maximum - minimum < 42;
-      const brightDetail = luminance > 172;
-      if (!neutralLight && !brightDetail) continue;
+  function roundedRectPath(context, x, y, width, height, radius) {
+    const safeRadius = Math.min(radius, width / 2, height / 2);
+    context.beginPath();
+    context.moveTo(x + safeRadius, y);
+    context.arcTo(x + width, y, x + width, y + height, safeRadius);
+    context.arcTo(x + width, y + height, x, y + height, safeRadius);
+    context.arcTo(x, y + height, x, y, safeRadius);
+    context.arcTo(x, y, x + width, y, safeRadius);
+    context.closePath();
+  }
 
-      const restore = luminance > 220 ? 0.94 : luminance > 190 ? 0.84 : 0.70;
-      toned[index] = clampChannel(toned[index] * (1 - restore) + red * restore);
-      toned[index + 1] = clampChannel(toned[index + 1] * (1 - restore) + green * restore);
-      toned[index + 2] = clampChannel(toned[index + 2] * (1 - restore) + blue * restore);
+  function drawImageContain(context, image, x, y, width, height) {
+    if (!image?.naturalWidth || !image?.naturalHeight) return false;
+    const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+    const targetWidth = image.naturalWidth * scale;
+    const targetHeight = image.naturalHeight * scale;
+    context.drawImage(image, x + (width - targetWidth) / 2, y + (height - targetHeight) / 2, targetWidth, targetHeight);
+    return true;
+  }
+
+  function interpolate(start, end, amount) {
+    return start + (end - start) * amount;
+  }
+
+  function applyGradientRegion(image, canvasWidth, canvasHeight, rect, profile) {
+    const left = Math.max(0, Math.floor(rect.x));
+    const top = Math.max(0, Math.floor(rect.y));
+    const right = Math.min(canvasWidth, Math.ceil(rect.x + rect.width));
+    const bottom = Math.min(canvasHeight, Math.ceil(rect.y + rect.height));
+    const radius = Math.max(0, rect.radius || 0);
+    const data = image.data;
+
+    for (let y = top; y < bottom; y += 1) {
+      for (let x = left; x < right; x += 1) {
+        const localX = x - rect.x;
+        const localY = y - rect.y;
+        const edgeX = Math.min(localX, rect.width - localX);
+        const edgeY = Math.min(localY, rect.height - localY);
+        if (radius && edgeX < radius && edgeY < radius) {
+          const cornerX = radius - edgeX;
+          const cornerY = radius - edgeY;
+          if (cornerX * cornerX + cornerY * cornerY > radius * radius) continue;
+        }
+
+        const index = (y * canvasWidth + x) * 4;
+        if (data[index + 3] === 0) continue;
+        const red = data[index];
+        const green = data[index + 1];
+        const blue = data[index + 2];
+        const maximum = Math.max(red, green, blue);
+        const minimum = Math.min(red, green, blue);
+        const chroma = maximum - minimum;
+        const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+
+        // Typography, pale SVG details and brighter crest pixels stay untouched.
+        if (luminance > 158 || (maximum > 132 && chroma < 30)) continue;
+
+        const horizontal = Math.max(0, Math.min(1, localX / Math.max(1, rect.width)));
+        const vertical = Math.max(0, Math.min(1, localY / Math.max(1, rect.height)));
+        const progress = Math.max(0, Math.min(1, horizontal * 0.68 + vertical * 0.32));
+        const targetRed = interpolate(profile.start[0], profile.end[0], progress);
+        const targetGreen = interpolate(profile.start[1], profile.end[1], progress);
+        const targetBlue = interpolate(profile.start[2], profile.end[2], progress);
+        const darknessBoost = 1 - Math.min(0.32, luminance / 520);
+        const mix = profile.strength * darknessBoost;
+
+        data[index] = Math.round(red * (1 - mix) + targetRed * mix);
+        data[index + 1] = Math.round(green * (1 - mix) + targetGreen * mix);
+        data[index + 2] = Math.round(blue * (1 - mix) + targetBlue * mix);
+      }
     }
   }
 
-  function applyLeagueGradient(canvas, snapshot) {
+  function fixtureRects(snapshot) {
+    const fixtureGap = 9;
+    const fixtureAreaTop = BODY.y + 70;
+    const fixtureAreaHeight = BODY.height - 94;
+    const fixtureHeight = Math.min(
+      150,
+      (fixtureAreaHeight - fixtureGap * Math.max(0, snapshot.fixtures.length - 1)) / snapshot.fixtures.length
+    );
+    const totalFixtureHeight = fixtureHeight * snapshot.fixtures.length
+      + fixtureGap * Math.max(0, snapshot.fixtures.length - 1);
+    const fixtureStartY = fixtureAreaTop + Math.max(0, (fixtureAreaHeight - totalFixtureHeight) / 2);
+    return snapshot.fixtures.map((_, index) => ({
+      x: BODY.leftX + 18,
+      y: fixtureStartY + index * (fixtureHeight + fixtureGap),
+      width: BODY.leftWidth - 36,
+      height: fixtureHeight,
+      radius: 18
+    }));
+  }
+
+  function applyComponentGradients(canvas, snapshot) {
     const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
-    const profile = gradientProfiles[leagueId];
-    if (!profile) return canvas;
+    const theme = componentThemes[leagueId];
+    if (!theme) return canvas;
 
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return canvas;
+    const scaleX = canvas.width / CARD_WIDTH;
+    const scaleY = canvas.height / CARD_HEIGHT;
+    const image = context.getImageData(0, 0, canvas.width, canvas.height);
+    const scaleRect = (rect) => ({
+      x: rect.x * scaleX,
+      y: rect.y * scaleY,
+      width: rect.width * scaleX,
+      height: rect.height * scaleY,
+      radius: rect.radius * Math.min(scaleX, scaleY)
+    });
 
-    const original = context.getImageData(0, 0, canvas.width, canvas.height);
+    applyGradientRegion(image, canvas.width, canvas.height, scaleRect(HEADER), theme.header);
+    applyGradientRegion(image, canvas.width, canvas.height, scaleRect({ x: BODY.leftX, y: BODY.y, width: BODY.leftWidth, height: BODY.height, radius: BODY.radius }), theme.panel);
+    applyGradientRegion(image, canvas.width, canvas.height, scaleRect({ x: BODY.rightX, y: BODY.y, width: BODY.rightWidth, height: BODY.height, radius: BODY.radius }), theme.panel);
+    fixtureRects(snapshot).forEach((rect) => applyGradientRegion(image, canvas.width, canvas.height, scaleRect(rect), theme.fixture));
+
+    context.putImageData(image, 0, 0);
+    return canvas;
+  }
+
+  async function redrawLogoTile(canvas, snapshot) {
+    const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
+    const theme = componentThemes[leagueId];
+    if (!theme) return canvas;
+    const crest = await loadImage(snapshot.activeCrest);
+    const context = canvas.getContext('2d');
+    if (!context) return canvas;
+    const scaleX = canvas.width / CARD_WIDTH;
+    const scaleY = canvas.height / CARD_HEIGHT;
+    const size = 168;
+    const x = HEADER.x + 28;
+    const y = HEADER.y + (HEADER.height - size) / 2;
 
     context.save();
-    context.globalCompositeOperation = 'overlay';
-    const leagueGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-    leagueGradient.addColorStop(0, profile.accent);
-    leagueGradient.addColorStop(0.30, profile.middle);
-    leagueGradient.addColorStop(0.68, profile.black);
-    leagueGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
-    context.fillStyle = leagueGradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    context.globalCompositeOperation = 'source-over';
-    const vignette = context.createRadialGradient(
-      canvas.width * 0.34,
-      canvas.height * 0.22,
-      canvas.width * 0.08,
-      canvas.width * 0.50,
-      canvas.height * 0.50,
-      canvas.height * 0.82
-    );
-    vignette.addColorStop(0, 'rgba(0, 0, 0, 0.03)');
-    vignette.addColorStop(0.48, 'rgba(0, 0, 0, 0.14)');
-    vignette.addColorStop(1, `rgba(0, 0, 0, ${profile.edgeAlpha})`);
-    context.fillStyle = vignette;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.scale(scaleX, scaleY);
+    roundedRectPath(context, x, y, size, size, 28);
+    context.fillStyle = theme.tile;
+    context.fill();
+    context.strokeStyle = theme.tileBorder;
+    context.lineWidth = 1.5;
+    context.stroke();
+    context.shadowColor = 'rgba(0, 0, 0, 0.58)';
+    context.shadowBlur = 18;
+    drawImageContain(context, crest, x + 11, y + 11, size - 22, size - 22);
     context.restore();
-
-    const toned = context.getImageData(0, 0, canvas.width, canvas.height);
-    restoreLightDetails(original.data, toned.data);
-    context.putImageData(toned, 0, 0);
     return canvas;
   }
 
@@ -120,38 +227,17 @@
 
     const context = canvas.getContext('2d');
     if (!context || !snapshot.fixtures.length) return canvas;
-
     const scaleX = canvas.width / CARD_WIDTH;
     const scaleY = canvas.height / CARD_HEIGHT;
-    const padding = 48;
-    const bodyY = 36 + 236 + 34;
-    const bodyHeight = CARD_HEIGHT - bodyY - 64;
-    const leftWidth = 680;
-    const fixtureGap = 9;
-    const fixtureAreaTop = bodyY + 70;
-    const fixtureAreaHeight = bodyHeight - 94;
-    const fixtureHeight = Math.min(
-      150,
-      (fixtureAreaHeight - fixtureGap * Math.max(0, snapshot.fixtures.length - 1)) / snapshot.fixtures.length
-    );
-    const totalFixtureHeight = fixtureHeight * snapshot.fixtures.length
-      + fixtureGap * Math.max(0, snapshot.fixtures.length - 1);
-    const fixtureStartY = fixtureAreaTop + Math.max(0, (fixtureAreaHeight - totalFixtureHeight) / 2);
-    const rowX = padding + 18;
-    const rowWidth = leftWidth - 36;
 
-    for (let index = 0; index < snapshot.fixtures.length; index += 1) {
+    for (const [index, rect] of fixtureRects(snapshot).entries()) {
       const fixture = snapshot.fixtures[index];
-      const rowY = fixtureStartY + index * (fixtureHeight + fixtureGap);
-
-      // Copy a clean two-pixel strip from the same row across the old week/date label.
-      // This preserves the exact translucent row colour without drawing a second overlay.
-      const sourceX = (rowX + rowWidth - 34) * scaleX;
-      const sourceY = (rowY + 8) * scaleY;
+      const sourceX = (rect.x + rect.width - 34) * scaleX;
+      const sourceY = (rect.y + 8) * scaleY;
       const sourceWidth = Math.max(1, 2 * scaleX);
       const sourceHeight = 25 * scaleY;
-      const destinationX = (rowX + 12) * scaleX;
-      const destinationWidth = (rowWidth - 24) * scaleX;
+      const destinationX = (rect.x + 12) * scaleX;
+      const destinationWidth = (rect.width - 24) * scaleX;
       context.drawImage(
         canvas,
         sourceX,
@@ -169,8 +255,8 @@
       context.textAlign = 'center';
       context.textBaseline = 'alphabetic';
       context.font = '400 17px "Champions Sans", Arial, sans-serif';
-      context.fillStyle = 'rgba(255, 255, 255, 0.72)';
-      context.fillText(formatDate(fixture.date), rowX + rowWidth / 2, rowY + 27);
+      context.fillStyle = 'rgba(255, 255, 255, 0.68)';
+      context.fillText(formatDate(fixture.date), rect.x + rect.width / 2, rect.y + 27);
       context.restore();
     }
 
@@ -179,7 +265,8 @@
 
   async function renderShareCard(snapshot) {
     const canvas = await V4.renderShareCard(snapshot);
-    applyLeagueGradient(canvas, snapshot);
+    applyComponentGradients(canvas, snapshot);
+    await redrawLogoTile(canvas, snapshot);
     return redrawFixtureDates(canvas, snapshot);
   }
 
@@ -261,6 +348,7 @@
     renderShareCard,
     shareCurrent,
     redrawFixtureDates,
-    applyLeagueGradient
+    applyComponentGradients,
+    redrawLogoTile
   });
 })();
