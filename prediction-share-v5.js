@@ -13,14 +13,18 @@
     uel: 'Avrupa Ligi Yolculuğu',
     uecl: 'Konferans Ligi Yolculuğu'
   });
-  const toneProfiles = Object.freeze({
+  const gradientProfiles = Object.freeze({
     uel: Object.freeze({
-      neutral: 0.88,
-      accent: Object.freeze({ red: 0.72, green: 0.58, blue: 0.58 })
+      accent: 'rgba(82, 25, 2, 0.82)',
+      middle: 'rgba(25, 7, 1, 0.90)',
+      black: 'rgba(0, 0, 0, 0.98)',
+      edgeAlpha: 0.34
     }),
     uecl: Object.freeze({
-      neutral: 0.86,
-      accent: Object.freeze({ red: 0.62, green: 0.68, blue: 0.62 })
+      accent: 'rgba(3, 54, 17, 0.80)',
+      middle: 'rgba(1, 18, 6, 0.91)',
+      black: 'rgba(0, 0, 0, 0.98)',
+      edgeAlpha: 0.36
     })
   });
 
@@ -47,52 +51,66 @@
     return Math.max(0, Math.min(255, Math.round(value)));
   }
 
-  function isLeagueAccent(leagueId, red, green, blue) {
-    if (leagueId === 'uel') {
-      return red >= 70 && red > green * 1.15 && green > blue * 1.15;
+  function restoreLightDetails(original, toned) {
+    for (let index = 0; index < original.length; index += 4) {
+      if (original[index + 3] === 0) continue;
+
+      const red = original[index];
+      const green = original[index + 1];
+      const blue = original[index + 2];
+      const maximum = Math.max(red, green, blue);
+      const minimum = Math.min(red, green, blue);
+      const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+      const neutralLight = maximum > 150 && maximum - minimum < 42;
+      const brightDetail = luminance > 172;
+      if (!neutralLight && !brightDetail) continue;
+
+      const restore = luminance > 220 ? 0.94 : luminance > 190 ? 0.84 : 0.70;
+      toned[index] = clampChannel(toned[index] * (1 - restore) + red * restore);
+      toned[index + 1] = clampChannel(toned[index + 1] * (1 - restore) + green * restore);
+      toned[index + 2] = clampChannel(toned[index + 2] * (1 - restore) + blue * restore);
     }
-    if (leagueId === 'uecl') {
-      return green >= 55 && green > red * 1.10 && green > blue * 1.18;
-    }
-    return false;
   }
 
-  function applyLeagueTone(canvas, snapshot) {
+  function applyLeagueGradient(canvas, snapshot) {
     const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
-    const profile = toneProfiles[leagueId];
+    const profile = gradientProfiles[leagueId];
     if (!profile) return canvas;
 
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return canvas;
 
-    const image = context.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = image.data;
+    const original = context.getImageData(0, 0, canvas.width, canvas.height);
 
-    for (let index = 0; index < pixels.length; index += 4) {
-      if (pixels[index + 3] === 0) continue;
+    context.save();
+    context.globalCompositeOperation = 'overlay';
+    const leagueGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+    leagueGradient.addColorStop(0, profile.accent);
+    leagueGradient.addColorStop(0.30, profile.middle);
+    leagueGradient.addColorStop(0.68, profile.black);
+    leagueGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
+    context.fillStyle = leagueGradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
-      const red = pixels[index];
-      const green = pixels[index + 1];
-      const blue = pixels[index + 2];
-      const maximum = Math.max(red, green, blue);
-      const minimum = Math.min(red, green, blue);
-      const chroma = maximum - minimum;
+    context.globalCompositeOperation = 'source-over';
+    const vignette = context.createRadialGradient(
+      canvas.width * 0.34,
+      canvas.height * 0.22,
+      canvas.width * 0.08,
+      canvas.width * 0.50,
+      canvas.height * 0.50,
+      canvas.height * 0.82
+    );
+    vignette.addColorStop(0, 'rgba(0, 0, 0, 0.03)');
+    vignette.addColorStop(0.48, 'rgba(0, 0, 0, 0.14)');
+    vignette.addColorStop(1, `rgba(0, 0, 0, ${profile.edgeAlpha})`);
+    context.fillStyle = vignette;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.restore();
 
-      // Keep white typography, pale SVG marks and neutral light details crisp.
-      if ((minimum > 185 && maximum > 215) || (maximum > 145 && chroma < 35) || maximum < 18) continue;
-
-      if (isLeagueAccent(leagueId, red, green, blue)) {
-        pixels[index] = clampChannel(red * profile.accent.red);
-        pixels[index + 1] = clampChannel(green * profile.accent.green);
-        pixels[index + 2] = clampChannel(blue * profile.accent.blue);
-      } else {
-        pixels[index] = clampChannel(red * profile.neutral);
-        pixels[index + 1] = clampChannel(green * profile.neutral);
-        pixels[index + 2] = clampChannel(blue * profile.neutral);
-      }
-    }
-
-    context.putImageData(image, 0, 0);
+    const toned = context.getImageData(0, 0, canvas.width, canvas.height);
+    restoreLightDetails(original.data, toned.data);
+    context.putImageData(toned, 0, 0);
     return canvas;
   }
 
@@ -151,7 +169,7 @@
       context.textAlign = 'center';
       context.textBaseline = 'alphabetic';
       context.font = '400 17px "Champions Sans", Arial, sans-serif';
-      context.fillStyle = 'rgba(255, 255, 255, 0.68)';
+      context.fillStyle = 'rgba(255, 255, 255, 0.72)';
       context.fillText(formatDate(fixture.date), rowX + rowWidth / 2, rowY + 27);
       context.restore();
     }
@@ -161,7 +179,7 @@
 
   async function renderShareCard(snapshot) {
     const canvas = await V4.renderShareCard(snapshot);
-    applyLeagueTone(canvas, snapshot);
+    applyLeagueGradient(canvas, snapshot);
     return redrawFixtureDates(canvas, snapshot);
   }
 
@@ -243,6 +261,6 @@
     renderShareCard,
     shareCurrent,
     redrawFixtureDates,
-    applyLeagueTone
+    applyLeagueGradient
   });
 })();
