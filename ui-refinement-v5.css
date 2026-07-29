@@ -1,4 +1,18 @@
-/* Header, prediction lock and floating-share refinements. */
+/* Header, prediction lock, floating-share and layout refinements. */
+html,
+body[data-league="uel"] {
+  background-color: #000 !important;
+}
+
+body[data-league="uel"] {
+  background:
+    radial-gradient(circle at 18% 4%, rgba(255, 105, 0, 0.28), transparent 34%),
+    radial-gradient(circle at 82% 30%, rgba(126, 39, 0, 0.18), transparent 38%),
+    linear-gradient(145deg, #2a0d02 0%, #100401 46%, #000 100%) !important;
+  background-color: #000 !important;
+  background-attachment: fixed !important;
+}
+
 .draw-topbar.themed-hero::before,
 .draw-topbar.themed-hero::after,
 .prediction-header.themed-hero::before,
@@ -24,6 +38,30 @@
 
 .roster-team-action-simple .roster-incoming-team > div > span {
   margin-top: 2px !important;
+}
+
+.roster-team-action-simple.is-simple-action-modal {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.roster-team-action-simple.is-simple-action-modal .roster-incoming-team {
+  grid-column: 1 / -1;
+}
+
+.roster-team-action-simple.is-simple-action-modal .roster-team-actions,
+.roster-team-action-simple.is-simple-action-modal > .action-button {
+  width: 100%;
+  min-height: 44px;
+  align-self: stretch;
+}
+
+.roster-team-action-simple.is-simple-action-modal .roster-team-actions {
+  grid-column: 1;
+}
+
+.roster-team-action-simple.is-simple-action-modal > .action-button {
+  grid-column: 2;
 }
 
 @media (min-width: 901px) {
@@ -57,10 +95,7 @@
     margin-top: 0 !important;
     font-size: clamp(2.15rem, 3.5vw, 3.05rem) !important;
     line-height: 0.92 !important;
-    text-shadow:
-      0 4px 18px rgba(0, 0, 0, 1),
-      0 0 44px rgba(0, 0, 0, 0.98),
-      0 0 88px rgba(0, 0, 0, 0.82) !important;
+    text-shadow: none !important;
   }
 
   body.draw-active .draw-topbar.draw-header-refined .progress-track {
@@ -78,10 +113,22 @@
     drop-shadow(0 0 30px rgba(0, 0, 0, 0.86)) !important;
 }
 
+body.prediction-active .prediction-section {
+  width: min(1014px, calc(100% - 24px)) !important;
+}
+
+body.prediction-active .prediction-layout,
 body.prediction-active .prediction-header.prediction-header-refined {
+  width: min(1014px, 100%) !important;
+  margin-inline: auto !important;
+}
+
+body.prediction-active .prediction-header.prediction-header-refined {
+  --prediction-header-control-height: 64px;
   grid-template-columns: minmax(0, 1fr) minmax(190px, 245px) auto !important;
   grid-template-rows: auto !important;
-  min-height: 86px !important;
+  min-height: 80px !important;
+  align-items: center !important;
   gap: 10px !important;
   padding: 8px 10px !important;
 }
@@ -89,23 +136,96 @@ body.prediction-active .prediction-header.prediction-header-refined {
 .prediction-header-refined .prediction-header-identity {
   grid-column: 1 !important;
   grid-row: 1 !important;
+  align-self: center;
+}
+
+.prediction-header-refined .prediction-header-identity h2 {
+  text-shadow: none !important;
 }
 
 .prediction-header-refined .prediction-header-controls {
   grid-column: 2 !important;
   grid-row: 1 !important;
-  align-self: stretch;
+  height: var(--prediction-header-control-height);
+  align-self: center;
 }
 
 .prediction-header-refined .prediction-back-button {
   grid-column: 3 !important;
   grid-row: 1 !important;
-  align-self: start;
+  height: var(--prediction-header-control-height);
+  min-height: var(--prediction-header-control-height) !important;
+  align-self: center;
   justify-self: end;
 }
 
 .prediction-header-refined .prediction-summary {
-  align-self: stretch;
+  height: var(--prediction-header-control-height);
+  min-height: var(--prediction-header-control-height);
+  align-self: center;
+  align-content: center;
+}
+
+.prediction-standings-panel {
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.prediction-standings-card {
+  width: 100%;
+  padding: 10px;
+  border-radius: 18px;
+}
+
+.prediction-fixture-list {
+  gap: 7px !important;
+}
+
+.prediction-fixture-card {
+  gap: 6px !important;
+  padding: 9px 10px !important;
+  border-radius: 14px !important;
+}
+
+.prediction-fixture-top {
+  min-height: 18px;
+}
+
+.prediction-outcome-team {
+  min-height: 108px !important;
+  gap: 4px !important;
+  padding: 7px 8px !important;
+}
+
+.prediction-outcome-team .prediction-crest {
+  width: 74px !important;
+  height: 74px !important;
+}
+
+.prediction-outcome-team strong {
+  font-size: 0.76rem !important;
+  line-height: 1.1 !important;
+}
+
+.prediction-draw-choice {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.prediction-score-editor {
+  min-height: 30px !important;
+}
+
+.prediction-score-editor input {
+  height: 31px !important;
+}
+
+.prediction-score-apply {
+  min-height: 31px !important;
 }
 
 .prediction-outcome-team:disabled,
@@ -162,8 +282,17 @@ body.prediction-active .prediction-header.prediction-header-refined {
   box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.34);
 }
 
+@media (max-width: 980px) {
+  body.prediction-active .prediction-section,
+  body.prediction-active .prediction-layout,
+  body.prediction-active .prediction-header.prediction-header-refined {
+    width: min(620px, calc(100% - 20px)) !important;
+  }
+}
+
 @media (max-width: 900px) {
   body.prediction-active .prediction-header.prediction-header-refined {
+    --prediction-header-control-height: 58px;
     grid-template-columns: minmax(0, 1fr) auto !important;
     grid-template-rows: auto auto !important;
   }
@@ -189,7 +318,30 @@ body.prediction-active .prediction-header.prediction-header-refined {
     margin-top: -3px;
   }
 
+  .roster-team-action-simple.is-simple-action-modal {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
   body.draw-active .draw-topbar.themed-hero.draw-header-refined {
     padding-block: 5px !important;
+  }
+
+  body.prediction-active .prediction-section,
+  body.prediction-active .prediction-layout,
+  body.prediction-active .prediction-header.prediction-header-refined {
+    width: calc(100% - 10px) !important;
+  }
+
+  .prediction-outcome-team {
+    min-height: 102px !important;
+  }
+
+  .prediction-outcome-team .prediction-crest {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .prediction-standings-card {
+    padding: 8px 5px;
   }
 }
