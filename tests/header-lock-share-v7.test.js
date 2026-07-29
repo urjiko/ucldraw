@@ -44,8 +44,10 @@ assert.match(css, /\.prediction-outcome-team:disabled[\s\S]*opacity:\s*1\s*!impo
 assert.match(css, /\.prediction-share-floating[\s\S]*position:\s*fixed/);
 assert.match(css, /bottom:\s*max\(14px, env\(safe-area-inset-bottom\)\)/);
 
-assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*min-height:\s*70px/);
-assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*64px/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*height:\s*64px\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*max-height:\s*64px\s*!important/);
+assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*58px/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.draw-header-refined \.progress-track[\s\S]*position:\s*absolute\s*!important/);
 assert.match(css6, /--prediction-header-column-gap:\s*clamp\(18px, 2\.4vw, 28px\)/);
 assert.match(css6, /column-gap:\s*var\(--prediction-header-column-gap\)/);
 
@@ -85,7 +87,13 @@ assert.match(share8, /async function redrawClubCrestWithBlackShadow/);
 assert.match(share8, /context\.shadowColor = 'rgba\(0, 0, 0, 0\.96\)'/);
 assert.match(share8, /context\.shadowBlur = 42/);
 assert.match(share8, /context\.fillRect\(HEADER\.x, HEADER\.y, CLUB\.repaintRight - HEADER\.x, HEADER\.height\)/);
-assert.match(share8, /await redrawClubCrestWithBlackShadow\(canvas, snapshot\)/);
+assert.match(share8, /function redrawFooter\(canvas, snapshot\)/);
+assert.match(share8, /const SITE_LINK = 'urjiko\.github\.io\/UEFA'/);
+assert.match(share8, /const FOOTER_LABEL = 'Unofficial Simulation'/);
+assert.match(share8, /context\.fillRect\(0, FOOTER\.y, CARD_WIDTH, FOOTER\.height\)/);
+assert.match(share8, /context\.fillText\(FOOTER_LABEL, FOOTER\.leftX, FOOTER\.textY\)/);
+assert.match(share8, /context\.fillText\(SITE_LINK, FOOTER\.rightX, FOOTER\.textY\)/);
+assert.match(share8, /await redrawClubCrestWithBlackShadow\(canvas, snapshot\)[\s\S]*redrawFooter\(canvas, snapshot\)/);
 assert.doesNotMatch(share8, /theme\.glow/);
 
-console.log('Matched live headers, reversible locks and black-shadow v8 output checks passed.');
+console.log('Tight draw header, reversible locks and clean v8 footer checks passed.');
