@@ -10,6 +10,7 @@
   const SITE_LINK = 'urjiko.github.io/UEFA';
   const HEADER = Object.freeze({ x: 48, y: 36, width: 1104, height: 236, radius: 30 });
   const BODY = Object.freeze({ y: 306, height: 1230, leftX: 48, leftWidth: 680, rightX: 752, rightWidth: 400, radius: 28 });
+  const STANDINGS_CENTER_X = BODY.rightX + BODY.rightWidth / 2;
   const imageCache = new Map();
   const journeyTitles = Object.freeze({
     ucl: 'Şampiyonlar Ligi Yolculuğu',
@@ -93,6 +94,20 @@
     return true;
   }
 
+  function drawUntintedImage(context, image, x, y, width, height) {
+    context.save();
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = 'source-over';
+    context.filter = 'none';
+    context.shadowColor = 'transparent';
+    context.shadowBlur = 0;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+    const drawn = drawImageContain(context, image, x, y, width, height);
+    context.restore();
+    return drawn;
+  }
+
   function interpolate(start, end, amount) {
     return start + (end - start) * amount;
   }
@@ -127,7 +142,7 @@
         const chroma = maximum - minimum;
         const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
 
-        // Typography, pale SVG details and brighter crest pixels stay untouched.
+        // Text is protected here. All logos are redrawn from their source files afterwards.
         if (luminance > 158 || (maximum > 132 && chroma < 30)) continue;
 
         const horizontal = Math.max(0, Math.min(1, localX / Math.max(1, rect.width)));
@@ -193,30 +208,108 @@
     return canvas;
   }
 
-  async function redrawLogoTile(canvas, snapshot) {
-    const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
-    const theme = componentThemes[leagueId];
-    if (!theme) return canvas;
-    const crest = await loadImage(snapshot.activeCrest);
+  async function buildLogoMap(snapshot) {
+    const sources = new Set();
+    const add = (source) => { if (source) sources.add(source); };
+    add(snapshot.activeCrest);
+    add(snapshot.competition?.logo);
+    snapshot.fixtures.forEach((fixture) => {
+      add(fixture.home?.crest);
+      add(fixture.away?.crest);
+    });
+    snapshot.standings.forEach((row) => add(row.team?.crest));
+    const entries = await Promise.all([...sources].map(async (source) => [absoluteAsset(source), await loadImage(source)]));
+    return new Map(entries);
+  }
+
+  async function redrawUntintedLogos(canvas, snapshot) {
     const context = canvas.getContext('2d');
     if (!context) return canvas;
+    const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
+    const theme = componentThemes[leagueId];
+    const logos = await buildLogoMap(snapshot);
+    const logoFor = (source) => logos.get(absoluteAsset(source)) || null;
     const scaleX = canvas.width / CARD_WIDTH;
     const scaleY = canvas.height / CARD_HEIGHT;
-    const size = 168;
-    const x = HEADER.x + 28;
-    const y = HEADER.y + (HEADER.height - size) / 2;
 
     context.save();
     context.scale(scaleX, scaleY);
-    roundedRectPath(context, x, y, size, size, 28);
-    context.fillStyle = theme.tile;
-    context.fill();
-    context.strokeStyle = theme.tileBorder;
-    context.lineWidth = 1.5;
-    context.stroke();
-    context.shadowColor = 'rgba(0, 0, 0, 0.58)';
-    context.shadowBlur = 18;
-    drawImageContain(context, crest, x + 11, y + 11, size - 22, size - 22);
+
+    const headerLogoSize = 168;
+    const headerLogoY = HEADER.y + (HEADER.height - headerLogoSize) / 2;
+    const clubLogoX = HEADER.x + 28;
+    if (theme) {
+      roundedRectPath(context, clubLogoX, headerLogoY, headerLogoSize, headerLogoSize, 28);
+      context.fillStyle = theme.tile;
+      context.fill();
+      context.strokeStyle = theme.tileBorder;
+      context.lineWidth = 1.5;
+      context.stroke();
+    }
+    drawUntintedImage(
+      context,
+      logoFor(snapshot.activeCrest),
+      clubLogoX + 11,
+      headerLogoY + 11,
+      headerLogoSize - 22,
+      headerLogoSize - 22
+    );
+
+    const leagueLogoX = STANDINGS_CENTER_X - headerLogoSize / 2;
+    drawUntintedImage(
+      context,
+      logoFor(snapshot.competition?.logo),
+      leagueLogoX,
+      headerLogoY,
+      headerLogoSize,
+      headerLogoSize
+    );
+
+    for (const [index, rect] of fixtureRects(snapshot).entries()) {
+      const fixture = snapshot.fixtures[index];
+      const crestSize = Math.min(58, rect.height - 54);
+      const contentY = rect.y + 40;
+      const inset = crestSize * 0.09;
+      const homeX = rect.x + 22;
+      const awayX = rect.x + rect.width - 22 - crestSize;
+      drawUntintedImage(
+        context,
+        logoFor(fixture.home?.crest),
+        homeX + inset,
+        contentY + inset,
+        crestSize - inset * 2,
+        crestSize - inset * 2
+      );
+      drawUntintedImage(
+        context,
+        logoFor(fixture.away?.crest),
+        awayX + inset,
+        contentY + inset,
+        crestSize - inset * 2,
+        crestSize - inset * 2
+      );
+    }
+
+    const standingsX = BODY.rightX + 14;
+    const standingsWidth = BODY.rightWidth - 28;
+    const labelsY = BODY.y + 68;
+    const standingsTop = labelsY + 31;
+    const standingsHeight = BODY.y + BODY.height - 20 - standingsTop;
+    const standingRowHeight = standingsHeight / Math.max(1, snapshot.standings.length);
+    snapshot.standings.forEach((row, index) => {
+      const rowY = standingsTop + standingRowHeight * index;
+      const rowHeight = Math.max(24, standingRowHeight - 1.5);
+      const crestSize = Math.min(20, rowHeight - 5);
+      drawUntintedImage(
+        context,
+        logoFor(row.team?.crest),
+        standingsX + 34,
+        rowY + (rowHeight - crestSize) / 2,
+        crestSize,
+        crestSize
+      );
+    });
+
     context.restore();
     return canvas;
   }
@@ -266,8 +359,8 @@
   async function renderShareCard(snapshot) {
     const canvas = await V4.renderShareCard(snapshot);
     applyComponentGradients(canvas, snapshot);
-    await redrawLogoTile(canvas, snapshot);
-    return redrawFixtureDates(canvas, snapshot);
+    await redrawFixtureDates(canvas, snapshot);
+    return redrawUntintedLogos(canvas, snapshot);
   }
 
   function canvasToBlob(canvas) {
@@ -349,6 +442,7 @@
     shareCurrent,
     redrawFixtureDates,
     applyComponentGradients,
-    redrawLogoTile
+    redrawUntintedLogos,
+    redrawLogoTile: redrawUntintedLogos
   });
 })();
