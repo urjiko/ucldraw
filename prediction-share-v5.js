@@ -13,6 +13,16 @@
     uel: 'Avrupa Ligi Yolculuğu',
     uecl: 'Konferans Ligi Yolculuğu'
   });
+  const toneProfiles = Object.freeze({
+    uel: Object.freeze({
+      neutral: 0.88,
+      accent: Object.freeze({ red: 0.72, green: 0.58, blue: 0.58 })
+    }),
+    uecl: Object.freeze({
+      neutral: 0.86,
+      accent: Object.freeze({ red: 0.62, green: 0.68, blue: 0.62 })
+    })
+  });
 
   function slug(value = '') {
     return String(value)
@@ -31,6 +41,59 @@
       year: 'numeric',
       timeZone: 'UTC'
     }).format(new Date(`${value}T12:00:00Z`));
+  }
+
+  function clampChannel(value) {
+    return Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  function isLeagueAccent(leagueId, red, green, blue) {
+    if (leagueId === 'uel') {
+      return red >= 70 && red > green * 1.15 && green > blue * 1.15;
+    }
+    if (leagueId === 'uecl') {
+      return green >= 55 && green > red * 1.10 && green > blue * 1.18;
+    }
+    return false;
+  }
+
+  function applyLeagueTone(canvas, snapshot) {
+    const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
+    const profile = toneProfiles[leagueId];
+    if (!profile) return canvas;
+
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) return canvas;
+
+    const image = context.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = image.data;
+
+    for (let index = 0; index < pixels.length; index += 4) {
+      if (pixels[index + 3] === 0) continue;
+
+      const red = pixels[index];
+      const green = pixels[index + 1];
+      const blue = pixels[index + 2];
+      const maximum = Math.max(red, green, blue);
+      const minimum = Math.min(red, green, blue);
+      const chroma = maximum - minimum;
+
+      // Keep white typography, pale SVG marks and neutral light details crisp.
+      if ((minimum > 185 && maximum > 215) || (maximum > 145 && chroma < 35) || maximum < 18) continue;
+
+      if (isLeagueAccent(leagueId, red, green, blue)) {
+        pixels[index] = clampChannel(red * profile.accent.red);
+        pixels[index + 1] = clampChannel(green * profile.accent.green);
+        pixels[index + 2] = clampChannel(blue * profile.accent.blue);
+      } else {
+        pixels[index] = clampChannel(red * profile.neutral);
+        pixels[index + 1] = clampChannel(green * profile.neutral);
+        pixels[index + 2] = clampChannel(blue * profile.neutral);
+      }
+    }
+
+    context.putImageData(image, 0, 0);
+    return canvas;
   }
 
   async function redrawFixtureDates(canvas, snapshot) {
@@ -98,6 +161,7 @@
 
   async function renderShareCard(snapshot) {
     const canvas = await V4.renderShareCard(snapshot);
+    applyLeagueTone(canvas, snapshot);
     return redrawFixtureDates(canvas, snapshot);
   }
 
@@ -178,6 +242,7 @@
   window.UCLDRAW_PREDICTION_SHARE_V5 = Object.freeze({
     renderShareCard,
     shareCurrent,
-    redrawFixtureDates
+    redrawFixtureDates,
+    applyLeagueTone
   });
 })();
