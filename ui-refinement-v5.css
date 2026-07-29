@@ -116,10 +116,14 @@ body.prediction-active .prediction-header.prediction-header-refined {
 }
 
 .prediction-outcome-team:disabled .prediction-crest,
-.prediction-outcome-team:disabled .prediction-crest img,
 .prediction-draw-choice:disabled {
   opacity: 1 !important;
   filter: none !important;
+}
+
+.prediction-outcome-team:disabled .prediction-crest img {
+  opacity: 1 !important;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.58)) !important;
 }
 
 .prediction-score-apply.is-match-locked {
