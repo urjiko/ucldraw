@@ -1,0 +1,88 @@
+/* Lighter search colour, warm Europa imagery and smaller live headers. Loaded after v5. */
+html {
+  background-color: #000 !important;
+}
+
+body[data-league="uel"] {
+  background:
+    linear-gradient(145deg, rgba(92, 25, 0, 0.42), rgba(18, 4, 0, 0.18) 48%, rgba(0, 0, 0, 0.5)),
+    linear-gradient(180deg, rgba(255, 105, 0, 0.12), rgba(0, 0, 0, 0.62)),
+    var(--league-background, url("assets/arkaplanuel.jpg")) !important;
+  background-color: #000 !important;
+  background-blend-mode: color, multiply, normal;
+  background-position: center !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+
+.selection-toolbar.glass {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(var(--accent-rgb), 0.32) 0%,
+      rgba(var(--accent-rgb), 0.18) 58%,
+      rgba(0, 0, 0, 0.42) 100%
+    ),
+    rgba(0, 0, 0, 0.36) !important;
+}
+
+.team-search {
+  border-color: rgba(var(--accent-rgb), 0.46) !important;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(var(--accent-rgb), 0.42) 0%,
+      rgba(var(--accent-rgb), 0.25) 64%,
+      rgba(0, 0, 0, 0.34) 100%
+    ) !important;
+}
+
+@media (min-width: 901px) {
+  body.draw-active .draw-topbar.themed-hero.draw-header-refined {
+    gap: 2px !important;
+    padding: 2px 10px !important;
+  }
+
+  .draw-header-refined .draw-header-identity {
+    gap: 8px !important;
+  }
+
+  .draw-header-refined .polished-hero-crest {
+    width: 92px !important;
+    height: 92px !important;
+  }
+
+  body.draw-active .draw-topbar.themed-hero.draw-header-refined.is-complete {
+    padding-block: 2px !important;
+  }
+}
+
+.draw-topbar.themed-hero.draw-header-refined .polished-hero-crest img {
+  filter:
+    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.82))
+    drop-shadow(0 0 16px rgba(0, 0, 0, 0.58)) !important;
+}
+
+body.prediction-active .prediction-header.prediction-header-refined {
+  --prediction-header-control-height: 56px;
+  min-height: 70px !important;
+  padding: 6px 8px !important;
+}
+
+.prediction-header-refined .prediction-hero-crest .polished-hero-crest {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+.prediction-header-refined .polished-hero-crest img {
+  filter:
+    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.78))
+    drop-shadow(0 0 14px rgba(0, 0, 0, 0.52)) !important;
+}
+
+@media (max-width: 900px) {
+  body.prediction-active .prediction-header.prediction-header-refined {
+    --prediction-header-control-height: 54px;
+    min-height: 0 !important;
+  }
+}
