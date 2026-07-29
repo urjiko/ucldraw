@@ -21,16 +21,17 @@ for (const asset of [
   if (!fs.existsSync(path.join(root, asset))) throw new Error(`Missing branding asset: ${asset}`);
 }
 
-for (const [league, asset] of [
-  ['Champions League', 'crests/pools/champions/UCL_Logo.svg'],
-  ['Europa League', 'crests/pools/europa/UEL_Logo.svg'],
-  ['Conference League', 'crests/pools/conference/CON_Logo.svg']
+for (const [leagueId, league, asset] of [
+  ['ucl', 'Champions League', 'crests/pools/champions/UCL_Logo.svg'],
+  ['uel', 'Europa League', 'crests/pools/europa/UEL_Logo.svg'],
+  ['uecl', 'Conference League', 'crests/pools/conference/CON_Logo.svg']
 ]) {
   if (!teams.includes(`logo: '${asset}'`)) throw new Error(`${league} SVG logo is not connected in competition data.`);
+  if (!javascript.includes(`${leagueId}: '${asset}'`)) throw new Error(`${league} SVG logo is not connected in the runtime branding map.`);
 }
 
-if (!javascript.includes("competitions.uecl.logo = 'crests/pools/conference/CON_Logo.svg'")) {
-  throw new Error('Conference League SVG logo override is not connected.');
+if (!javascript.includes('Object.entries(svgLogos).forEach')) {
+  throw new Error('SVG competition logos are not applied after dynamic pool loading.');
 }
 if (!javascript.includes("competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg'")) {
   throw new Error('Conference League background is not connected.');
@@ -38,11 +39,11 @@ if (!javascript.includes("competitions.uecl.background = 'crests/pools/conferenc
 if (!javascript.includes("element.lang = 'en'")) {
   throw new Error('English competition names are not locale protected.');
 }
-if (!javascript.includes('#competitionPicker button[data-league="uecl"] > .league-icon img')) {
-  throw new Error('Conference logo refresh is not scoped to the Conference picker button.');
+if (!javascript.includes('#competitionPicker button[data-league]')) {
+  throw new Error('Competition picker SVG refresh does not cover all league buttons.');
 }
-if (javascript.includes("'[data-league=\"uecl\"] .league-icon img'")) {
-  throw new Error('Conference logo selector is broad enough to rewrite every league icon.');
+if (!javascript.includes('#brandMark img')) {
+  throw new Error('Active competition brand mark is not kept on the SVG asset.');
 }
 if (!css.includes('var(--league-background')) {
   throw new Error('Conference theme still ignores its image background.');

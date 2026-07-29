@@ -2,13 +2,18 @@
   'use strict';
 
   const competitions = window.UCLDRAW_DATA?.competitions;
-  if (competitions?.uecl) {
-    competitions.uecl.logo = 'crests/pools/conference/CON_Logo.svg';
-    competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg';
-  }
+  const svgLogos = Object.freeze({
+    ucl: 'crests/pools/champions/UCL_Logo.svg',
+    uel: 'crests/pools/europa/UEL_Logo.svg',
+    uecl: 'crests/pools/conference/CON_Logo.svg'
+  });
+
+  Object.entries(svgLogos).forEach(([leagueId, source]) => {
+    if (competitions?.[leagueId]) competitions[leagueId].logo = source;
+  });
+  if (competitions?.uecl) competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg';
 
   const englishCompetitionPattern = /(?:UEFA\s+)?(?:Champions|Europa|Conference)\s+League/i;
-  const conferenceLogoSelector = '#competitionPicker button[data-league="uecl"] > .league-icon img';
   const actionLabels = Object.freeze({
     retryButton: 'Yeni Kura',
     showOverviewButton: 'Tüm Maçlar',
@@ -26,12 +31,17 @@
     });
   }
 
-  function refreshConferenceLogo(root = document) {
-    root.querySelectorAll?.(conferenceLogoSelector).forEach((image) => {
-      if (!image.src.endsWith('/crests/pools/conference/CON_Logo.svg')) {
-        image.src = 'crests/pools/conference/CON_Logo.svg';
-      }
+  function refreshCompetitionLogos(root = document) {
+    root.querySelectorAll?.('#competitionPicker button[data-league]').forEach((button) => {
+      const expected = svgLogos[button.dataset.league];
+      const image = button.querySelector('.league-icon img');
+      if (expected && image && !image.src.endsWith(`/${expected}`)) image.src = expected;
     });
+
+    const activeLeague = document.body.dataset.league || 'ucl';
+    const activeLogo = svgLogos[activeLeague];
+    const brandImage = document.querySelector('#brandMark img');
+    if (activeLogo && brandImage && !brandImage.src.endsWith(`/${activeLogo}`)) brandImage.src = activeLogo;
   }
 
   function installCompactPredictionStyles() {
@@ -56,7 +66,7 @@
 
   function refreshBranding() {
     applyCompetitionLanguages();
-    refreshConferenceLogo();
+    refreshCompetitionLogos();
     applyInterfaceCopy();
   }
 
