@@ -47,9 +47,24 @@ assert.match(share, /BODY\.rightX[\s\S]*theme\.panel/);
 assert.match(share, /fixtureRects\(snapshot\)\.forEach[\s\S]*theme\.fixture/);
 assert.doesNotMatch(share, /standings.*forEach[\s\S]*applyGradientRegion/i);
 assert.match(share, /tile:\s*'rgba\(0, 0, 0, 0\.58\)'/);
-assert.match(share, /function redrawLogoTile\(canvas, snapshot\)/);
-assert.match(share, /applyComponentGradients\(canvas, snapshot\);[\s\S]*redrawLogoTile\(canvas, snapshot\)[\s\S]*redrawFixtureDates\(canvas, snapshot\)/);
+
+assert.match(share, /function drawUntintedImage\(context, image, x, y, width, height\)/);
+assert.match(share, /context\.globalAlpha = 1/);
+assert.match(share, /context\.globalCompositeOperation = 'source-over'/);
+assert.match(share, /context\.filter = 'none'/);
+assert.match(share, /function buildLogoMap\(snapshot\)/);
+assert.match(share, /add\(snapshot\.activeCrest\)/);
+assert.match(share, /add\(snapshot\.competition\?\.logo\)/);
+assert.match(share, /add\(fixture\.home\?\.crest\)/);
+assert.match(share, /add\(fixture\.away\?\.crest\)/);
+assert.match(share, /snapshot\.standings\.forEach\(\(row\) => add\(row\.team\?\.crest\)\)/);
+assert.match(share, /function redrawUntintedLogos\(canvas, snapshot\)/);
+assert.match(share, /STANDINGS_CENTER_X - headerLogoSize \/ 2/);
+assert.match(share, /crestSize = Math\.min\(58, rect\.height - 54\)/);
+assert.match(share, /crestSize = Math\.min\(20, rowHeight - 5\)/);
+assert.match(share, /applyComponentGradients\(canvas, snapshot\);[\s\S]*redrawFixtureDates\(canvas, snapshot\)[\s\S]*redrawUntintedLogos\(canvas, snapshot\)/);
+assert.match(share, /redrawLogoTile:\s*redrawUntintedLogos/);
 assert.doesNotMatch(share, /function applyLeagueGradient/);
 assert.doesNotMatch(share, /globalCompositeOperation\s*=\s*'overlay'/);
 
-console.log('SVG branding, minimal metadata and component-gradient checks passed.');
+console.log('SVG branding, component gradients and untinted logo redraw checks passed.');
