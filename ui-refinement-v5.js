@@ -29,6 +29,32 @@
     }
   }
 
+  function refineTeamActionButtons() {
+    document.querySelectorAll('.roster-team-action-simple').forEach((modal) => {
+      const actions = modal.querySelector('.roster-team-actions');
+      modal.classList.toggle('is-simple-action-modal', Boolean(actions && actions.children.length === 1));
+    });
+  }
+
+  function refineStandingsPanel() {
+    document.querySelectorAll('#predictionSection .prediction-standings-panel').forEach((panel) => {
+      panel.classList.remove('glass');
+      if (panel.querySelector(':scope > .prediction-standings-card')) return;
+
+      const legend = panel.querySelector(':scope > .prediction-zone-legend');
+      const table = panel.querySelector(':scope > .prediction-standings-table');
+      if (!table) return;
+
+      const card = document.createElement('div');
+      card.className = 'prediction-standings-card glass';
+      if (legend) card.appendChild(legend);
+      card.appendChild(table);
+
+      const actions = panel.querySelector(':scope > .prediction-share-actions-v4');
+      panel.insertBefore(card, actions || null);
+    });
+  }
+
   function predictionState() {
     return window.UCLDRAW_PREDICTION_AI?.getState?.() || null;
   }
@@ -170,6 +196,8 @@
 
   function refresh() {
     refineDrawKicker();
+    refineTeamActionButtons();
+    refineStandingsPanel();
     refinePredictionLocks();
     syncFloatingShare();
     installShareRendererV7();
