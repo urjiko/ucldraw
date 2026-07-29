@@ -43,8 +43,8 @@ assert.match(css6, /body\[data-league="uel"\][\s\S]*var\(--league-background, ur
 assert.match(css6, /background-blend-mode:\s*color, multiply, normal/);
 assert.match(css6, /\.team-search[\s\S]*rgba\(var\(--accent-rgb\), 0\.42\)[\s\S]*rgba\(0, 0, 0, 0\.34\)/);
 assert.match(css6, /\.selection-toolbar\.glass[\s\S]*rgba\(0, 0, 0, 0\.42\)/);
-assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*width:\s*min\(1014px, 100%\)[\s\S]*min-height:\s*70px/);
-assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*64px/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*width:\s*min\(1014px, 100%\)[\s\S]*height:\s*64px/);
+assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*58px/);
 assert.match(css6, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*--prediction-header-column-gap:\s*clamp\(18px, 2\.4vw, 28px\)/);
 assert.match(css6, /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(190px, 230px\) minmax\(118px, 156px\)/);
 assert.match(css6, /column-gap:\s*var\(--prediction-header-column-gap\)/);

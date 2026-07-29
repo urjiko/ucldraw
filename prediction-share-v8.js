@@ -9,6 +9,9 @@
   const CARD_HEIGHT = 1600;
   const HEADER = Object.freeze({ x: 48, y: 36, width: 1104, height: 236, radius: 30 });
   const CLUB = Object.freeze({ x: 76, y: 65, size: 178, repaintRight: 278 });
+  const FOOTER = Object.freeze({ y: 1536, height: 64, leftX: 48, rightX: 1152, textY: 1568 });
+  const SITE_LINK = 'urjiko.github.io/UEFA';
+  const FOOTER_LABEL = 'Unofficial Simulation';
   const imageCache = new Map();
 
   const headerThemes = Object.freeze({
@@ -111,9 +114,54 @@
     return canvas;
   }
 
+  function redrawFooter(canvas, snapshot) {
+    const context = canvas.getContext('2d');
+    if (!context) return canvas;
+    const leagueId = snapshot.competition?.id || document.body.dataset.league || 'ucl';
+    const theme = headerThemes[leagueId] || headerThemes.ucl;
+    const scaleX = canvas.width / CARD_WIDTH;
+    const scaleY = canvas.height / CARD_HEIGHT;
+
+    context.save();
+    context.scale(scaleX, scaleY);
+    context.globalCompositeOperation = 'source-over';
+    context.globalAlpha = 1;
+    context.filter = 'none';
+    context.shadowColor = 'transparent';
+    context.shadowBlur = 0;
+
+    const footerGradient = context.createLinearGradient(0, FOOTER.y, CARD_WIDTH, FOOTER.y);
+    footerGradient.addColorStop(0, theme.end);
+    footerGradient.addColorStop(0.38, '#030303');
+    footerGradient.addColorStop(1, theme.final);
+    context.fillStyle = footerGradient;
+    context.fillRect(0, FOOTER.y, CARD_WIDTH, FOOTER.height);
+
+    context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(48, FOOTER.y + 0.5);
+    context.lineTo(CARD_WIDTH - 48, FOOTER.y + 0.5);
+    context.stroke();
+
+    context.textBaseline = 'middle';
+    context.fillStyle = 'rgba(255, 255, 255, 0.62)';
+    context.font = '600 16px "Champions Sans", Arial, sans-serif';
+    context.textAlign = 'left';
+    context.fillText(FOOTER_LABEL, FOOTER.leftX, FOOTER.textY);
+
+    context.fillStyle = 'rgba(255, 255, 255, 0.78)';
+    context.font = '700 16px "Champions Sans", Arial, sans-serif';
+    context.textAlign = 'right';
+    context.fillText(SITE_LINK, FOOTER.rightX, FOOTER.textY);
+    context.restore();
+    return canvas;
+  }
+
   async function renderShareCard(snapshot) {
     const canvas = await V7.renderShareCard(snapshot);
     await redrawClubCrestWithBlackShadow(canvas, snapshot);
+    redrawFooter(canvas, snapshot);
     return canvas;
   }
 
@@ -167,6 +215,9 @@
   window.UCLDRAW_PREDICTION_SHARE_V8 = Object.freeze({
     renderShareCard,
     shareCurrent,
-    redrawClubCrestWithBlackShadow
+    redrawClubCrestWithBlackShadow,
+    redrawFooter,
+    footerLabel: FOOTER_LABEL,
+    siteLink: SITE_LINK
   });
 })();
