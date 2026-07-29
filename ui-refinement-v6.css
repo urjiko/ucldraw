@@ -1,4 +1,20 @@
-/* Lighter search colour and smaller live headers. Loaded after v5. */
+/* Lighter search colour, warm Europa imagery and smaller live headers. Loaded after v5. */
+html {
+  background-color: #000 !important;
+}
+
+body[data-league="uel"] {
+  background:
+    linear-gradient(145deg, rgba(92, 25, 0, 0.42), rgba(18, 4, 0, 0.18) 48%, rgba(0, 0, 0, 0.5)),
+    linear-gradient(180deg, rgba(255, 105, 0, 0.12), rgba(0, 0, 0, 0.62)),
+    var(--league-background, url("assets/arkaplanuel.jpg")) !important;
+  background-color: #000 !important;
+  background-blend-mode: color, multiply, normal;
+  background-position: center !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+
 .selection-toolbar.glass {
   background:
     linear-gradient(
