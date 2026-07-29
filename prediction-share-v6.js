@@ -7,6 +7,7 @@
 
   const CARD_WIDTH = 1200;
   const CARD_HEIGHT = 1600;
+  const CARD_OPACITY = 0.62;
   const SITE_LINK = 'urjiko.github.io/UEFA';
   const HEADER = Object.freeze({ x: 48, y: 36, width: 1104, height: 236, radius: 30 });
   const BODY = Object.freeze({ y: 306, height: 1230, leftX: 48, leftWidth: 680, rightX: 752, rightWidth: 400 });
@@ -16,25 +17,28 @@
     ucl: Object.freeze({
       headerStart: '#102a82',
       headerEnd: '#050914',
-      cardStart: '#142a65',
-      cardEnd: '#060a16',
-      stroke: 'rgba(100, 137, 255, 0.58)',
+      cardStart: Object.freeze([20, 43, 103]),
+      cardMiddle: Object.freeze([10, 24, 66]),
+      cardEnd: Object.freeze([5, 12, 32]),
+      stroke: 'rgba(118, 151, 255, 0.52)',
       glow: 'rgba(65, 105, 255, 0.56)'
     }),
     uel: Object.freeze({
       headerStart: '#4b1704',
-      headerEnd: '#050505',
-      cardStart: '#3d1203',
-      cardEnd: '#080808',
-      stroke: 'rgba(216, 91, 25, 0.54)',
+      headerEnd: '#120701',
+      cardStart: Object.freeze([67, 25, 7]),
+      cardMiddle: Object.freeze([43, 15, 4]),
+      cardEnd: Object.freeze([23, 8, 3]),
+      stroke: 'rgba(227, 111, 48, 0.48)',
       glow: 'rgba(196, 70, 16, 0.50)'
     }),
     uecl: Object.freeze({
       headerStart: '#063814',
-      headerEnd: '#050505',
-      cardStart: '#072e13',
-      cardEnd: '#080808',
-      stroke: 'rgba(55, 180, 91, 0.50)',
+      headerEnd: '#03180b',
+      cardStart: Object.freeze([8, 57, 24]),
+      cardMiddle: Object.freeze([5, 39, 17]),
+      cardEnd: Object.freeze([3, 23, 10]),
+      stroke: 'rgba(73, 194, 106, 0.46)',
       glow: 'rgba(35, 158, 73, 0.48)'
     })
   });
@@ -86,6 +90,10 @@
     return true;
   }
 
+  function rgba(rgb, alpha = CARD_OPACITY) {
+    return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+  }
+
   function formatDate(value) {
     if (!value) return 'Tarih bekleniyor';
     return new Intl.DateTimeFormat('tr-TR', {
@@ -126,13 +134,34 @@
     }));
   }
 
+  function restorePanelSurface(context, canvas, rect, scaleX, scaleY) {
+    const sourceX = (BODY.leftX + BODY.leftWidth - 12) * scaleX;
+    const sourceY = rect.y * scaleY;
+    const sourceWidth = Math.max(2, 6 * scaleX);
+    const sourceHeight = rect.height * scaleY;
+    context.save();
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.drawImage(
+      canvas,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      rect.x * scaleX,
+      rect.y * scaleY,
+      rect.width * scaleX,
+      rect.height * scaleY
+    );
+    context.restore();
+  }
+
   function fillCardGradient(context, rect, theme) {
     context.save();
     roundedRectPath(context, rect.x, rect.y, rect.width, rect.height, rect.radius);
     const gradient = context.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
-    gradient.addColorStop(0, theme.cardStart);
-    gradient.addColorStop(0.48, theme.cardEnd);
-    gradient.addColorStop(1, '#040404');
+    gradient.addColorStop(0, rgba(theme.cardStart));
+    gradient.addColorStop(0.56, rgba(theme.cardMiddle));
+    gradient.addColorStop(1, rgba(theme.cardEnd));
     context.fillStyle = gradient;
     context.fill();
     context.strokeStyle = theme.stroke;
@@ -175,12 +204,24 @@
     context.save();
     context.scale(scaleX, scaleY);
     roundedRectPath(context, HEADER.x, HEADER.y, HEADER.width, HEADER.height, HEADER.radius);
+    context.clip();
+
+    if (leagueId === 'uecl') {
+      context.fillStyle = '#03180b';
+      context.fillRect(HEADER.x, HEADER.y, HEADER.width, HEADER.height);
+    }
+
     const gradient = context.createLinearGradient(HEADER.x, HEADER.y, HEADER.x + HEADER.width, HEADER.y + HEADER.height);
     gradient.addColorStop(0, theme.headerStart);
-    gradient.addColorStop(0.42, theme.headerEnd);
-    gradient.addColorStop(1, '#030303');
+    gradient.addColorStop(0.56, theme.headerEnd);
+    gradient.addColorStop(1, leagueId === 'uecl' ? '#021108' : '#030303');
     context.fillStyle = gradient;
-    context.fill();
+    context.fillRect(HEADER.x, HEADER.y, HEADER.width, HEADER.height);
+    context.restore();
+
+    context.save();
+    context.scale(scaleX, scaleY);
+    roundedRectPath(context, HEADER.x, HEADER.y, HEADER.width, HEADER.height, HEADER.radius);
     context.strokeStyle = theme.stroke;
     context.lineWidth = 2;
     context.stroke();
@@ -202,21 +243,21 @@
     context.textBaseline = 'alphabetic';
     context.fillStyle = 'rgba(255, 255, 255, 0.72)';
     context.font = '400 23px "Champions Sans", Arial, sans-serif';
-    context.fillText('2026-27', copyX, HEADER.y + 54);
+    context.fillText('2026-27', copyX, HEADER.y + 51);
 
     const titleSize = fitFont(context, snapshot.activeName, copyWidth, 72, 39, 700);
     context.font = `700 ${titleSize}px "Champions Sans", Arial, sans-serif`;
     context.fillStyle = '#fff';
     context.shadowColor = 'rgba(0, 0, 0, 0.90)';
     context.shadowBlur = 16;
-    context.fillText(snapshot.activeName, copyX, HEADER.y + 132);
+    context.fillText(snapshot.activeName, copyX, HEADER.y + 117);
     context.shadowBlur = 0;
 
     const journey = journeyTitles[leagueId] || `${snapshot.competition?.shortName || 'Avrupa Kupası'} Yolculuğu`;
     const journeySize = fitFont(context, journey, copyWidth, 39, 25, 400);
     context.font = `400 ${journeySize}px "Champions Sans", Arial, sans-serif`;
     context.fillStyle = 'rgba(255, 255, 255, 0.76)';
-    context.fillText(journey, copyX, HEADER.y + 191);
+    context.fillText(journey, copyX, HEADER.y + 166);
 
     context.textAlign = 'right';
     context.font = '700 16px "Champions Sans", Arial, sans-serif';
@@ -244,39 +285,42 @@
         loadImage(fixture.away.crest)
       ]);
 
+      restorePanelSurface(context, canvas, rect, scaleX, scaleY);
+
       context.save();
       context.scale(scaleX, scaleY);
       fillCardGradient(context, rect, theme);
 
       context.textAlign = 'center';
-      context.textBaseline = 'alphabetic';
-      context.fillStyle = 'rgba(255, 255, 255, 0.68)';
+      context.textBaseline = 'middle';
+      context.fillStyle = 'rgba(255, 255, 255, 0.70)';
       context.font = '400 16px "Champions Sans", Arial, sans-serif';
-      context.fillText(formatDate(fixture.date), rect.x + rect.width / 2, rect.y + 23);
+      context.fillText(formatDate(fixture.date), rect.x + rect.width / 2, rect.y + 18);
 
-      const crestSize = Math.min(68, Math.max(54, rect.height * 0.48));
-      const crestY = rect.y + 33;
+      const crestSize = Math.min(72, Math.max(58, rect.height * 0.51));
+      const crestY = rect.y + 29;
       const homeCenterX = rect.x + rect.width * 0.27;
       const awayCenterX = rect.x + rect.width * 0.73;
       drawCrestWithShadow(context, homeLogo, homeCenterX - crestSize / 2, crestY, crestSize, crestSize, theme.glow, 13);
       drawCrestWithShadow(context, awayLogo, awayCenterX - crestSize / 2, crestY, crestSize, crestSize, theme.glow, 13);
 
-      const scoreY = crestY + crestSize * 0.62;
-      context.font = '700 32px "Champions Sans", Arial, sans-serif';
+      const scoreX = rect.x + rect.width / 2;
+      const scoreY = rect.y + rect.height / 2;
+      context.font = '700 38px "Champions Sans", Arial, sans-serif';
       context.fillStyle = '#fff';
       context.shadowColor = 'rgba(0, 0, 0, 0.84)';
       context.shadowBlur = 10;
       const score = fixture.score ? `${fixture.score.homeGoals} – ${fixture.score.awayGoals}` : '– –';
-      context.fillText(score, rect.x + rect.width / 2, scoreY);
+      context.fillText(score, scoreX, scoreY);
       context.shadowBlur = 0;
 
       const nameY = rect.y + rect.height - 14;
-      const nameWidth = Math.min(215, rect.width * 0.34);
-      const homeSize = fitFont(context, fixture.home.name, nameWidth, 17, 12, 700);
+      const nameWidth = Math.min(220, rect.width * 0.35);
+      const homeSize = fitFont(context, fixture.home.name, nameWidth, 18, 12, 700);
       context.font = `700 ${homeSize}px "Champions Sans", Arial, sans-serif`;
       context.fillStyle = '#fff';
       context.fillText(fixture.home.name, homeCenterX, nameY, nameWidth);
-      const awaySize = fitFont(context, fixture.away.name, nameWidth, 17, 12, 700);
+      const awaySize = fitFont(context, fixture.away.name, nameWidth, 18, 12, 700);
       context.font = `700 ${awaySize}px "Champions Sans", Arial, sans-serif`;
       context.fillText(fixture.away.name, awayCenterX, nameY, nameWidth);
       context.restore();
@@ -374,6 +418,7 @@
     shareCurrent,
     redrawHeader,
     redrawFixtureCards,
-    fixtureRects
+    fixtureRects,
+    cardOpacity: CARD_OPACITY
   });
 })();
