@@ -38,17 +38,25 @@ body[data-league="uel"] {
 }
 
 @media (min-width: 901px) {
+  body.draw-active .draw-screen {
+    gap: 4px !important;
+  }
+
+  body.draw-active .draw-stage {
+    margin-top: 0 !important;
+  }
+
   body.draw-active .draw-topbar.themed-hero.draw-header-refined {
     position: relative;
     width: min(1014px, 100%) !important;
-    height: 64px !important;
-    min-height: 64px !important;
-    max-height: 64px !important;
+    height: 70px !important;
+    min-height: 70px !important;
+    max-height: 70px !important;
     grid-template-columns: 1fr !important;
     grid-template-rows: 1fr !important;
     align-items: center !important;
     gap: 0 !important;
-    padding: 2px 8px !important;
+    padding: 2px 8px 8px !important;
     box-sizing: border-box;
     border-radius: 16px;
   }
@@ -84,7 +92,7 @@ body[data-league="uel"] {
     position: absolute !important;
     z-index: 2;
     left: 50%;
-    bottom: 1px;
+    bottom: 2px;
     width: min(340px, 55%) !important;
     height: 3px !important;
     margin: 0 !important;
@@ -92,10 +100,10 @@ body[data-league="uel"] {
   }
 
   body.draw-active .draw-topbar.themed-hero.draw-header-refined.is-complete {
-    height: 64px !important;
-    min-height: 64px !important;
-    max-height: 64px !important;
-    padding-block: 2px !important;
+    height: 70px !important;
+    min-height: 70px !important;
+    max-height: 70px !important;
+    padding: 6px 8px !important;
   }
 }
 
