@@ -54,24 +54,16 @@
       "aarhus.png",
       "ararat.png",
       "celje.png",
-      "craiova.png",
       "crvenazvezda.png",
       "dinamo.png",
       "fenerbahce.png",
-      "gornikzabrze.png",
       "hapoel.png",
       "kairat.png",
-      "klaksvik.png",
-      "larne.png",
       "levskisofia.png",
       "mjallby.png",
-      "omonia.png",
-      "poznan.png",
       "sabah.png",
       "slovanbratislava.png",
       "strumgraz.png",
-      "tblisi.png",
-      "vikingurreykjavik.png",
       "zalgiris.png"
     ]
   },
@@ -99,9 +91,17 @@
       "viktoriaplzen.png"
     ],
     "q3": [
+      "craiova.png",
+      "gornikzabrze.png",
       "jagiellonia.png",
+      "klaksvik.png",
+      "larne.png",
+      "omonia.png",
+      "poznan.png",
       "rangers.png",
-      "salzburg.png"
+      "salzburg.png",
+      "tblisi.png",
+      "vikingurreykjavik.png"
     ],
     "q2": [
       "anderlecht.png",
