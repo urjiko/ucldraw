@@ -318,20 +318,29 @@
     });
   }
 
-  const predictionSection = document.getElementById('predictionSection');
-  if (predictionSection) {
-    new MutationObserver((mutations) => {
-      if (mutations.some((mutation) => mutation.type === 'childList' || mutation.attributeName === 'class')) {
-        invalidateExportCache();
-      }
-      queueRefresh();
-    }).observe(predictionSection, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['hidden', 'class', 'value']
-    });
-  }
+  const observationRoot = document.getElementById('predictionSection') || document.body;
+  new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => mutation.type === 'childList' || mutation.attributeName === 'class')) {
+      invalidateExportCache();
+    }
+    queueRefresh();
+  }).observe(observationRoot, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['hidden', 'class', 'value']
+  });
+
+  document.addEventListener('input', (event) => {
+    if (!event.target.closest?.('#predictionSection')) return;
+    invalidateExportCache();
+    queueRefresh();
+  }, true);
+  document.addEventListener('change', (event) => {
+    if (!event.target.closest?.('#predictionSection')) return;
+    invalidateExportCache();
+    queueRefresh();
+  }, true);
 
   window.addEventListener('ucldraw:ai-predictions-applied', () => {
     invalidateExportCache();
