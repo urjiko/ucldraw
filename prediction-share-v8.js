@@ -212,6 +212,22 @@
     return 'downloaded';
   }
 
+  function installHighResolutionExport() {
+    if (!document.querySelector('link[data-prediction-share-v9]')) {
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = 'prediction-share-v9.css';
+      stylesheet.dataset.predictionShareV9 = 'true';
+      document.head.appendChild(stylesheet);
+    }
+    if (window.UCLDRAW_PREDICTION_SHARE_V9 || document.querySelector('script[data-prediction-share-v9]')) return;
+    const script = document.createElement('script');
+    script.src = 'prediction-share-v9.js';
+    script.async = false;
+    script.dataset.predictionShareV9 = 'true';
+    document.body.appendChild(script);
+  }
+
   window.UCLDRAW_PREDICTION_SHARE_V8 = Object.freeze({
     renderShareCard,
     shareCurrent,
@@ -220,4 +236,6 @@
     footerLabel: FOOTER_LABEL,
     siteLink: SITE_LINK
   });
+
+  installHighResolutionExport();
 })();
