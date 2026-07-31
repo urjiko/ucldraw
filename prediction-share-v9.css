@@ -1,0 +1,88 @@
+.prediction-share-v4-button.prediction-share-v9-legacy {
+  display: none !important;
+}
+
+.prediction-share-actions-v4.has-share-v9 {
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.7fr);
+  align-items: stretch;
+}
+
+.prediction-export-group-v9 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.prediction-export-group-v9[hidden] {
+  display: none !important;
+}
+
+.prediction-export-group-v9 .action-button {
+  min-width: 0;
+  padding-inline: 12px;
+  white-space: nowrap;
+}
+
+.prediction-export-copy-v9-button,
+.prediction-export-share-v9-button {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.prediction-export-floating-v9 {
+  position: fixed;
+  z-index: 230;
+  left: 50%;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  width: min(520px, calc(100vw - 24px));
+  padding: 8px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 17px;
+  background:
+    linear-gradient(135deg, rgba(var(--accent-rgb), 0.26), rgba(0, 0, 0, 0.9) 68%),
+    rgba(0, 0, 0, 0.88);
+  box-shadow:
+    0 18px 58px rgba(0, 0, 0, 0.72),
+    0 0 34px rgba(var(--accent-rgb), 0.22);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.prediction-export-floating-v9[hidden] {
+  display: none !important;
+}
+
+.prediction-export-floating-v9 .action-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+
+.prediction-export-floating-v9 .primary {
+  border-color: transparent;
+  background: var(--accent);
+  box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.34);
+}
+
+@media (max-width: 700px) {
+  .prediction-share-actions-v4.has-share-v9 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 460px) {
+  .prediction-export-group-v9,
+  .prediction-export-floating-v9 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prediction-export-share-v9-button,
+  .prediction-export-floating-v9 .prediction-export-v9-button[data-export-action="share"] {
+    grid-column: 1 / -1;
+  }
+}
