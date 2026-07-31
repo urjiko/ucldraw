@@ -1,0 +1,12 @@
+/* Keep the full-height draw grid from stretching empty space between the header and stage. Loaded after v6. */
+@media (min-width: 901px) {
+  body.draw-active .draw-screen {
+    align-content: start !important;
+    grid-auto-rows: max-content !important;
+    gap: 10px !important;
+  }
+
+  body.draw-active .draw-stage {
+    margin-top: 0 !important;
+  }
+}
