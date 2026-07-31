@@ -44,11 +44,14 @@ assert.match(css, /\.prediction-outcome-team:disabled[\s\S]*opacity:\s*1\s*!impo
 assert.match(css, /\.prediction-share-floating[\s\S]*position:\s*fixed/);
 assert.match(css, /bottom:\s*max\(14px, env\(safe-area-inset-bottom\)\)/);
 
-assert.match(css6, /body\.draw-active \.draw-screen[\s\S]*gap:\s*4px\s*!important/);
-assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*height:\s*70px\s*!important/);
-assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*max-height:\s*70px\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-screen[\s\S]*gap:\s*0\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-stage[\s\S]*margin-top:\s*-2px\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*width:\s*min\(1080px, 100%\)\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*height:\s*76px\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*max-height:\s*76px\s*!important/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-refined[\s\S]*padding:\s*2px 8px 12px\s*!important/);
 assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*58px/);
-assert.match(css6, /body\.draw-active \.draw-topbar\.draw-header-refined \.progress-track[\s\S]*position:\s*absolute\s*!important[\s\S]*bottom:\s*2px/);
+assert.match(css6, /body\.draw-active \.draw-topbar\.draw-header-refined \.progress-track[\s\S]*position:\s*absolute\s*!important[\s\S]*bottom:\s*3px/);
 assert.match(css6, /--prediction-header-column-gap:\s*clamp\(18px, 2\.4vw, 28px\)/);
 assert.match(css6, /column-gap:\s*var\(--prediction-header-column-gap\)/);
 
@@ -97,4 +100,4 @@ assert.match(share8, /context\.fillText\(SITE_LINK, FOOTER\.rightX, FOOTER\.text
 assert.match(share8, /await redrawClubCrestWithBlackShadow\(canvas, snapshot\)[\s\S]*redrawFooter\(canvas, snapshot\)/);
 assert.doesNotMatch(share8, /theme\.glow/);
 
-console.log('Relaxed draw header, reversible locks and clean v8 footer checks passed.');
+console.log('Roomier draw header, tighter stage spacing and clean v8 footer checks passed.');
