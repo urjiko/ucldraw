@@ -22,7 +22,9 @@ assert.ok(html.indexOf('prediction-share.js') < html.indexOf('prediction-share-v
 assert.match(controller, /state\.scores = \{\}/);
 assert.match(controller, /state\.matchLocks = \{\}/);
 assert.match(controller, /state\.teamLocks = \{\}/);
-assert.match(controller, /base\.simulateMatchday\(state, matchday\)/);
+assert.match(controller, /function simulateMatchday\(state, matchday/);
+assert.match(controller, /simulateAdjustedScore\(match, state\.comp, state\.seed, version\)/);
+assert.match(controller, /__homeAdvantageModel: true/);
 assert.match(share, /Yapay Zeka Tahmini/);
 assert.match(share, /AI\.predictAll\(\)/);
 assert.match(share, /prediction-share-actions-v2/);
@@ -41,10 +43,26 @@ assert.doesNotMatch(share, /activeRow\.rank/);
 assert.match(css, /prediction-share-button[\s\S]*display: none !important/);
 assert.match(css, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
 
+const home = {
+  name: 'Home FC',
+  poolSlug: 'home-fc',
+  country: 'TUR',
+  coefficient: 50,
+  pot: 2
+};
+const away = {
+  name: 'Away FC',
+  poolSlug: 'away-fc',
+  country: 'ENG',
+  coefficient: 80,
+  pot: 1
+};
 const state = {
+  comp: { id: 'ucl', potCount: 4 },
+  seed: 'share-ai-regression',
   matches: [
-    { id: 'm1', matchday: 1 },
-    { id: 'm2', matchday: 2 }
+    { id: 'm1', matchday: 1, home, away },
+    { id: 'm2', matchday: 2, home: away, away: home }
   ],
   scores: { m1: { homeGoals: 9, awayGoals: 0, source: 'user-score' } },
   matchLocks: { m1: true },
@@ -52,14 +70,8 @@ const state = {
   activeMatchdays: { 1: true },
   rerollVersion: { 1: 7, 2: 4 }
 };
-const simulated = [];
 const base = {
-  createState: () => state,
-  simulateMatchday: (target, matchday) => {
-    simulated.push(matchday);
-    target.activeMatchdays[matchday] = true;
-    target.scores[`ai-${matchday}`] = { homeGoals: matchday, awayGoals: 0, source: 'model' };
-  }
+  createState: () => state
 };
 const context = {
   window: {
@@ -72,16 +84,27 @@ const context = {
       this.detail = options?.detail;
     }
   },
-  console
+  console,
+  Math,
+  Object,
+  Number,
+  String,
+  Boolean,
+  Array,
+  Map,
+  Set,
+  JSON
 };
 vm.runInNewContext(controller, context, { filename: 'prediction-ai-controller.js' });
 const wrappedState = context.window.UCLDRAW_PREDICTION_ENGINE.createState();
 context.window.UCLDRAW_PREDICTION_AI.predictAll(wrappedState);
-assert.deepEqual(simulated, [1, 2]);
 assert.deepEqual(Object.keys(wrappedState.matchLocks), []);
 assert.deepEqual(Object.keys(wrappedState.teamLocks), []);
-assert.equal(wrappedState.scores.m1, undefined);
-assert.equal(wrappedState.scores['ai-1'].source, 'model');
-assert.equal(wrappedState.scores['ai-2'].source, 'model');
+assert.equal(wrappedState.scores.m1.source, 'model');
+assert.equal(wrappedState.scores.m2.source, 'model');
+assert.equal(wrappedState.activeMatchdays[1], true);
+assert.equal(wrappedState.activeMatchdays[2], true);
+assert.equal(wrappedState.rerollVersion[1], 1);
+assert.equal(wrappedState.rerollVersion[2], 1);
 
 console.log('League share card and AI prediction checks passed.');
