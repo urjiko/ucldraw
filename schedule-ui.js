@@ -16,7 +16,7 @@
       label.textContent = 'Durdurmalı Kura';
     });
     document.querySelectorAll('[data-initial-mode="manual"] span').forEach((description) => {
-      description.textContent = 'Takımları akıtır; istediğin anda durdurup seçimi tamamlarsın.';
+      description.textContent = 'Takımları seçtiğin hızda akıtır; istediğin anda durdurup seçimi tamamlarsın.';
     });
   }
 
@@ -54,10 +54,27 @@
     });
   }
 
+  function installManualDrawV2() {
+    if (!document.querySelector('link[data-manual-draw-v2]')) {
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = 'manual-draw-v2.css';
+      stylesheet.dataset.manualDrawV2 = 'true';
+      document.head.appendChild(stylesheet);
+    }
+    if (document.querySelector('script[data-manual-draw-v2]')) return;
+    const script = document.createElement('script');
+    script.src = 'manual-draw-v2.js';
+    script.async = false;
+    script.dataset.manualDrawV2 = 'true';
+    document.body.appendChild(script);
+  }
+
   relocateControlPanel();
   renameControlledMode();
   decorateFixtureSlots();
   decorateOverviewRows();
+  installManualDrawV2();
 
   if (overviewHeading) overviewHeading.textContent = 'Tüm takımların maç haftaları';
   if (overviewDescription) {
