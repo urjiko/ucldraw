@@ -44,6 +44,11 @@ for (const [competitionKey, stages] of Object.entries(manifest)) {
   }
 }
 
+const conferenceEntries = Object.values(manifest.conference)
+  .flat()
+  .map((entry) => (typeof entry === 'string' ? entry : entry.file));
+const expectedConferencePlaceholders = Math.max(0, 36 - conferenceEntries.length);
+
 for (let run = 0; run < 20; run += 1) {
   const context = createContext();
   load('teams.js', context);
@@ -75,7 +80,11 @@ for (let run = 0; run < 20; run += 1) {
   const selectedUcl = new Set(diagnostics.ucl.selectedSlugs);
   allGuaranteedUcl.forEach((slug) => assert.ok(selectedUcl.has(slug), `${slug} must stay guaranteed`));
 
-  assert.equal(diagnostics.uecl.placeholderCount, 9, 'current Conference pool needs nine temporary clubs');
+  assert.equal(
+    diagnostics.uecl.placeholderCount,
+    expectedConferencePlaceholders,
+    'Conference placeholder count must follow the current pool manifest'
+  );
 }
 
 console.log('Team pool generation checks passed.');
