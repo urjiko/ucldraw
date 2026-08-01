@@ -3,7 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const inputPath = path.join(root, 'data', 'home-advantage-matches.json');
+const legacyInputPath = path.join(root, 'data', 'home-advantage-matches.json');
+const inputDirectory = path.join(root, 'data', 'home-advantage-matches');
 const outputPath = path.join(root, 'generated-home-advantage-profiles.js');
 
 const methodology = Object.freeze({
@@ -20,23 +21,27 @@ function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value));
 }
 
-function finiteNumber(value, field, index) {
+function matchLabel(index, sourceFile) {
+  return `${sourceFile} match ${index + 1}`;
+}
+
+function finiteNumber(value, field, index, sourceFile) {
   const number = Number(value);
-  if (!Number.isFinite(number)) throw new Error(`Match ${index + 1}: ${field} must be numeric.`);
+  if (!Number.isFinite(number)) throw new Error(`${matchLabel(index, sourceFile)}: ${field} must be numeric.`);
   return number;
 }
 
-function integer(value, field, index, minimum = 0) {
-  const number = finiteNumber(value, field, index);
+function integer(value, field, index, sourceFile, minimum = 0) {
+  const number = finiteNumber(value, field, index, sourceFile);
   if (!Number.isInteger(number) || number < minimum) {
-    throw new Error(`Match ${index + 1}: ${field} must be an integer >= ${minimum}.`);
+    throw new Error(`${matchLabel(index, sourceFile)}: ${field} must be an integer >= ${minimum}.`);
   }
   return number;
 }
 
-function requiredText(value, field, index) {
+function requiredText(value, field, index, sourceFile) {
   const text = String(value || '').trim();
-  if (!text) throw new Error(`Match ${index + 1}: ${field} is required.`);
+  if (!text) throw new Error(`${matchLabel(index, sourceFile)}: ${field} is required.`);
   return text;
 }
 
@@ -61,33 +66,76 @@ function opponentBand(difference) {
   return 'vsSimilar';
 }
 
-function normalizeMatch(raw, index) {
-  const date = requiredText(raw.date, 'date', index);
+function normalizeMatch(raw, index, sourceFile) {
+  const date = requiredText(raw.date, 'date', index, sourceFile);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`))) {
-    throw new Error(`Match ${index + 1}: date must use YYYY-MM-DD.`);
+    throw new Error(`${matchLabel(index, sourceFile)}: date must use YYYY-MM-DD.`);
   }
-  const competitionType = requiredText(raw.competitionType, 'competitionType', index);
+  const competitionType = requiredText(raw.competitionType, 'competitionType', index, sourceFile);
   if (!['domestic', 'europe'].includes(competitionType)) {
-    throw new Error(`Match ${index + 1}: competitionType must be domestic or europe.`);
+    throw new Error(`${matchLabel(index, sourceFile)}: competitionType must be domestic or europe.`);
   }
   return {
     date,
     competitionType,
     competition: String(raw.competition || '').trim() || null,
-    homeSlug: requiredText(raw.homeSlug, 'homeSlug', index),
+    homeSlug: requiredText(raw.homeSlug, 'homeSlug', index, sourceFile),
     homeName: String(raw.homeName || raw.homeSlug).trim(),
-    homeCountry: requiredText(raw.homeCountry, 'homeCountry', index).toUpperCase(),
-    awaySlug: requiredText(raw.awaySlug, 'awaySlug', index),
+    homeCountry: requiredText(raw.homeCountry, 'homeCountry', index, sourceFile).toUpperCase(),
+    awaySlug: requiredText(raw.awaySlug, 'awaySlug', index, sourceFile),
     awayName: String(raw.awayName || raw.awaySlug).trim(),
-    awayCountry: requiredText(raw.awayCountry, 'awayCountry', index).toUpperCase(),
-    homeCoefficient: finiteNumber(raw.homeCoefficient, 'homeCoefficient', index),
-    awayCoefficient: finiteNumber(raw.awayCoefficient, 'awayCoefficient', index),
-    homePot: integer(raw.homePot, 'homePot', index, 1),
-    awayPot: integer(raw.awayPot, 'awayPot', index, 1),
-    potCount: integer(raw.potCount, 'potCount', index, 1),
-    homeGoals: integer(raw.homeGoals, 'homeGoals', index),
-    awayGoals: integer(raw.awayGoals, 'awayGoals', index)
+    awayCountry: requiredText(raw.awayCountry, 'awayCountry', index, sourceFile).toUpperCase(),
+    homeCoefficient: finiteNumber(raw.homeCoefficient, 'homeCoefficient', index, sourceFile),
+    awayCoefficient: finiteNumber(raw.awayCoefficient, 'awayCoefficient', index, sourceFile),
+    homePot: integer(raw.homePot, 'homePot', index, sourceFile, 1),
+    awayPot: integer(raw.awayPot, 'awayPot', index, sourceFile, 1),
+    potCount: integer(raw.potCount, 'potCount', index, sourceFile, 1),
+    homeGoals: integer(raw.homeGoals, 'homeGoals', index, sourceFile),
+    awayGoals: integer(raw.awayGoals, 'awayGoals', index, sourceFile),
+    sourceFile
   };
+}
+
+function inputFiles() {
+  const files = [];
+  if (fs.existsSync(legacyInputPath)) files.push(legacyInputPath);
+  if (fs.existsSync(inputDirectory)) {
+    files.push(...fs.readdirSync(inputDirectory)
+      .filter((name) => name.endsWith('.json'))
+      .sort((first, second) => first.localeCompare(second))
+      .map((name) => path.join(inputDirectory, name)));
+  }
+  return files;
+}
+
+function loadMatches() {
+  const files = inputFiles();
+  const matches = [];
+  const seen = new Map();
+
+  for (const file of files) {
+    const sourceFile = path.relative(root, file).replaceAll(path.sep, '/');
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (!Array.isArray(raw)) throw new Error(`${sourceFile} must contain an array.`);
+
+    raw.forEach((entry, index) => {
+      const match = normalizeMatch(entry, index, sourceFile);
+      const duplicateKey = [
+        match.date,
+        match.competitionType,
+        match.competition || '',
+        match.homeSlug,
+        match.awaySlug
+      ].join('|');
+      if (seen.has(duplicateKey)) {
+        throw new Error(`Duplicate home-advantage match ${duplicateKey} in ${sourceFile}; already defined in ${seen.get(duplicateKey)}.`);
+      }
+      seen.set(duplicateKey, sourceFile);
+      matches.push(match);
+    });
+  }
+
+  return { files, matches };
 }
 
 function yearsBetween(firstDate, secondDate) {
@@ -221,7 +269,7 @@ function buildProfiles(matches) {
   return profiles;
 }
 
-function generatedSource(matches, profiles) {
+function generatedSource(matches, profiles, files) {
   const latestMatchDate = matches.length
     ? matches.reduce((latest, match) => match.date > latest ? match.date : latest, matches[0].date)
     : null;
@@ -229,7 +277,8 @@ function generatedSource(matches, profiles) {
     matches: matches.length,
     teams: Object.keys(profiles).length,
     domesticMatches: matches.filter((match) => match.competitionType === 'domestic').length,
-    europeanMatches: matches.filter((match) => match.competitionType === 'europe').length
+    europeanMatches: matches.filter((match) => match.competitionType === 'europe').length,
+    files: files.map((file) => path.relative(root, file).replaceAll(path.sep, '/'))
   };
   const payload = {
     version: 1,
@@ -237,15 +286,13 @@ function generatedSource(matches, profiles) {
     latestMatchDate,
     sourceSummary,
     methodology,
-    researchQueue: ['galatasaray', 'trabzonspor'],
+    researchQueue: ['galatasaray', 'trabzonspor', 'fenerbahce', 'besiktas', 'basaksehir', 'samsunspor'],
     profiles
   };
-  return `// Generated by scripts/build-home-advantage-profiles.mjs.\n// Do not hand-edit multipliers. Add normalized match records to data/home-advantage-matches.json.\n(() => {\n  'use strict';\n  window.UCLDRAW_HOME_ADVANTAGE_PROFILES = Object.freeze(${JSON.stringify(payload, null, 2)});\n})();\n`;
+  return `// Generated by scripts/build-home-advantage-profiles.mjs.\n// Do not hand-edit multipliers. Add normalized match records under data/home-advantage-matches*.\n(() => {\n  'use strict';\n  window.UCLDRAW_HOME_ADVANTAGE_PROFILES = Object.freeze(${JSON.stringify(payload, null, 2)});\n})();\n`;
 }
 
-const raw = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
-if (!Array.isArray(raw)) throw new Error('data/home-advantage-matches.json must contain an array.');
-const matches = raw.map(normalizeMatch);
+const { files, matches } = loadMatches();
 const profiles = buildProfiles(matches);
-fs.writeFileSync(outputPath, generatedSource(matches, profiles));
-console.log(`Generated ${path.relative(root, outputPath)} from ${matches.length} matches and ${Object.keys(profiles).length} teams.`);
+fs.writeFileSync(outputPath, generatedSource(matches, profiles, files));
+console.log(`Generated ${path.relative(root, outputPath)} from ${matches.length} matches, ${files.length} files and ${Object.keys(profiles).length} teams.`);

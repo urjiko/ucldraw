@@ -2,129 +2,112 @@
 
 ## Goal
 
-Add a conservative, reproducible home-advantage layer on top of the existing UEFA-coefficient and Poisson prediction model. The layer must remain neutral for clubs without enough data and must never replace current team strength with a historic streak.
+Add a conservative, reproducible home-advantage layer on top of the existing UEFA-coefficient and Poisson prediction model. Historic home form may adjust expected goals, but it must never replace current team strength with a stadium myth or a tiny unbeaten streak.
 
 ## Current coverage
 
-The first sourced data batch covers Galatasaray and Trabzonspor in 2024/25:
+The generated runtime profile now uses **124 home matches**:
 
-- 44 valid home matches in total;
-- 35 Süper Lig matches;
-- 9 UEFA competition matches;
-- 23 Galatasaray matches: 17 domestic and 6 European;
-- 21 Trabzonspor matches: 18 domestic and 3 European.
+- 109 Süper Lig matches;
+- 15 UEFA competition matches;
+- 48 Galatasaray matches: 36 domestic and 12 European;
+- 40 Trabzonspor matches: 37 domestic and 3 European;
+- 18 Fenerbahçe domestic matches;
+- 18 Beşiktaş domestic matches.
+
+Included seasons and teams:
+
+- Galatasaray and Trabzonspor: 2023/24 and 2024/25;
+- Fenerbahçe and Beşiktaş: 2024/25;
+- Galatasaray's 2023/24 Champions League qualifying and group-stage home matches;
+- Galatasaray and Trabzonspor's 2024/25 UEFA home matches.
 
 Galatasaray's awarded 3-0 Adana Demirspor match is excluded because no played score exists. Trabzonspor's St. Gallen tie is stored as 1-1 after extra time; the penalty shootout is not treated as football goals.
 
-This is an initial one-season profile, not a final historical verdict. European splits, especially Trabzonspor's three-match sample, remain deliberately low-confidence until more seasons are added.
+The available OpenFootball 2025/26 Süper Lig file contains results only through the opening part of the season and fixture-only rows afterwards. It is not loaded as a completed season. Incomplete public data is preferable to imaginary completeness only in fiction, not in model inputs.
 
 ## Files
 
-- `data/home-advantage-matches.json`: normalized source matches.
-- `scripts/build-home-advantage-profiles.mjs`: deterministic profile generator.
-- `generated-home-advantage-profiles.js`: generated runtime data.
-- `prediction-ai-controller.js`: applies the profile to AI simulations and affected-matchday rerolls.
-- `tests/home-advantage-model.test.js`: neutral behavior, safety bounds, context selection, and deterministic simulation.
+- `data/home-advantage-matches.json`: original Galatasaray and Trabzonspor 2024/25 batch;
+- `data/home-advantage-matches/*.json`: additional season and club batches;
+- `scripts/build-home-advantage-profiles.mjs`: deterministic multi-file profile generator;
+- `generated-home-advantage-profiles.js`: generated runtime data;
+- `prediction-ai-controller.js`: applies the profile to AI simulations and affected-matchday rerolls;
+- `tests/home-advantage-model.test.js`: source counts, duplicate protection, profile values, safety bounds, neutral fallback, and deterministic simulation.
+
+The generator reads the legacy file first, then every JSON file in `data/home-advantage-matches/` alphabetically. A match duplicated across files stops generation instead of silently counting twice. The generated payload records its input file list.
 
 ## Source registry
 
-The match records use compact `sourceKey` values. Their canonical datasets are:
+The match records use compact `sourceKey` values. Canonical datasets include:
 
+- `openfootball-turkey-2023-24`: `openfootball/europe`, `turkey/2023-24_tr1.txt`;
 - `openfootball-turkey-2024-25`: `openfootball/europe`, `turkey/2024-25_tr1.txt`;
+- `openfootball-ucl-2023-24`: `openfootball/champions-league`, `2023-24/cl.txt`;
+- `openfootball-uclq-2023-24`: UEFA qualifying results cross-checked with match-result archives;
 - `openfootball-uclq-2024-25`: `openfootball/champions-league`, `2024-25/clq.txt`;
 - `openfootball-uel-2024-25`: `openfootball/champions-league`, `2024-25/el.txt`;
 - `openfootball-uelq-2024-25`: `openfootball/champions-league`, `2024-25/elq.txt`;
 - `openfootball-ueclq-2024-25`: `openfootball/champions-league`, `2024-25/confq.txt`.
 
-OpenFootball publishes these datasets under CC0-1.0. Match records are committed locally so runtime predictions do not depend on an external service.
+OpenFootball publishes its football datasets under CC0-1.0. Match records are committed locally, so runtime predictions do not depend on a third-party service remaining online.
 
-## Strength proxy used by the first batch
+## Strength proxy
 
-Historical match strength is estimated with the same logarithmic UEFA-coefficient function used by the prediction engine. The first batch uses the 2026 five-year club coefficients already maintained by the project.
+Historical opponent strength is estimated with the same logarithmic UEFA-coefficient function used by the prediction engine. The data currently uses the project's 2026 five-year coefficient snapshot.
 
-For Turkish clubs without a higher individual five-year value, the 2026 Turkish association floor of `10.375` is used. Historical records set `homePot`, `awayPot`, and `potCount` to `1`, which disables pot bonuses. This prevents current league-phase pots from being projected backwards onto domestic or qualifying matches.
+For Turkish clubs without a higher individual value, the 2026 Turkish association floor of `10.375` is used. Historical records set `homePot`, `awayPot`, and `potCount` to `1`, disabling pot bonuses. This prevents 2026 league-phase pots from being projected backwards onto domestic or qualifying matches and avoids counting the same strength signal twice.
 
-This is a transparent approximation. A later data revision may replace current coefficients with season-specific pre-match ratings, but it must regenerate every affected profile and pass the same deterministic checks.
-
-## Match input schema
-
-Each match record contains:
-
-```json
-{
-  "date": "2024-11-07",
-  "competitionType": "europe",
-  "competition": "UEFA Europa League 2024/25",
-  "homeSlug": "galatasaray",
-  "homeName": "Galatasaray",
-  "homeCountry": "TUR",
-  "awaySlug": "tottenham",
-  "awayName": "Tottenham Hotspur",
-  "awayCountry": "ENG",
-  "homeCoefficient": 53.5,
-  "awayCoefficient": 82,
-  "homePot": 1,
-  "awayPot": 1,
-  "potCount": 1,
-  "homeGoals": 3,
-  "awayGoals": 2,
-  "sourceKey": "openfootball-uel-2024-25"
-}
-```
+This is a transparent approximation. A later revision may replace current coefficients with season-specific pre-match Elo or coefficient values, but it must regenerate every affected profile and pass the deterministic checks.
 
 ## Method
 
-1. Recreate the current model's expected home and away goals for every historical match.
+1. Recreate the base model's expected home and away goals for every historical match.
 2. Compare actual goals with those expected goals.
 3. Weight recent matches more heavily with a three-year half-life.
-4. Produce separate home attack and away-goal multipliers.
+4. Produce separate home attack and visiting-goal multipliers.
 5. Split context into overall, domestic, Europe, stronger, similar, and weaker opponents.
 6. Create opponent-country interactions only after at least six matches.
 7. Shrink every estimate toward `1.0` according to effective sample size.
-8. Clamp attack and concession effects to conservative limits.
+8. Clamp attack and visiting-goal effects to conservative limits.
 
-## Reading the generated values
+## Reading the values
 
-- `attack > 1.0`: the home team scored more than the base model expected.
-- `attack < 1.0`: the home team scored less than expected.
-- `defense < 1.0`: visiting teams scored less than expected, indicating a positive home defensive effect.
-- `defense > 1.0`: visiting teams scored more than expected. Despite the internal property name, this is a multiplier applied to away expected goals, not a defensive-quality score.
+- `attack > 1.0`: the home team scored more than the base model expected;
+- `attack < 1.0`: the home team scored less than expected;
+- `defense < 1.0`: visiting teams scored less than expected, a positive home defensive effect;
+- `defense > 1.0`: visiting teams scored more than expected;
 - `confidence`: effective sample size after recency weighting and prior shrinkage.
 
-The first batch produces these broad signals:
+The internal property remains named `defense` for compatibility, but it is applied to the visiting team's expected goals. It is not a defensive-quality score where a larger number is better.
 
-- Galatasaray: strong positive home scoring residual domestically and in Europe; the away-goal multiplier is above `1.0`, so the data does not justify granting a defensive bonus.
-- Trabzonspor: strong domestic home scoring residual; the three-game European attack split is below `1.0` and low-confidence, so it only nudges rather than controls European predictions.
+## Current profile signals
 
-Several attack estimates reach the safety ceiling of `1.18`. That is intentional: the model records that the measured residual is at least that strong without allowing one season to inflate expected goals indefinitely.
+- **Galatasaray:** domestic attack remains at the `1.18` safety ceiling. European attack settles at `1.1513` across 12 matches, lower than the first one-season estimate but supported by more evidence. The data still does not justify a home defensive bonus.
+- **Trabzonspor:** domestic attack remains at the `1.18` ceiling. Adding 2023/24 moves the stronger-opponent attack value from `0.9295` to `0.9806`, reducing the one-season penalty. European estimates still rely on only three matches.
+- **Fenerbahçe:** 2024/25 domestic attack is `1.1128`. Most matches are classified against weaker opponents, so the similar- and stronger-opponent splits remain weakly informed.
+- **Beşiktaş:** 2024/25 domestic attack is `1.1459`. The small stronger-opponent sample produces a positive visiting-goal suppression signal, while the broader sample does not support a general defensive bonus.
+
+Several attack or visiting-goal values hit their safety bounds. A bound means the measured residual is at least that strong under the current proxy; it does not authorize the model to extrapolate indefinitely.
 
 ## Runtime behavior
 
 The model adjusts expected goals, not the final score directly:
 
-- home attack multiplier modifies the home expected-goal value;
-- the internal `defense` multiplier modifies the visiting team's expected-goal value;
-- teams without a profile remain exactly on the previous algorithm;
-- association-specific history is capped at 45% confidence even when the raw sample reports a higher value;
-- the seeded Poisson simulation remains reproducible.
+- home attack multiplier modifies home expected goals;
+- the internal `defense` multiplier modifies visiting expected goals;
+- teams without a profile remain on the previous algorithm;
+- association-specific history is capped at 45% confidence;
+- the seeded Poisson simulation remains reproducible;
+- adding a club profile does not alter draw pot construction or coefficient chain sorting.
 
-## Research stages
+## Research queue
 
-### Stage 1: active
-
-- Galatasaray and Trabzonspor 2024/25 complete.
-- Add 2023/24 and 2025/26 to reduce single-season noise.
-- Validate season-specific coefficient or Elo alternatives before changing the strength proxy.
-
-### Stage 2
-
-- Remaining Turkish clubs and clubs with large home/away residuals.
-- Prioritize Fenerbahçe, Beşiktaş, İstanbul Başakşehir, and Samsunspor.
-
-### Stage 3
-
-- Fill every active 108-club league-phase roster.
-- Expand to all candidate-pool clubs only after source coverage and aliases pass validation.
+1. Complete adjacent-season European samples for Fenerbahçe and Beşiktaş.
+2. Add İstanbul Başakşehir and Samsunspor.
+3. Add remaining Turkish clubs with sufficient European or domestic coverage.
+4. Expand to active league-phase clubs, preserving coefficient and pot regression checks.
+5. Expand to candidate-pool clubs only after aliases and source coverage pass validation.
 
 ## Update command
 
@@ -132,4 +115,4 @@ The model adjusts expected goals, not the final score directly:
 node scripts/build-home-advantage-profiles.mjs
 ```
 
-The generated file must not change when the normalized input has not changed.
+The generated file must remain byte-for-byte unchanged when the source records have not changed.
