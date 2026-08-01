@@ -61,11 +61,13 @@ jobs:
           node --check branding-fixes.js
           node --check generated-team-pools.js
           node --check generated-club-coefficients.js
+          node --check generated-home-advantage-profiles.js
           node --check team-pool-loader.js
           node --check coefficient-pots.js
           node --check scripts/generate-team-pools.mjs
           node --check scripts/update-uefa-coefficients.mjs
           node --check scripts/stabilize-coefficient-snapshot.mjs
+          node --check scripts/build-home-advantage-profiles.mjs
       - name: Check generated team pools and coefficients
         run: |
           node scripts/generate-team-pools.mjs
@@ -75,6 +77,11 @@ jobs:
           node tests/uefa-coefficients.test.mjs
           node tests/generated-coefficients.test.js
           node tests/roster-manager.test.js
+      - name: Check generated home advantage profiles
+        run: |
+          node scripts/build-home-advantage-profiles.mjs
+          git diff --exit-code -- generated-home-advantage-profiles.js
+          node tests/home-advantage-model.test.js
       - name: Check base HTML and controls
         run: |
           node tests/ui-v3.test.js
