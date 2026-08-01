@@ -10,6 +10,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const source = read('prediction-ai-controller.js');
 const builderSource = read('scripts/build-home-advantage-profiles.mjs');
 const generatedSource = read('generated-home-advantage-profiles.js');
+const profileSnapshotDate = '2025-06-01';
 
 const modularDirectory = path.join(root, 'data', 'home-advantage-matches');
 const dataFiles = [
@@ -28,32 +29,42 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 124, 'Expanded source set must contain 124 home matches.');
+assert.equal(records.length, 160, 'Expanded source set must contain 160 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Home-advantage source matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 109);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 145);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 assert.equal(records.filter((match) => match.homeSlug === 'galatasaray').length, 48);
 assert.equal(records.filter((match) => match.homeSlug === 'trabzonspor').length, 40);
 assert.equal(records.filter((match) => match.homeSlug === 'fenerbahce').length, 18);
 assert.equal(records.filter((match) => match.homeSlug === 'besiktas').length, 18);
+assert.equal(records.filter((match) => match.homeSlug === 'basaksehir').length, 18);
+assert.equal(records.filter((match) => match.homeSlug === 'samsunspor').length, 18);
 assert.match(builderSource, /readdirSync\(inputDirectory\)/);
 assert.match(builderSource, /Duplicate home-advantage match/);
-assert.match(builderSource, /researchQueue: \['galatasaray', 'trabzonspor', 'fenerbahce', 'besiktas'/);
+assert.match(builderSource, /researchQueue: \['goztepe', 'konyaspor', 'rizespor', 'gaziantep', 'alanyaspor', 'kasimpasa'/);
 
 const generatedContext = { window: {}, Object };
 vm.runInNewContext(generatedSource, generatedContext, { filename: 'generated-home-advantage-profiles.js' });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
-assert.equal(generated.sourceSummary.matches, 124);
-assert.equal(generated.sourceSummary.teams, 4);
+assert.equal(generated.latestMatchDate, profileSnapshotDate);
+assert.equal(generated.sourceSummary.matches, 160);
+assert.equal(generated.sourceSummary.teams, 6);
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
 assert.equal(generated.profiles.galatasaray.samples.overall.raw, 48);
 assert.equal(generated.profiles.trabzonspor.samples.overall.raw, 40);
 assert.equal(generated.profiles.fenerbahce.samples.overall.raw, 18);
 assert.equal(generated.profiles.besiktas.samples.overall.raw, 18);
-assert.equal(generated.profiles.galatasaray.attack.europe, 1.1513);
+assert.equal(generated.profiles.basaksehir.samples.overall.raw, 18);
+assert.equal(generated.profiles.samsunspor.samples.overall.raw, 18);
+assert.equal(generated.profiles.galatasaray.attack.europe, 1.1512);
 assert.equal(generated.profiles.trabzonspor.attack.vsStronger, 0.9806);
-assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1128);
-assert.equal(generated.profiles.besiktas.attack.domestic, 1.1459);
+assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1127);
+assert.equal(generated.profiles.besiktas.attack.domestic, 1.1458);
+assert.equal(generated.profiles.basaksehir.attack.domestic, 1.1035);
+assert.equal(generated.profiles.basaksehir.attack.vsWeaker, 1.1646);
+assert.equal(generated.profiles.basaksehir.attack.vsSimilar, 0.9493);
+assert.equal(generated.profiles.samsunspor.attack.domestic, 1.1437);
+assert.equal(generated.profiles.samsunspor.attack.vsSimilar, 1.1503);
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
 const strongerAway = { name: 'Liverpool', poolSlug: 'liverpool', country: 'ENG', coefficient: 130, pot: 1 };
