@@ -27,15 +27,40 @@ assert.equal(data.clubs.psg.coefficient, 132);
 assert.equal(data.clubs.liverpool.coefficient, 130);
 assert.equal(data.clubs.inter.coefficient, 127);
 
+function slugFor(entry) {
+  const file = typeof entry === 'string' ? entry : entry.file;
+  return file.replace(/\.png$/i, '').toLowerCase();
+}
+
 const poolSlugs = new Set();
+const guaranteedSlugs = new Set();
+const qualifierSlugs = new Set();
 Object.values(manifest).forEach((competition) => {
-  Object.values(competition).forEach((files) => {
-    files.forEach((file) => poolSlugs.add(file.replace(/\.png$/i, '').toLowerCase()));
+  Object.entries(competition).forEach(([stage, entries]) => {
+    entries.forEach((entry) => {
+      const slug = slugFor(entry);
+      poolSlugs.add(slug);
+      if (stage === 'guaranteed') guaranteedSlugs.add(slug);
+      else qualifierSlugs.add(slug);
+    });
   });
 });
 
-const uncovered = [...poolSlugs].filter((slug) => !data.clubs[slug] && !reviewedFallbacks.has(slug));
-assert.deepEqual(uncovered, [], `Every pool crest needs a coefficient: ${uncovered.join(', ')}`);
+const hasCoefficient = (slug) => Boolean(data.clubs[slug] || reviewedFallbacks.has(slug));
+const uncoveredGuaranteed = [...guaranteedSlugs].filter((slug) => !hasCoefficient(slug));
+assert.deepEqual(
+  uncoveredGuaranteed,
+  [],
+  `Every guaranteed pool crest needs a coefficient: ${uncoveredGuaranteed.join(', ')}`
+);
+
+const uncovered = [...poolSlugs].filter((slug) => !hasCoefficient(slug));
+const invalidFallbacks = uncovered.filter((slug) => !qualifierSlugs.has(slug));
+assert.deepEqual(
+  invalidFallbacks,
+  [],
+  `Only qualification-stage candidates may use the missing-coefficient fallback: ${invalidFallbacks.join(', ')}`
+);
 
 for (const [slug, record] of Object.entries(data.clubs)) {
   assert.ok(Number.isFinite(record.coefficient), `${slug} has an invalid coefficient.`);
@@ -43,4 +68,7 @@ for (const [slug, record] of Object.entries(data.clubs)) {
   assert.match(record.country, /^[A-Z]{3}$/, `${slug} has an invalid country code.`);
 }
 
-console.log(`Generated coefficient checks passed for ${poolSlugs.size} pool crests.`);
+console.log(
+  `Generated coefficient checks passed for ${poolSlugs.size} pool crests; `
+  + `${uncovered.length} qualification candidates use the tested last-pot fallback.`
+);
