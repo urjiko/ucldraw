@@ -1,4 +1,4 @@
-/* Fixture row hierarchy: Pot · Team · Country · Matchweek. */
+/* Fixture row hierarchy: Pot · Team · Country. Matchweek already lives in the H1/H2 slot marker. */
 .fixture-slot:disabled {
   opacity: 1;
   color: #fff;
@@ -13,14 +13,18 @@
   white-space: nowrap;
 }
 .fixture-pot,
-.fixture-country,
-.fixture-week {
+.fixture-country {
   flex: 0 0 auto;
   color: rgba(255, 255, 255, 0.48);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.035em;
 }
+.fixture-country {
+  margin-left: auto;
+  letter-spacing: 0.07em;
+}
+.fixture-week { display: none !important; }
 .fixture-team.fixture-team-primary {
   min-width: 0;
   flex: 1 1 auto;
@@ -42,7 +46,6 @@
 @media (max-width: 680px) {
   .fixture-info-line { gap: 6px; }
   .fixture-pot,
-  .fixture-country,
-  .fixture-week { font-size: 0.58rem; }
+  .fixture-country { font-size: 0.58rem; }
   .fixture-team.fixture-team-primary { font-size: 0.78rem; }
 }
