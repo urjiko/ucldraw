@@ -123,6 +123,12 @@
   }
 }
 
+@media (max-width: 930px), (orientation: portrait) {
+  body.draw-active .flying-card {
+    display: none !important;
+  }
+}
+
 @media (max-width: 680px), (orientation: portrait) {
   .fixture-inline-roulette {
     grid-template-columns: 38px minmax(0, 1fr) auto;
