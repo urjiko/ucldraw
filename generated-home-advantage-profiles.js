@@ -4,15 +4,16 @@
   'use strict';
   window.UCLDRAW_HOME_ADVANTAGE_PROFILES = Object.freeze({
   "version": 1,
-  "generatedAt": "2025-05-31T00:00:00.000Z",
-  "latestMatchDate": "2025-05-31",
+  "generatedAt": "2025-06-01T00:00:00.000Z",
+  "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "matches": 124,
-    "teams": 4,
-    "domesticMatches": 109,
+    "matches": 160,
+    "teams": 6,
+    "domesticMatches": 145,
     "europeanMatches": 15,
     "files": [
       "data/home-advantage-matches.json",
+      "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json"
     ]
@@ -33,22 +34,93 @@
     ]
   },
   "researchQueue": [
-    "galatasaray",
-    "trabzonspor",
-    "fenerbahce",
-    "besiktas",
-    "basaksehir",
-    "samsunspor"
+    "goztepe",
+    "konyaspor",
+    "rizespor",
+    "gaziantep",
+    "alanyaspor",
+    "kasimpasa"
   ],
   "profiles": {
+    "basaksehir": {
+      "name": "İstanbul Başakşehir",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.0855,
+        "domestic": 1.1035,
+        "europe": 1,
+        "vsStronger": 0.9831,
+        "vsSimilar": 0.9493,
+        "vsWeaker": 1.1646
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 0.9626,
+        "vsWeaker": 1.1535
+      },
+      "confidence": {
+        "overall": 0.4781,
+        "domestic": 0.5788,
+        "europe": 0,
+        "vsStronger": 0.1367,
+        "vsSimilar": 0.2358,
+        "vsWeaker": 0.4756
+      },
+      "defenseConfidence": {
+        "overall": 0.4781,
+        "domestic": 0.5788,
+        "europe": 0,
+        "vsStronger": 0.1367,
+        "vsSimilar": 0.2358,
+        "vsWeaker": 0.4756
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.49
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.49
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.9
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.7
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 10.88
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.1035,
+          "defense": 1.16,
+          "confidence": 0.5788,
+          "samples": 18,
+          "effectiveSample": 16.49
+        }
+      }
+    },
     "besiktas": {
       "name": "Beşiktaş",
       "country": "TUR",
       "attack": {
         "overall": 1.1205,
-        "domestic": 1.1459,
+        "domestic": 1.1458,
         "europe": 1,
-        "vsStronger": 1.0546,
+        "vsStronger": 1.0545,
         "vsSimilar": 1.131,
         "vsWeaker": 1
       },
@@ -61,29 +133,29 @@
         "vsWeaker": 1
       },
       "confidence": {
-        "overall": 0.4785,
-        "domestic": 0.5792,
+        "overall": 0.4783,
+        "domestic": 0.579,
         "europe": 0,
-        "vsStronger": 0.134,
-        "vsSimilar": 0.5499,
+        "vsStronger": 0.1339,
+        "vsSimilar": 0.5497,
         "vsWeaker": 0
       },
       "defenseConfidence": {
-        "overall": 0.4785,
-        "domestic": 0.5792,
+        "overall": 0.4783,
+        "domestic": 0.579,
         "europe": 0,
-        "vsStronger": 0.134,
-        "vsSimilar": 0.5499,
+        "vsStronger": 0.1339,
+        "vsSimilar": 0.5497,
         "vsWeaker": 0
       },
       "samples": {
         "overall": {
           "raw": 18,
-          "effective": 16.52
+          "effective": 16.5
         },
         "domestic": {
           "raw": 18,
-          "effective": 16.52
+          "effective": 16.5
         },
         "europe": {
           "raw": 0,
@@ -91,11 +163,11 @@
         },
         "vsStronger": {
           "raw": 2,
-          "effective": 1.86
+          "effective": 1.85
         },
         "vsSimilar": {
           "raw": 16,
-          "effective": 14.66
+          "effective": 14.65
         },
         "vsWeaker": {
           "raw": 0,
@@ -104,11 +176,11 @@
       },
       "associationMatchups": {
         "TUR": {
-          "attack": 1.1459,
+          "attack": 1.1458,
           "defense": 1.1334,
-          "confidence": 0.5792,
+          "confidence": 0.579,
           "samples": 18,
-          "effectiveSample": 16.52
+          "effectiveSample": 16.5
         }
       }
     },
@@ -117,7 +189,7 @@
       "country": "TUR",
       "attack": {
         "overall": 1.0932,
-        "domestic": 1.1128,
+        "domestic": 1.1127,
         "europe": 1,
         "vsStronger": 1,
         "vsSimilar": 0.9777,
@@ -128,33 +200,33 @@
         "domestic": 1.16,
         "europe": 1,
         "vsStronger": 1,
-        "vsSimilar": 1.1333,
+        "vsSimilar": 1.1332,
         "vsWeaker": 1.16
       },
       "confidence": {
-        "overall": 0.4795,
-        "domestic": 0.5801,
+        "overall": 0.4793,
+        "domestic": 0.58,
         "europe": 0,
         "vsStronger": 0,
         "vsSimilar": 0.0663,
-        "vsWeaker": 0.5672
+        "vsWeaker": 0.5671
       },
       "defenseConfidence": {
-        "overall": 0.4795,
-        "domestic": 0.5801,
+        "overall": 0.4793,
+        "domestic": 0.58,
         "europe": 0,
         "vsStronger": 0,
         "vsSimilar": 0.0663,
-        "vsWeaker": 0.5672
+        "vsWeaker": 0.5671
       },
       "samples": {
         "overall": {
           "raw": 18,
-          "effective": 16.58
+          "effective": 16.57
         },
         "domestic": {
           "raw": 18,
-          "effective": 16.58
+          "effective": 16.57
         },
         "europe": {
           "raw": 0,
@@ -170,16 +242,16 @@
         },
         "vsWeaker": {
           "raw": 17,
-          "effective": 15.73
+          "effective": 15.72
         }
       },
       "associationMatchups": {
         "TUR": {
-          "attack": 1.1128,
+          "attack": 1.1127,
           "defense": 1.16,
-          "confidence": 0.5801,
+          "confidence": 0.58,
           "samples": 18,
-          "effectiveSample": 16.58
+          "effectiveSample": 16.57
         }
       }
     },
@@ -189,7 +261,7 @@
       "attack": {
         "overall": 1.18,
         "domestic": 1.18,
-        "europe": 1.1513,
+        "europe": 1.1512,
         "vsStronger": 0.9948,
         "vsSimilar": 1.0901,
         "vsWeaker": 1.18
@@ -199,37 +271,37 @@
         "domestic": 1.16,
         "europe": 1.16,
         "vsStronger": 1.0673,
-        "vsSimilar": 1.137,
+        "vsSimilar": 1.1369,
         "vsWeaker": 1.16
       },
       "confidence": {
-        "overall": 0.6821,
-        "domestic": 0.7092,
-        "europe": 0.4382,
+        "overall": 0.682,
+        "domestic": 0.7091,
+        "europe": 0.438,
         "vsStronger": 0.0544,
-        "vsSimilar": 0.3252,
-        "vsWeaker": 0.7282
+        "vsSimilar": 0.3251,
+        "vsWeaker": 0.7281
       },
       "defenseConfidence": {
-        "overall": 0.6821,
-        "domestic": 0.7092,
-        "europe": 0.4382,
+        "overall": 0.682,
+        "domestic": 0.7091,
+        "europe": 0.438,
         "vsStronger": 0.0544,
-        "vsSimilar": 0.3252,
-        "vsWeaker": 0.7282
+        "vsSimilar": 0.3251,
+        "vsWeaker": 0.7281
       },
       "samples": {
         "overall": {
           "raw": 48,
-          "effective": 38.62
+          "effective": 38.6
         },
         "domestic": {
           "raw": 36,
-          "effective": 29.27
+          "effective": 29.25
         },
         "europe": {
           "raw": 12,
-          "effective": 9.36
+          "effective": 9.35
         },
         "vsStronger": {
           "raw": 1,
@@ -241,16 +313,87 @@
         },
         "vsWeaker": {
           "raw": 40,
-          "effective": 32.15
+          "effective": 32.13
         }
       },
       "associationMatchups": {
         "TUR": {
           "attack": 1.18,
           "defense": 1.16,
-          "confidence": 0.7092,
+          "confidence": 0.7091,
           "samples": 36,
-          "effectiveSample": 29.27
+          "effectiveSample": 29.25
+        }
+      }
+    },
+    "samsunspor": {
+      "name": "Samsunspor",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.1187,
+        "domestic": 1.1437,
+        "europe": 1,
+        "vsStronger": 0.9933,
+        "vsSimilar": 1.1503,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.0412,
+        "domestic": 1.0499,
+        "europe": 1,
+        "vsStronger": 1.0522,
+        "vsSimilar": 1.0176,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4777,
+        "domestic": 0.5784,
+        "europe": 0,
+        "vsStronger": 0.1327,
+        "vsSimilar": 0.5493,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4777,
+        "domestic": 0.5784,
+        "europe": 0,
+        "vsStronger": 0.1327,
+        "vsSimilar": 0.5493,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.46
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.46
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.84
+        },
+        "vsSimilar": {
+          "raw": 16,
+          "effective": 14.62
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.1437,
+          "defense": 1.0499,
+          "confidence": 0.5784,
+          "samples": 18,
+          "effectiveSample": 16.46
         }
       }
     },
@@ -263,7 +406,7 @@
         "europe": 0.9057,
         "vsStronger": 0.9806,
         "vsSimilar": 1.18,
-        "vsWeaker": 0.9746
+        "vsWeaker": 0.9747
       },
       "defense": {
         "overall": 1.0973,
@@ -271,36 +414,36 @@
         "europe": 0.9405,
         "vsStronger": 1.16,
         "vsSimilar": 1.0124,
-        "vsWeaker": 0.9356
+        "vsWeaker": 0.9357
       },
       "confidence": {
-        "overall": 0.646,
-        "domestic": 0.7166,
-        "europe": 0.1721,
-        "vsStronger": 0.2583,
-        "vsSimilar": 0.6988,
-        "vsWeaker": 0.0644
+        "overall": 0.6458,
+        "domestic": 0.7165,
+        "europe": 0.172,
+        "vsStronger": 0.2582,
+        "vsSimilar": 0.6986,
+        "vsWeaker": 0.0643
       },
       "defenseConfidence": {
-        "overall": 0.646,
-        "domestic": 0.7166,
-        "europe": 0.1721,
-        "vsStronger": 0.2583,
-        "vsSimilar": 0.6988,
-        "vsWeaker": 0.0644
+        "overall": 0.6458,
+        "domestic": 0.7165,
+        "europe": 0.172,
+        "vsStronger": 0.2582,
+        "vsSimilar": 0.6986,
+        "vsWeaker": 0.0643
       },
       "samples": {
         "overall": {
           "raw": 40,
-          "effective": 32.84
+          "effective": 32.82
         },
         "domestic": {
           "raw": 37,
-          "effective": 30.35
+          "effective": 30.33
         },
         "europe": {
           "raw": 3,
-          "effective": 2.5
+          "effective": 2.49
         },
         "vsStronger": {
           "raw": 5,
@@ -308,7 +451,7 @@
         },
         "vsSimilar": {
           "raw": 34,
-          "effective": 27.83
+          "effective": 27.82
         },
         "vsWeaker": {
           "raw": 1,
@@ -319,9 +462,9 @@
         "TUR": {
           "attack": 1.18,
           "defense": 1.1359,
-          "confidence": 0.7166,
+          "confidence": 0.7165,
           "samples": 37,
-          "effectiveSample": 30.35
+          "effectiveSample": 30.33
         }
       }
     }
