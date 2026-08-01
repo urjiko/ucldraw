@@ -6,7 +6,54 @@ const vm = require('node:vm');
 const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
-const source = fs.readFileSync(path.join(root, 'prediction-ai-controller.js'), 'utf8');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
+const source = read('prediction-ai-controller.js');
+const builderSource = read('scripts/build-home-advantage-profiles.mjs');
+const generatedSource = read('generated-home-advantage-profiles.js');
+
+const modularDirectory = path.join(root, 'data', 'home-advantage-matches');
+const dataFiles = [
+  'data/home-advantage-matches.json',
+  ...fs.readdirSync(modularDirectory)
+    .filter((name) => name.endsWith('.json'))
+    .sort()
+    .map((name) => `data/home-advantage-matches/${name}`)
+];
+const records = dataFiles.flatMap((file) => JSON.parse(read(file)));
+const matchKeys = records.map((match) => [
+  match.date,
+  match.competitionType,
+  match.competition || '',
+  match.homeSlug,
+  match.awaySlug
+].join('|'));
+
+assert.equal(records.length, 124, 'Expanded source set must contain 124 home matches.');
+assert.equal(new Set(matchKeys).size, records.length, 'Home-advantage source matches must be unique.');
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 109);
+assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
+assert.equal(records.filter((match) => match.homeSlug === 'galatasaray').length, 48);
+assert.equal(records.filter((match) => match.homeSlug === 'trabzonspor').length, 40);
+assert.equal(records.filter((match) => match.homeSlug === 'fenerbahce').length, 18);
+assert.equal(records.filter((match) => match.homeSlug === 'besiktas').length, 18);
+assert.match(builderSource, /readdirSync\(inputDirectory\)/);
+assert.match(builderSource, /Duplicate home-advantage match/);
+assert.match(builderSource, /researchQueue: \['galatasaray', 'trabzonspor', 'fenerbahce', 'besiktas'/);
+
+const generatedContext = { window: {}, Object };
+vm.runInNewContext(generatedSource, generatedContext, { filename: 'generated-home-advantage-profiles.js' });
+const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
+assert.equal(generated.sourceSummary.matches, 124);
+assert.equal(generated.sourceSummary.teams, 4);
+assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
+assert.equal(generated.profiles.galatasaray.samples.overall.raw, 48);
+assert.equal(generated.profiles.trabzonspor.samples.overall.raw, 40);
+assert.equal(generated.profiles.fenerbahce.samples.overall.raw, 18);
+assert.equal(generated.profiles.besiktas.samples.overall.raw, 18);
+assert.equal(generated.profiles.galatasaray.attack.europe, 1.1513);
+assert.equal(generated.profiles.trabzonspor.attack.vsStronger, 0.9806);
+assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1128);
+assert.equal(generated.profiles.besiktas.attack.domestic, 1.1459);
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
 const strongerAway = { name: 'Liverpool', poolSlug: 'liverpool', country: 'ENG', coefficient: 130, pot: 1 };
@@ -142,4 +189,4 @@ state.rerollVersion[1] = 0;
 engine.simulateMatchday(state, 1);
 assert.equal(JSON.stringify(state.scores[match.id]), firstScore, 'Seeded adjusted predictions must remain reproducible.');
 
-console.log('Home advantage prediction model checks passed.');
+console.log('Home advantage data and prediction model checks passed.');
