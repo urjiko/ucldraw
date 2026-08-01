@@ -4,13 +4,13 @@
   'use strict';
   window.UCLDRAW_HOME_ADVANTAGE_PROFILES = Object.freeze({
   "version": 1,
-  "generatedAt": null,
-  "latestMatchDate": null,
+  "generatedAt": "2025-05-30T00:00:00.000Z",
+  "latestMatchDate": "2025-05-30",
   "sourceSummary": {
-    "matches": 0,
-    "teams": 0,
-    "domesticMatches": 0,
-    "europeanMatches": 0
+    "matches": 44,
+    "teams": 2,
+    "domesticMatches": 35,
+    "europeanMatches": 9
   },
   "methodology": {
     "recencyHalfLifeYears": 3,
@@ -31,6 +31,149 @@
     "galatasaray",
     "trabzonspor"
   ],
-  "profiles": {}
+  "profiles": {
+    "galatasaray": {
+      "name": "Galatasaray",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.1792,
+        "europe": 1.1684,
+        "vsStronger": 1,
+        "vsSimilar": 1.0858,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1.16,
+        "vsStronger": 1,
+        "vsSimilar": 1.039,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.5359,
+        "domestic": 0.5632,
+        "europe": 0.3066,
+        "vsStronger": 0,
+        "vsSimilar": 0.2315,
+        "vsWeaker": 0.5886
+      },
+      "defenseConfidence": {
+        "overall": 0.5359,
+        "domestic": 0.5632,
+        "europe": 0.3066,
+        "vsStronger": 0,
+        "vsSimilar": 0.2315,
+        "vsWeaker": 0.5886
+      },
+      "samples": {
+        "overall": {
+          "raw": 23,
+          "effective": 20.78
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.48
+        },
+        "europe": {
+          "raw": 6,
+          "effective": 5.31
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.62
+        },
+        "vsWeaker": {
+          "raw": 19,
+          "effective": 17.17
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.1792,
+          "defense": 1.16,
+          "confidence": 0.5632,
+          "samples": 17,
+          "effectiveSample": 15.48
+        }
+      }
+    },
+    "trabzonspor": {
+      "name": "Trabzonspor",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 0.9056,
+        "vsStronger": 0.9295,
+        "vsSimilar": 1.18,
+        "vsWeaker": 0.9746
+      },
+      "defense": {
+        "overall": 1.0437,
+        "domestic": 1.0852,
+        "europe": 0.9404,
+        "vsStronger": 1.0843,
+        "vsSimilar": 1.0261,
+        "vsWeaker": 0.9356
+      },
+      "confidence": {
+        "overall": 0.5141,
+        "domestic": 0.5797,
+        "europe": 0.1722,
+        "vsStronger": 0.1833,
+        "vsSimilar": 0.5641,
+        "vsWeaker": 0.0644
+      },
+      "defenseConfidence": {
+        "overall": 0.5141,
+        "domestic": 0.5797,
+        "europe": 0.1722,
+        "vsStronger": 0.1833,
+        "vsSimilar": 0.5641,
+        "vsWeaker": 0.0644
+      },
+      "samples": {
+        "overall": {
+          "raw": 21,
+          "effective": 19.05
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.55
+        },
+        "europe": {
+          "raw": 3,
+          "effective": 2.5
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.69
+        },
+        "vsSimilar": {
+          "raw": 17,
+          "effective": 15.53
+        },
+        "vsWeaker": {
+          "raw": 1,
+          "effective": 0.83
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.18,
+          "defense": 1.0852,
+          "confidence": 0.5797,
+          "samples": 18,
+          "effectiveSample": 16.55
+        }
+      }
+    }
+  }
 });
 })();
