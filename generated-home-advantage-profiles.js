@@ -2,27 +2,35 @@
 // Do not hand-edit multipliers. Add normalized match records to data/home-advantage-matches.json.
 (() => {
   'use strict';
-
   window.UCLDRAW_HOME_ADVANTAGE_PROFILES = Object.freeze({
-    version: 1,
-    generatedAt: null,
-    latestMatchDate: null,
-    sourceSummary: Object.freeze({
-      matches: 0,
-      teams: 0,
-      domesticMatches: 0,
-      europeanMatches: 0
-    }),
-    methodology: Object.freeze({
-      recencyHalfLifeYears: 3,
-      overallPriorMatches: 18,
-      contextPriorMatches: 12,
-      opponentStrengthThreshold: 0.55,
-      minimumAssociationSample: 6,
-      attackBounds: Object.freeze([0.84, 1.18]),
-      defenseBounds: Object.freeze([0.82, 1.16])
-    }),
-    researchQueue: Object.freeze(['galatasaray', 'trabzonspor']),
-    profiles: Object.freeze({})
-  });
+  "version": 1,
+  "generatedAt": null,
+  "latestMatchDate": null,
+  "sourceSummary": {
+    "matches": 0,
+    "teams": 0,
+    "domesticMatches": 0,
+    "europeanMatches": 0
+  },
+  "methodology": {
+    "recencyHalfLifeYears": 3,
+    "overallPriorMatches": 18,
+    "contextPriorMatches": 12,
+    "opponentStrengthThreshold": 0.55,
+    "minimumAssociationSample": 6,
+    "attackBounds": [
+      0.84,
+      1.18
+    ],
+    "defenseBounds": [
+      0.82,
+      1.16
+    ]
+  },
+  "researchQueue": [
+    "galatasaray",
+    "trabzonspor"
+  ],
+  "profiles": {}
+});
 })();
