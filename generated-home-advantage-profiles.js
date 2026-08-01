@@ -7,10 +7,14 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "matches": 160,
-    "teams": 6,
-    "domesticMatches": 145,
-    "europeanMatches": 15,
+    "storedMatches": 160,
+    "matches": 66,
+    "excludedStoredMatches": 94,
+    "teams": 2,
+    "activeTeamScope": 53,
+    "domesticMatches": 54,
+    "europeanMatches": 12,
+    "latestIncludedMatchDate": "2025-05-31",
     "files": [
       "data/home-advantage-matches.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
@@ -33,157 +37,182 @@
       1.16
     ]
   },
+  "scope": {
+    "competition": "champions",
+    "source": "generated-team-pools.js",
+    "stages": {
+      "guaranteed": [
+        "arsenal",
+        "astonvilla",
+        "atleti",
+        "barcelona",
+        "bayern",
+        "brugge",
+        "bvb",
+        "city",
+        "como",
+        "feyenoord",
+        "galatasaray",
+        "inter",
+        "leipzig",
+        "lens",
+        "lille",
+        "liverpool",
+        "manu",
+        "napoli",
+        "porto",
+        "psg",
+        "psv",
+        "real",
+        "realbetis",
+        "roma",
+        "shakhtar",
+        "slavia",
+        "sporting",
+        "stuttgart",
+        "villareal"
+      ],
+      "playoffs": [
+        "aek",
+        "celtic",
+        "lask",
+        "viking"
+      ],
+      "q3": [
+        "bodo",
+        "lyon",
+        "nec",
+        "olympiacos",
+        "spartapraha",
+        "union"
+      ],
+      "q2": [
+        "aarhus",
+        "ararat",
+        "celje",
+        "crvenazvezda",
+        "dinamo",
+        "fenerbahce",
+        "hapoelbeersheva",
+        "kairat",
+        "levskisofia",
+        "mjallby",
+        "sabah",
+        "slovanbratislava",
+        "strumgraz",
+        "zalgiris"
+      ]
+    },
+    "teams": [
+      "arsenal",
+      "astonvilla",
+      "atleti",
+      "barcelona",
+      "bayern",
+      "brugge",
+      "bvb",
+      "city",
+      "como",
+      "feyenoord",
+      "galatasaray",
+      "inter",
+      "leipzig",
+      "lens",
+      "lille",
+      "liverpool",
+      "manu",
+      "napoli",
+      "porto",
+      "psg",
+      "psv",
+      "real",
+      "realbetis",
+      "roma",
+      "shakhtar",
+      "slavia",
+      "sporting",
+      "stuttgart",
+      "villareal",
+      "aek",
+      "celtic",
+      "lask",
+      "viking",
+      "bodo",
+      "lyon",
+      "nec",
+      "olympiacos",
+      "spartapraha",
+      "union",
+      "aarhus",
+      "ararat",
+      "celje",
+      "crvenazvezda",
+      "dinamo",
+      "fenerbahce",
+      "hapoelbeersheva",
+      "kairat",
+      "levskisofia",
+      "mjallby",
+      "sabah",
+      "slovanbratislava",
+      "strumgraz",
+      "zalgiris"
+    ]
+  },
   "researchQueue": [
-    "goztepe",
-    "konyaspor",
-    "rizespor",
-    "gaziantep",
-    "alanyaspor",
-    "kasimpasa"
+    "arsenal",
+    "astonvilla",
+    "atleti",
+    "barcelona",
+    "bayern",
+    "brugge",
+    "bvb",
+    "city",
+    "como",
+    "feyenoord",
+    "inter",
+    "leipzig",
+    "lens",
+    "lille",
+    "liverpool",
+    "manu",
+    "napoli",
+    "porto",
+    "psg",
+    "psv",
+    "real",
+    "realbetis",
+    "roma",
+    "shakhtar",
+    "slavia",
+    "sporting",
+    "stuttgart",
+    "villareal",
+    "aek",
+    "celtic",
+    "lask",
+    "viking",
+    "bodo",
+    "lyon",
+    "nec",
+    "olympiacos",
+    "spartapraha",
+    "union",
+    "aarhus",
+    "ararat",
+    "celje",
+    "crvenazvezda",
+    "dinamo",
+    "hapoelbeersheva",
+    "kairat",
+    "levskisofia",
+    "mjallby",
+    "sabah",
+    "slovanbratislava",
+    "strumgraz",
+    "zalgiris"
   ],
   "profiles": {
-    "basaksehir": {
-      "name": "İstanbul Başakşehir",
-      "country": "TUR",
-      "attack": {
-        "overall": 1.0855,
-        "domestic": 1.1035,
-        "europe": 1,
-        "vsStronger": 0.9831,
-        "vsSimilar": 0.9493,
-        "vsWeaker": 1.1646
-      },
-      "defense": {
-        "overall": 1.16,
-        "domestic": 1.16,
-        "europe": 1,
-        "vsStronger": 1.16,
-        "vsSimilar": 0.9626,
-        "vsWeaker": 1.1535
-      },
-      "confidence": {
-        "overall": 0.4781,
-        "domestic": 0.5788,
-        "europe": 0,
-        "vsStronger": 0.1367,
-        "vsSimilar": 0.2358,
-        "vsWeaker": 0.4756
-      },
-      "defenseConfidence": {
-        "overall": 0.4781,
-        "domestic": 0.5788,
-        "europe": 0,
-        "vsStronger": 0.1367,
-        "vsSimilar": 0.2358,
-        "vsWeaker": 0.4756
-      },
-      "samples": {
-        "overall": {
-          "raw": 18,
-          "effective": 16.49
-        },
-        "domestic": {
-          "raw": 18,
-          "effective": 16.49
-        },
-        "europe": {
-          "raw": 0,
-          "effective": 0
-        },
-        "vsStronger": {
-          "raw": 2,
-          "effective": 1.9
-        },
-        "vsSimilar": {
-          "raw": 4,
-          "effective": 3.7
-        },
-        "vsWeaker": {
-          "raw": 12,
-          "effective": 10.88
-        }
-      },
-      "associationMatchups": {
-        "TUR": {
-          "attack": 1.1035,
-          "defense": 1.16,
-          "confidence": 0.5788,
-          "samples": 18,
-          "effectiveSample": 16.49
-        }
-      }
-    },
-    "besiktas": {
-      "name": "Beşiktaş",
-      "country": "TUR",
-      "attack": {
-        "overall": 1.1205,
-        "domestic": 1.1458,
-        "europe": 1,
-        "vsStronger": 1.0545,
-        "vsSimilar": 1.131,
-        "vsWeaker": 1
-      },
-      "defense": {
-        "overall": 1.1102,
-        "domestic": 1.1334,
-        "europe": 1,
-        "vsStronger": 0.9169,
-        "vsSimilar": 1.16,
-        "vsWeaker": 1
-      },
-      "confidence": {
-        "overall": 0.4783,
-        "domestic": 0.579,
-        "europe": 0,
-        "vsStronger": 0.1339,
-        "vsSimilar": 0.5497,
-        "vsWeaker": 0
-      },
-      "defenseConfidence": {
-        "overall": 0.4783,
-        "domestic": 0.579,
-        "europe": 0,
-        "vsStronger": 0.1339,
-        "vsSimilar": 0.5497,
-        "vsWeaker": 0
-      },
-      "samples": {
-        "overall": {
-          "raw": 18,
-          "effective": 16.5
-        },
-        "domestic": {
-          "raw": 18,
-          "effective": 16.5
-        },
-        "europe": {
-          "raw": 0,
-          "effective": 0
-        },
-        "vsStronger": {
-          "raw": 2,
-          "effective": 1.85
-        },
-        "vsSimilar": {
-          "raw": 16,
-          "effective": 14.65
-        },
-        "vsWeaker": {
-          "raw": 0,
-          "effective": 0
-        }
-      },
-      "associationMatchups": {
-        "TUR": {
-          "attack": 1.1458,
-          "defense": 1.1334,
-          "confidence": 0.579,
-          "samples": 18,
-          "effectiveSample": 16.5
-        }
-      }
-    },
     "fenerbahce": {
       "name": "Fenerbahçe",
       "country": "TUR",
@@ -323,148 +352,6 @@
           "confidence": 0.7091,
           "samples": 36,
           "effectiveSample": 29.25
-        }
-      }
-    },
-    "samsunspor": {
-      "name": "Samsunspor",
-      "country": "TUR",
-      "attack": {
-        "overall": 1.1187,
-        "domestic": 1.1437,
-        "europe": 1,
-        "vsStronger": 0.9933,
-        "vsSimilar": 1.1503,
-        "vsWeaker": 1
-      },
-      "defense": {
-        "overall": 1.0412,
-        "domestic": 1.0499,
-        "europe": 1,
-        "vsStronger": 1.0522,
-        "vsSimilar": 1.0176,
-        "vsWeaker": 1
-      },
-      "confidence": {
-        "overall": 0.4777,
-        "domestic": 0.5784,
-        "europe": 0,
-        "vsStronger": 0.1327,
-        "vsSimilar": 0.5493,
-        "vsWeaker": 0
-      },
-      "defenseConfidence": {
-        "overall": 0.4777,
-        "domestic": 0.5784,
-        "europe": 0,
-        "vsStronger": 0.1327,
-        "vsSimilar": 0.5493,
-        "vsWeaker": 0
-      },
-      "samples": {
-        "overall": {
-          "raw": 18,
-          "effective": 16.46
-        },
-        "domestic": {
-          "raw": 18,
-          "effective": 16.46
-        },
-        "europe": {
-          "raw": 0,
-          "effective": 0
-        },
-        "vsStronger": {
-          "raw": 2,
-          "effective": 1.84
-        },
-        "vsSimilar": {
-          "raw": 16,
-          "effective": 14.62
-        },
-        "vsWeaker": {
-          "raw": 0,
-          "effective": 0
-        }
-      },
-      "associationMatchups": {
-        "TUR": {
-          "attack": 1.1437,
-          "defense": 1.0499,
-          "confidence": 0.5784,
-          "samples": 18,
-          "effectiveSample": 16.46
-        }
-      }
-    },
-    "trabzonspor": {
-      "name": "Trabzonspor",
-      "country": "TUR",
-      "attack": {
-        "overall": 1.18,
-        "domestic": 1.18,
-        "europe": 0.9057,
-        "vsStronger": 0.9806,
-        "vsSimilar": 1.18,
-        "vsWeaker": 0.9747
-      },
-      "defense": {
-        "overall": 1.0973,
-        "domestic": 1.1359,
-        "europe": 0.9405,
-        "vsStronger": 1.16,
-        "vsSimilar": 1.0124,
-        "vsWeaker": 0.9357
-      },
-      "confidence": {
-        "overall": 0.6458,
-        "domestic": 0.7165,
-        "europe": 0.172,
-        "vsStronger": 0.2582,
-        "vsSimilar": 0.6986,
-        "vsWeaker": 0.0643
-      },
-      "defenseConfidence": {
-        "overall": 0.6458,
-        "domestic": 0.7165,
-        "europe": 0.172,
-        "vsStronger": 0.2582,
-        "vsSimilar": 0.6986,
-        "vsWeaker": 0.0643
-      },
-      "samples": {
-        "overall": {
-          "raw": 40,
-          "effective": 32.82
-        },
-        "domestic": {
-          "raw": 37,
-          "effective": 30.33
-        },
-        "europe": {
-          "raw": 3,
-          "effective": 2.49
-        },
-        "vsStronger": {
-          "raw": 5,
-          "effective": 4.18
-        },
-        "vsSimilar": {
-          "raw": 34,
-          "effective": 27.82
-        },
-        "vsWeaker": {
-          "raw": 1,
-          "effective": 0.83
-        }
-      },
-      "associationMatchups": {
-        "TUR": {
-          "attack": 1.18,
-          "defense": 1.1359,
-          "confidence": 0.7165,
-          "samples": 37,
-          "effectiveSample": 30.33
         }
       }
     }

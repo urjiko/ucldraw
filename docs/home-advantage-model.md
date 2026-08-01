@@ -1,102 +1,91 @@
 # Contextual home advantage model
 
-## Goal
+## Active scope
 
-Add a conservative, reproducible home-advantage layer on top of the UEFA-coefficient and Poisson prediction model. Historic home form may adjust expected goals, but it must not replace current team strength with a stadium myth or a tiny unbeaten streak.
+Runtime home-advantage profiles are generated **only for clubs in the current Champions League pool** defined by `generated-team-pools.js`.
 
-## Current coverage
+The active pool includes every club under:
 
-The generated runtime profile now uses **160 home matches**:
+- `champions.guaranteed`;
+- `champions.playoffs`;
+- `champions.q3`;
+- `champions.q2`.
 
-- 145 Süper Lig matches;
-- 15 UEFA competition matches;
-- 48 Galatasaray matches;
-- 40 Trabzonspor matches;
-- 18 Fenerbahçe matches;
-- 18 Beşiktaş matches;
-- 18 İstanbul Başakşehir matches;
-- 18 Samsunspor matches.
+This is intentional while qualifying is in progress. The generator follows the project roster rather than maintaining a second hand-written list that would inevitably become stale because apparently one source of truth was too peaceful.
 
-Galatasaray and Trabzonspor cover 2023/24 and 2024/25. Fenerbahçe, Beşiktaş, İstanbul Başakşehir, and Samsunspor currently cover 2024/25. Galatasaray has 12 European home matches; Trabzonspor has three. The other four profiles remain domestic-only until their verified European batches are added.
+Historical records for clubs outside the Champions League scope are retained in `data/home-advantage-matches*.json`, but they are excluded from generated runtime profiles. They can be reused later if Europa League or Conference League coverage is enabled.
 
-Galatasaray's awarded 3-0 Adana Demirspor match is excluded because no played score exists. Trabzonspor's St. Gallen tie is stored as 1-1 after extra time; the penalty shootout is not treated as football goals. OpenFootball left the final 2024/25 Samsunspor-Kayserispor score blank, so the 2-1 result is completed from the official TFF record and marked with `sourceKey: tff-turkey-2024-25`.
+## Current snapshot
 
-The available OpenFootball 2025/26 Süper Lig file contains results only through the opening part of the season and fixture-only rows afterwards. It is not loaded as a completed season.
+The stored research archive contains 160 home matches for six Turkish clubs. Under the current Champions League pool, only Galatasaray and Fenerbahçe are active:
 
-## Files and deterministic loading
+- 160 stored matches;
+- 66 matches included in Champions-scoped generation;
+- 94 archived matches excluded from runtime generation;
+- 53 current Champions League candidate clubs in the project manifest;
+- 2 clubs currently backed by a generated home profile;
+- 54 included domestic matches;
+- 12 included European matches.
 
+The runtime research queue is generated automatically from the Champions League manifest and contains every active club that does not yet have a profile.
+
+## Data and source files
+
+- `generated-team-pools.js`: authoritative active Champions League scope;
 - `data/home-advantage-matches.json`: original Galatasaray and Trabzonspor 2024/25 batch;
 - `data/home-advantage-matches/*.json`: additional season and club batches;
-- `scripts/build-home-advantage-profiles.mjs`: deterministic multi-file profile generator;
-- `generated-home-advantage-profiles.js`: generated runtime data;
-- `prediction-ai-controller.js`: applies the profile to AI simulations and affected-matchday rerolls;
-- `tests/home-advantage-model.test.js`: source counts, duplicate protection, profile values, safety bounds, neutral fallback, and deterministic simulation.
+- `scripts/build-home-advantage-profiles.mjs`: deterministic scope loader and profile generator;
+- `generated-home-advantage-profiles.js`: generated runtime payload;
+- `prediction-ai-controller.js`: applies the profile to expected goals;
+- `tests/home-advantage-model.test.js`: scope, source, profile, fallback, and reproducibility checks.
 
-The generator reads the legacy file first, then every JSON file in `data/home-advantage-matches/` alphabetically. A match duplicated across files stops generation instead of silently counting twice. The generated payload records its input file list.
+The generator reads all stored match files, rejects duplicates, loads the Champions League pool through a sandboxed Node `vm` context, and then filters records by the home club's pool slug.
+
+## Why archived records remain
+
+Beşiktaş, Trabzonspor, İstanbul Başakşehir, and Samsunspor records are not deleted. Removing verified source data because a club changed competitions would be impressive wastefulness. They remain available for later competition-specific models but do not affect current Champions League predictions.
 
 ## Strength proxy
 
-Historical opponent strength is estimated with the same logarithmic UEFA-coefficient function used by the prediction engine. The data currently uses the project's 2026 five-year coefficient snapshot.
+Historical opponent strength is estimated using the same logarithmic UEFA-coefficient function as the prediction engine. Historical records disable pot bonuses by setting `homePot`, `awayPot`, and `potCount` to `1`, preventing modern league-phase pots from being projected backwards.
 
-For Turkish clubs without a higher individual value, the 2026 Turkish association floor of `10.375` is used. Historical records set `homePot`, `awayPot`, and `potCount` to `1`, disabling pot bonuses. This prevents 2026 league-phase pots from being projected backwards and avoids counting the same strength signal twice.
-
-A later revision may replace current coefficients with season-specific pre-match Elo or coefficient values, but it must regenerate every affected profile and pass the deterministic checks.
+The recency anchor is the latest date in the full stored archive. Filtering the active competition therefore does not make old records artificially younger simply because another competition's data is temporarily hidden.
 
 ## Method
 
-1. Recreate the base model's expected home and away goals for every historical match.
-2. Compare actual goals with those expected goals.
-3. Weight recent matches more heavily with a three-year half-life.
-4. Produce separate home attack and visiting-goal multipliers.
-5. Split context into overall, domestic, Europe, stronger, similar, and weaker opponents.
-6. Create opponent-country interactions only after at least six matches.
-7. Shrink every estimate toward `1.0` according to effective sample size.
-8. Clamp attack and visiting-goal effects to conservative limits.
-
-## Reading the values
-
-- `attack > 1.0`: the home team scored more than the base model expected;
-- `attack < 1.0`: the home team scored less than expected;
-- `defense < 1.0`: visiting teams scored less than expected, a positive home defensive effect;
-- `defense > 1.0`: visiting teams scored more than expected;
-- `confidence`: effective sample size after recency weighting and prior shrinkage.
-
-The internal property remains named `defense` for compatibility, but it is applied to the visiting team's expected goals. It is not a defensive-quality score where a larger number is better.
-
-## Current profile signals
-
-- **Galatasaray:** domestic attack remains at the `1.18` safety ceiling. European attack is `1.1512` across 12 matches. The broader sample still does not justify a home defensive bonus.
-- **Trabzonspor:** domestic attack remains at `1.18`. Adding 2023/24 moved the stronger-opponent attack value from `0.9295` to `0.9806`, reducing a one-season penalty. European estimates still rely on three matches.
-- **Fenerbahçe:** 2024/25 domestic attack is `1.1127`. Most matches fall into the weaker-opponent band, so the similar- and stronger-opponent splits remain weakly informed.
-- **Beşiktaş:** 2024/25 domestic attack is `1.1458`. Its small stronger-opponent sample shows a defensive benefit, while the broad sample does not support a general defensive bonus.
-- **İstanbul Başakşehir:** domestic attack is `1.1035`. The contextual split is meaningful: `1.1646` against weaker opponents but `0.9493` against similar opponents.
-- **Samsunspor:** domestic attack is `1.1437`; the similar-opponent attack value is `1.1503`. The broad visiting-goal multiplier is close to neutral rather than a large defensive bonus.
-
-Several values hit safety bounds. A bound means the measured residual is at least that strong under the current proxy; it does not authorize indefinite extrapolation.
+1. Load and validate every normalized source match.
+2. Reject duplicate date, competition, home-team, and away-team combinations.
+3. Load the current Champions League team pool from `generated-team-pools.js`.
+4. Keep only matches whose home club is in that pool.
+5. Recreate the base model's expected goals.
+6. Compare actual goals with expected goals.
+7. Apply a three-year recency half-life.
+8. Split results by domestic/European context and opponent strength.
+9. Shrink small samples toward `1.0`.
+10. Clamp all adjustments to conservative bounds.
 
 ## Runtime behavior
 
-The model adjusts expected goals, not the final score directly:
+- Clubs with a generated profile receive contextual expected-goal adjustments.
+- Current Champions League clubs without enough data use the original prediction algorithm unchanged.
+- Clubs outside the active Champions League pool receive no generated profile, even if archived data exists.
+- The seeded Poisson simulation remains reproducible.
+- Draw pots, coefficient sorting, and qualification logic are not modified.
 
-- home attack multiplier modifies home expected goals;
-- the internal `defense` multiplier modifies visiting expected goals;
-- teams without a profile remain on the previous algorithm;
-- association-specific history is capped at 45% confidence;
-- the seeded Poisson simulation remains reproducible;
-- adding a club profile does not alter draw pot construction or coefficient sorting.
+## Current active profiles
 
-## Research queue
+### Galatasaray
 
-The next domestic batch is:
+- 48 included home matches;
+- 36 domestic matches;
+- 12 European matches;
+- European home attack multiplier: `1.1512`.
 
-1. Göztepe;
-2. Konyaspor;
-3. Çaykur Rizespor;
-4. Gaziantep FK;
-5. Alanyaspor;
-6. Kasımpaşa.
+### Fenerbahçe
 
-After that, verified European batches for Fenerbahçe, Beşiktaş, İstanbul Başakşehir, and Samsunspor take priority before the model expands across the active European league-phase field.
+- 18 included domestic home matches;
+- domestic home attack multiplier: `1.1127`;
+- European split remains neutral until verified European home data is added.
 
 ## Update command
 
@@ -104,4 +93,13 @@ After that, verified European batches for Fenerbahçe, Beşiktaş, İstanbul Ba�
 node scripts/build-home-advantage-profiles.mjs
 ```
 
-The generated file must remain byte-for-byte unchanged when the source records have not changed.
+The generated payload records:
+
+- stored match count;
+- included and excluded match counts;
+- active Champions League team count;
+- exact scope stages and slugs;
+- automatically derived research queue;
+- source file list.
+
+The generated file must remain byte-for-byte unchanged when neither the match archive nor `generated-team-pools.js` has changed.
