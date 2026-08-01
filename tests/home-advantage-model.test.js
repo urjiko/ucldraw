@@ -10,6 +10,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const source = read('prediction-ai-controller.js');
 const builderSource = read('scripts/build-home-advantage-profiles.mjs');
 const generatedSource = read('generated-home-advantage-profiles.js');
+const profileSnapshotDate = '2025-06-01';
 
 const modularDirectory = path.join(root, 'data', 'home-advantage-matches');
 const dataFiles = [
@@ -45,6 +46,7 @@ assert.match(builderSource, /researchQueue: \['goztepe', 'konyaspor', 'rizespor'
 const generatedContext = { window: {}, Object };
 vm.runInNewContext(generatedSource, generatedContext, { filename: 'generated-home-advantage-profiles.js' });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
+assert.equal(generated.latestMatchDate, profileSnapshotDate);
 assert.equal(generated.sourceSummary.matches, 160);
 assert.equal(generated.sourceSummary.teams, 6);
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -54,10 +56,10 @@ assert.equal(generated.profiles.fenerbahce.samples.overall.raw, 18);
 assert.equal(generated.profiles.besiktas.samples.overall.raw, 18);
 assert.equal(generated.profiles.basaksehir.samples.overall.raw, 18);
 assert.equal(generated.profiles.samsunspor.samples.overall.raw, 18);
-assert.equal(generated.profiles.galatasaray.attack.europe, 1.1513);
+assert.equal(generated.profiles.galatasaray.attack.europe, 1.1512);
 assert.equal(generated.profiles.trabzonspor.attack.vsStronger, 0.9806);
-assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1128);
-assert.equal(generated.profiles.besiktas.attack.domestic, 1.1459);
+assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1127);
+assert.equal(generated.profiles.besiktas.attack.domestic, 1.1458);
 assert.equal(generated.profiles.basaksehir.attack.domestic, 1.1035);
 assert.equal(generated.profiles.basaksehir.attack.vsWeaker, 1.1646);
 assert.equal(generated.profiles.basaksehir.attack.vsSimilar, 0.9493);

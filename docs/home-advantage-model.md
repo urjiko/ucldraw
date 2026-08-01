@@ -65,10 +65,10 @@ The internal property remains named `defense` for compatibility, but it is appli
 
 ## Current profile signals
 
-- **Galatasaray:** domestic attack remains at the `1.18` safety ceiling. European attack is `1.1513` across 12 matches. The broader sample still does not justify a home defensive bonus.
+- **Galatasaray:** domestic attack remains at the `1.18` safety ceiling. European attack is `1.1512` across 12 matches. The broader sample still does not justify a home defensive bonus.
 - **Trabzonspor:** domestic attack remains at `1.18`. Adding 2023/24 moved the stronger-opponent attack value from `0.9295` to `0.9806`, reducing a one-season penalty. European estimates still rely on three matches.
-- **Fenerbahçe:** 2024/25 domestic attack is `1.1128`. Most matches fall into the weaker-opponent band, so the similar- and stronger-opponent splits remain weakly informed.
-- **Beşiktaş:** 2024/25 domestic attack is `1.1459`. Its small stronger-opponent sample shows a defensive benefit, while the broad sample does not support a general defensive bonus.
+- **Fenerbahçe:** 2024/25 domestic attack is `1.1127`. Most matches fall into the weaker-opponent band, so the similar- and stronger-opponent splits remain weakly informed.
+- **Beşiktaş:** 2024/25 domestic attack is `1.1458`. Its small stronger-opponent sample shows a defensive benefit, while the broad sample does not support a general defensive bonus.
 - **İstanbul Başakşehir:** domestic attack is `1.1035`. The contextual split is meaningful: `1.1646` against weaker opponents but `0.9493` against similar opponents.
 - **Samsunspor:** domestic attack is `1.1437`; the similar-opponent attack value is `1.1503`. The broad visiting-goal multiplier is close to neutral rather than a large defensive bonus.
 
