@@ -1,6 +1,6 @@
 # Champions playoff domestic home data, 2024/25
 
-This batch adds complete domestic home seasons for the four clubs currently listed under `champions.playoffs` in `generated-team-pools.js`. Generation fails unless all 68 expected target fixtures are present and unique.
+This batch adds complete domestic home seasons for the four clubs currently listed under `champions.playoffs` in `generated-team-pools.js`. Generation fails unless all 68 expected target fixtures are present and unique. This group follows the two completed guaranteed-team groups in runtime priority.
 
 ## Coverage
 
