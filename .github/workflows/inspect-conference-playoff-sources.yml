@@ -1,4 +1,4 @@
-name: Inspect Conference playoff sources
+name: Generate Conference playoff home profiles
 
 on:
   pull_request:
@@ -6,47 +6,41 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  inspect:
+  generate:
     if: github.head_ref == 'agent/add-conference-playoff-home-profiles'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/add-conference-playoff-home-profiles
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Count source home fixtures
+      - name: Build Conference playoff home matches
+        run: node scripts/generate-conference-playoff-home-profiles.mjs
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Report generated profile values
         run: |
           node <<'NODE'
-          const sources = {
-            italy: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/it.1.json',
-            england: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/en.1.json',
-            germany: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/de.1.json',
-            spain: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/es.1.json',
-            france: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json'
-          };
-          const targets = new Set(['Atalanta BC', 'Brighton & Hove Albion FC', 'SC Freiburg', 'Getafe CF', 'AS Monaco FC']);
-
-          (async () => {
-            for (const [key, url] of Object.entries(sources)) {
-              const response = await fetch(url, { headers: { 'user-agent': 'UEFA-source-inspector/1.0' } });
-              if (!response.ok) throw new Error(`${key}: ${response.status}`);
-              const data = await response.json();
-              const counts = new Map();
-              const missing = [];
-              for (const match of data.matches || []) {
-                if (targets.has(match.team1) && !Array.isArray(match.score?.ft)) missing.push(match);
-                if (!Array.isArray(match.score?.ft)) continue;
-                counts.set(match.team1, (counts.get(match.team1) || 0) + 1);
-              }
-              console.log(`JSON ${key} matches=${data.matches?.length}`);
-              console.log(JSON.stringify([...counts.entries()].filter(([team]) => targets.has(team))));
-              if (missing.length) console.log(`MISSING ${key} ${JSON.stringify(missing)}`);
-            }
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const context = { window: {}, Object };
+          vm.runInNewContext(fs.readFileSync('generated-home-advantage-profiles.js', 'utf8'), context);
+          const profiles = context.window.UCLDRAW_HOME_ADVANTAGE_PROFILES.profiles;
+          const selected = Object.fromEntries(['atalanta', 'brighton', 'freiburg', 'getafe', 'monaco'].map((slug) => [slug, profiles[slug]]));
+          console.log(JSON.stringify(selected));
           NODE
+      - name: Commit verified Conference playoff profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/atalanta-brighton-freiburg-getafe-monaco-2024-25.json scripts/build-home-advantage-profiles.mjs generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate Conference playoff home profiles"
+            git push origin HEAD:agent/add-conference-playoff-home-profiles
+          fi
