@@ -17,7 +17,7 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 327 verified home matches. The guaranteed-team filter currently includes 215:
+The archive contains 347 verified home matches. The guaranteed-team filter currently includes 235:
 
 - Galatasaray: 48 matches;
 - Arsenal: 19 Premier League home matches;
@@ -28,7 +28,8 @@ The archive contains 327 verified home matches. The guaranteed-team filter curre
 - Atlético Madrid: 19 La Liga home matches;
 - Barcelona: 19 La Liga home matches;
 - Bayern München: 17 Bundesliga home matches;
-- Borussia Dortmund: 17 Bundesliga home matches.
+- Borussia Dortmund: 17 Bundesliga home matches;
+- Club Brugge: 20 Belgian First Division A home matches, including the championship play-off round.
 
 The remaining 112 archived records are retained but excluded from runtime generation.
 
@@ -80,6 +81,23 @@ Generated domestic attack residuals:
 | Borussia Dortmund | 1.1800 |
 
 Barcelona and Bayern reach the conservative attack ceiling. Dortmund reaches the domestic ceiling while its broader overall value is `1.1710`. Atlético remains below the ceiling and shows a stronger `1.1184` signal against similar-strength opponents. Bayern’s similar-opponent attack value is approximately neutral at `0.9930`, despite its large weaker-opponent residual.
+
+## Belgium 2024/25 batch
+
+`brugge-2024-25.json` adds all 20 Club Brugge league home matches shown for the 2024/25 Belgian First Division A season, including five championship play-off home fixtures. Match results are sourced from the season home-results listing and retain normal-season and play-off dates in one domestic context.
+
+The project coefficient snapshot supplies Club Brugge at `75.250`. Union Saint-Gilloise, Gent, Anderlecht, Genk, Antwerp, and Cercle Brugge use their individual 2026 values. Other Belgian opponents use the Belgian association floor of `12.450`.
+
+Generated Club Brugge signals:
+
+| Context | Multiplier |
+|---|---:|
+| Domestic attack | 1.1168 |
+| Overall attack | 1.0974 |
+| Weaker-opponent attack | 1.1168 |
+| Domestic visiting-goal multiplier | 1.1600 |
+
+All 20 domestic opponents fall into the current model's weaker-opponent bucket relative to Club Brugge's coefficient. That makes the profile useful as a broad domestic home residual but does not yet establish a separate similar- or stronger-opponent effect. European home matches must be added before the model can make a Club Brugge-specific Europe adjustment.
 
 ## Files
 
