@@ -2,12 +2,12 @@
 
 ## Active research order
 
-Profile work follows two guaranteed-team groups from `generated-team-pools.js`:
+Profile work follows the guaranteed-team groups in `generated-team-pools.js`:
 
 1. `champions.guaranteed`;
 2. `europa.guaranteed`.
 
-The queue preserves that order. Missing guaranteed Champions League clubs always appear before the first guaranteed Europa League club. Qualifying-stage records remain stored but do not affect the active model until their priority group is enabled.
+Missing guaranteed Champions League clubs always remain ahead of the first guaranteed Europa League club. Qualifying-stage records may stay in the archive, but they do not affect runtime generation unless their club is also in an active guaranteed group.
 
 Current manifest scope:
 
@@ -17,34 +17,25 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 347 verified home matches. The guaranteed-team filter currently includes 235:
+The archive contains 423 verified home matches. The guaranteed-team filter currently includes 311 matches across 15 active profiles:
 
-- Galatasaray: 48 matches;
-- Arsenal: 19 Premier League home matches;
-- Aston Villa: 19 Premier League home matches;
-- Manchester City: 19 Premier League home matches;
-- Liverpool: 19 Premier League home matches;
-- Manchester United: 19 Premier League home matches;
-- Atlético Madrid: 19 La Liga home matches;
-- Barcelona: 19 La Liga home matches;
-- Bayern München: 17 Bundesliga home matches;
-- Borussia Dortmund: 17 Bundesliga home matches;
-- Club Brugge: 20 Belgian First Division A home matches, including the championship play-off round.
+- Galatasaray: 48;
+- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
+- Bayern München and Borussia Dortmund: 17 each;
+- Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Feyenoord.
 
-## English 2024/25 batches
+## Data batches
 
-The two English source files contain every league home match from the 2024/25 season for five guaranteed Champions League clubs:
+### England 2024/25
 
-- `arsenal-liverpool-2024-25.json`: 38 matches;
-- `astonvilla-city-manu-2024-25.json`: 57 matches.
+- `arsenal-liverpool-2024-25.json`: 38 Premier League matches;
+- `astonvilla-2024-25.json`, `city-2024-25.json`, and `manu-2024-25.json`: 57 matches.
 
-Match scores come from the OpenFootball England 2024/25 Premier League dataset. Strength values use the project's 2026 UEFA coefficient snapshot. English clubs without an individual coefficient use the English association floor of `23.903`. Historical pot values are fixed at `1`, so modern draw pots are not projected backwards.
+English clubs without an individual coefficient use the `23.903` association floor.
 
-Generated domestic attack residuals:
-
-| Club | Multiplier |
+| Club | Domestic attack |
 |---|---:|
 | Arsenal | 0.9824 |
 | Aston Villa | 1.0210 |
@@ -52,43 +43,25 @@ Generated domestic attack residuals:
 | Liverpool | 1.0948 |
 | Manchester United | 0.8400 |
 
-These are residuals after the existing UEFA-coefficient expectation. A value below `1.0` does not claim the club was objectively weak at home; it says the club scored below what the base model already expected from its coefficient and opponents. Manchester United reaches the conservative attack floor, preventing a single season from lowering expected goals without limit.
-
-Context examples:
-
-- Aston Villa against stronger opponents: `1.0687`;
-- Manchester City against weaker opponents: `1.1129`;
-- Manchester United against similar opponents: `0.8892`;
-- Arsenal against similar opponents: `1.1547`;
-- Liverpool against weaker opponents: `1.0763`.
-
-## Spain and Germany 2024/25 batches
-
-The next guaranteed-Champions batch adds every domestic league home match from 2024/25 for four clubs:
+### Spain and Germany 2024/25
 
 - `atleti-barcelona-2024-25.json`: 38 La Liga matches;
 - `bayern-bvb-2024-25.json`: 34 Bundesliga matches.
 
-Scores come from the OpenFootball Spain and Germany season datasets. The project’s 2026 UEFA coefficient snapshot supplies individual club values above the association minimum. Other Spanish opponents use the `19.409` association floor; other German opponents use `18.580`. Historical pot values remain fixed at `1`.
+Spanish opponents without a higher individual value use `19.409`; German opponents use `18.580`.
 
-Generated domestic attack residuals:
-
-| Club | Multiplier |
+| Club | Domestic attack |
 |---|---:|
 | Atlético Madrid | 1.1061 |
 | Barcelona | 1.1800 |
 | Bayern München | 1.1800 |
 | Borussia Dortmund | 1.1800 |
 
-Barcelona and Bayern reach the conservative attack ceiling. Dortmund reaches the domestic ceiling while its broader overall value is `1.1710`. Atlético remains below the ceiling and shows a stronger `1.1184` signal against similar-strength opponents. Bayern’s similar-opponent attack value is approximately neutral at `0.9930`, despite its large weaker-opponent residual.
+Barcelona, Bayern, and Dortmund reach the conservative attack ceiling. Bayern remains approximately neutral against similar-strength opponents at `0.9930`, while Atlético's similar-opponent value is `1.1184`.
 
-## Belgium 2024/25 batch
+### Belgium 2024/25
 
-`brugge-2024-25.json` adds all 20 Club Brugge league home matches shown for the 2024/25 Belgian First Division A season, including five championship play-off home fixtures. Match results are sourced from the season home-results listing and retain normal-season and play-off dates in one domestic context.
-
-The project coefficient snapshot supplies Club Brugge at `75.250`. Union Saint-Gilloise, Gent, Anderlecht, Genk, Antwerp, and Cercle Brugge use their individual 2026 values. Other Belgian opponents use the Belgian association floor of `12.450`.
-
-Generated Club Brugge signals:
+`brugge-2024-25.json` contains all 20 Club Brugge league home matches, including five championship play-off fixtures. Belgian opponents without a higher individual coefficient use `12.450`.
 
 | Context | Multiplier |
 |---|---:|
@@ -97,7 +70,32 @@ Generated Club Brugge signals:
 | Weaker-opponent attack | 1.1168 |
 | Domestic visiting-goal multiplier | 1.1600 |
 
-All 20 domestic opponents fall into the current model's weaker-opponent bucket relative to Club Brugge's coefficient. That makes the profile useful as a broad domestic home residual but does not yet establish a separate similar- or stronger-opponent effect. European home matches must be added before the model can make a Club Brugge-specific Europe adjustment.
+All 20 domestic opponents fall into the weaker-opponent bucket under the current coefficient snapshot. No unsupported similar- or stronger-opponent effect is invented.
+
+### Italy 2024/25
+
+`como-inter-napoli-roma-2024-25.json` contains every Serie A home match for Como, Internazionale, Napoli, and Roma, 19 per club and 76 total. Scores come from the OpenFootball Italy 2024/25 Serie A dataset. Strength values use the project's 2026 UEFA coefficient snapshot; Italian opponents without a higher individual coefficient use the `19.989` association floor. Historical pot values remain neutral at `1`.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Como | 1.0620 | Stronger opponents: 1.0466 |
+| Internazionale | 1.0253 | Weaker opponents: 1.0527 |
+| Napoli | 0.9873 | Domestic visiting-goal multiplier: 0.9089 |
+| Roma | 1.0170 | Weaker opponents: 1.0533 |
+
+Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goal multiplier indicates a positive home defensive effect in this sample. Como has both stronger- and similar-opponent observations; Inter and Roma are driven mostly by weaker-opponent matches because of their higher coefficients.
+
+## Interpretation
+
+The values are residual multipliers after the existing UEFA-coefficient expected-goal model, not raw goal rates or subjective club ratings.
+
+- Attack above `1.0` means the home club scored above the coefficient baseline.
+- Attack below `1.0` means it scored below that already-adjusted baseline.
+- The field named `defense` multiplies the visiting team's expected goals.
+- A visiting-goal multiplier below `1.0` is a positive home defensive effect.
+- A value above `1.0` means visitors scored above the baseline.
+
+Single-season effects are shrunk toward neutral and clamped. Attack is bounded to `0.84–1.18`; visiting-goal effects are bounded to `0.82–1.16`.
 
 ## Files
 
@@ -119,7 +117,7 @@ All 20 domestic opponents fall into the current model's weaker-opponent bucket r
 6. Measure home scoring and visiting scoring residuals separately.
 7. Split domestic, European, stronger, similar, and weaker-opponent contexts.
 8. Apply a three-year recency half-life and sample-size shrinkage.
-9. Clamp attack effects to `0.84–1.18` and visiting-goal effects to `0.82–1.16`.
+9. Clamp attack and visiting-goal effects to the safety bounds.
 10. Emit missing teams in Champions-guaranteed, then Europa-guaranteed order.
 
 ## Runtime behavior
