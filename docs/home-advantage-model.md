@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 755 verified home matches. The guaranteed-team filter currently includes 643 matches across 34 active profiles:
+The archive contains 793 verified home matches. The guaranteed-team filter currently includes 681 matches across 36 active profiles:
 
 - Galatasaray: 48;
-- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
+- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
 - AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Crystal Palace, and Hoffenheim are completed guaranteed Europa League clubs, and the research queue now begins with Celta Vigo.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, and Real Sociedad are completed guaranteed Europa League clubs, and the research queue now begins with Juventus.
 
 ## Data batches
 
@@ -91,6 +91,15 @@ The follow-up Spanish batch `real-betis-villarreal-2024-25.json` adds 57 more La
 | Villarreal | 1.1800 | Similar opponents: 1.0069 |
 
 Real Madrid remains below the attack ceiling and is weaker than neutral against the two similar-strength observations at `0.9119`. Real Betis scores below its overall coefficient baseline but rises above it against stronger opponents; its similar-opponent visiting-goal multiplier is `0.9432`. Villarreal reaches the domestic attack ceiling, while its similar-opponent attack residual is approximately neutral. The project keeps the historical runtime slug `villareal` for compatibility, while display text and source records use the correct club name.
+
+`celta-sociedad-2024-25.json` adds all 38 La Liga home matches for two guaranteed Europa League clubs, 19 per club.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Celta Vigo | 1.1800 | Stronger opponents: 1.1800 |
+| Real Sociedad | 0.8400 | Similar opponents: 1.0061 |
+
+Celta reaches the attack ceiling but also has a positive home defensive signal, with a domestic visiting-goal multiplier of `0.9591` and `0.9288` against stronger opponents. Real Sociedad reaches the conservative attack floor overall; however, its similar-opponent attack value is neutral and its corresponding visiting-goal multiplier is `0.8691`. Neither club has weaker-opponent observations under the current coefficient snapshot.
 
 ### France 2024/25
 
