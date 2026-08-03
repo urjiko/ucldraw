@@ -1,4 +1,4 @@
-name: Generate Conference playoff home profiles
+name: Finalize Conference playoff home profiles
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  finalize:
     if: github.head_ref == 'agent/add-conference-playoff-home-profiles'
     runs-on: ubuntu-latest
     steps:
@@ -20,27 +20,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Conference playoff home matches
-        run: node scripts/generate-conference-playoff-home-profiles.mjs
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Report generated profile values
+      - name: Rebuild Conference playoff home profiles
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const vm = require('node:vm');
-          const context = { window: {}, Object };
-          vm.runInNewContext(fs.readFileSync('generated-home-advantage-profiles.js', 'utf8'), context);
-          const profiles = context.window.UCLDRAW_HOME_ADVANTAGE_PROFILES.profiles;
-          const selected = Object.fromEntries(['atalanta', 'brighton', 'freiburg', 'getafe', 'monaco'].map((slug) => [slug, profiles[slug]]));
-          console.log(JSON.stringify(selected));
-          NODE
-      - name: Commit verified Conference playoff profiles
+          node scripts/generate-conference-playoff-home-profiles.mjs
+          node scripts/build-home-advantage-profiles.mjs
+      - name: Finalize tests and documentation
+        run: node scripts/finalize-conference-playoff-home-profiles.mjs
+      - name: Run profile regression test
+        run: node tests/home-advantage-model.test.js
+      - name: Commit finalized Conference playoff profiles
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/atalanta-brighton-freiburg-getafe-monaco-2024-25.json scripts/build-home-advantage-profiles.mjs generated-home-advantage-profiles.js
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md generated-home-advantage-profiles.js data/home-advantage-matches/atalanta-brighton-freiburg-getafe-monaco-2024-25.json scripts/build-home-advantage-profiles.mjs
           if ! git diff --cached --quiet; then
-            git commit -m "Generate Conference playoff home profiles"
+            git commit -m "Finalize Conference playoff home profiles"
             git push origin HEAD:agent/add-conference-playoff-home-profiles
           fi
