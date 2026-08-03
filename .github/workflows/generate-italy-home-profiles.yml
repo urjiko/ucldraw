@@ -1,21 +1,18 @@
 name: Generate Italy home profiles
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/add-italy-guaranteed-home-profiles
+      - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate:
-    if: ${{ !contains(github.event.head_commit.message, '[italy profile snapshot]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -121,12 +118,10 @@ jobs:
           NODE
       - name: Regenerate profile payload
         run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit generated Italian profiles
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/como-inter-napoli-roma-2024-25.json generated-home-advantage-profiles.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate Italian guaranteed profiles [italy profile snapshot]"
-            git push
-          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: italy-home-profile-snapshot
+          path: |
+            data/home-advantage-matches/como-inter-napoli-roma-2024-25.json
+            generated-home-advantage-profiles.js
+          if-no-files-found: error
