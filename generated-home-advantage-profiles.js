@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 423,
-    "matches": 311,
+    "storedMatches": 457,
+    "matches": 345,
     "excludedStoredMatches": 112,
-    "teams": 15,
+    "teams": 17,
     "activeTeamScope": 42,
-    "domesticMatches": 299,
+    "domesticMatches": 333,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -26,6 +26,7 @@
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/como-inter-napoli-roma-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
+      "data/home-advantage-matches/feyenoord-psv-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
       "data/home-advantage-matches/manu-2024-25.json"
     ]
@@ -149,13 +150,11 @@
     ]
   },
   "researchQueue": [
-    "feyenoord",
     "leipzig",
     "lens",
     "lille",
     "porto",
     "psg",
-    "psv",
     "real",
     "realbetis",
     "shakhtar",
@@ -817,6 +816,77 @@
         }
       }
     },
+    "feyenoord": {
+      "name": "Feyenoord",
+      "country": "NED",
+      "attack": {
+        "overall": 1.0812,
+        "domestic": 1.0988,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0202,
+        "vsWeaker": 1.096
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4638,
+        "domestic": 0.5648,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1856,
+        "vsWeaker": 0.5168
+      },
+      "defenseConfidence": {
+        "overall": 0.4638,
+        "domestic": 0.5648,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1856,
+        "vsWeaker": 0.5168
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.57
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.57
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.74
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.84
+        }
+      },
+      "associationMatchups": {
+        "NED": {
+          "attack": 1.0988,
+          "defense": 1.16,
+          "confidence": 0.5648,
+          "samples": 17,
+          "effectiveSample": 15.57
+        }
+      }
+    },
     "galatasaray": {
       "name": "Galatasaray",
       "country": "TUR",
@@ -1169,6 +1239,77 @@
           "confidence": 0.5916,
           "samples": 19,
           "effectiveSample": 17.38
+        }
+      }
+    },
+    "psv": {
+      "name": "PSV",
+      "country": "NED",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.014,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0695,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4625,
+        "domestic": 0.5634,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.188,
+        "vsWeaker": 0.5143
+      },
+      "defenseConfidence": {
+        "overall": 0.4625,
+        "domestic": 0.5634,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.188,
+        "vsWeaker": 0.5143
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.49
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.49
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.78
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.71
+        }
+      },
+      "associationMatchups": {
+        "NED": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5634,
+          "samples": 17,
+          "effectiveSample": 15.49
         }
       }
     },
