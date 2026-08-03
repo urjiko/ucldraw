@@ -2,22 +2,24 @@
 
 ## Active research order
 
-Profile work follows the guaranteed-team groups in `generated-team-pools.js`:
+Profile work follows the active groups in `generated-team-pools.js`:
 
 1. `champions.guaranteed`;
-2. `europa.guaranteed`.
+2. `europa.guaranteed`;
+3. `champions.playoffs`.
 
-Missing guaranteed Champions League clubs always remain ahead of the first guaranteed Europa League club. Qualifying-stage records may stay in the archive, but they do not affect runtime generation unless their club is also in an active guaranteed group.
+Guaranteed Champions and Europa clubs remain the first two priorities. The next active group is the four-club Champions League play-off pool. Records outside these configured groups remain archived but do not affect runtime generation.
 
 Current manifest scope:
 
 - 29 guaranteed Champions League clubs;
 - 13 guaranteed Europa League clubs;
-- 42 unique active clubs.
+- 4 Champions League play-off clubs;
+- 46 unique active clubs.
 
 ## Current snapshot
 
-The archive contains 906 verified home matches. The guaranteed-team filter currently includes 794 matches across all 42 active profiles:
+The archive contains 974 verified home matches. The active-team filter currently includes 862 matches across all 46 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
@@ -25,9 +27,13 @@ The archive contains 906 verified home matches. The guaranteed-team filter curre
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round;
-- Sunderland: 24, including its home Championship play-off semifinal.
+- Sunderland: 24, including its home Championship play-off semifinal;
+- AEK Athens: 16;
+- Celtic: 19;
+- LASK: 18, including two European-place play-off home fixtures;
+- Viking: 15.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs and all 13 guaranteed Europa League clubs now have active profiles. The guaranteed-team research queue is empty.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, and all four Champions League play-off clubs now have active profiles. The active-scope research queue is empty.
 
 ## Data batches
 
@@ -62,6 +68,19 @@ Bournemouth scores below its coefficient baseline but shows a strong positive ho
 | Sunderland | 0.9235 | 0.8614 |
 
 Sunderland scores below its coefficient baseline but shows a strong positive home defensive residual. All 24 observations fall into the similar-opponent bucket under the current coefficient snapshot.
+
+### Champions League play-off clubs, 2024/25
+
+`aek-celtic-lask-viking-2024-25.json` adds 68 domestic home matches for the four clubs in `champions.playoffs`: AEK Athens 16, Celtic 19, LASK 18, and Viking 15. The LASK sample includes two home European-place play-off fixtures. Opponents without a higher individual coefficient use the parsed 2026 association floors: Greece `9.682`, Scotland `6.410`, Austria `6.770`, and Norway `8.247`.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier | Notable context |
+|---|---:|---:|---|
+| AEK Athens | 1.1073 | 0.8981 | Weaker opponents: 1.1680 attack / 0.8200 visiting goals |
+| Celtic | 1.1800 | 0.8945 | Weaker opponents: 1.1800 attack / 0.8200 visiting goals |
+| LASK | 1.0245 | 1.0922 | Similar opponents: 1.0915 attack |
+| Viking | 1.1800 | 1.0349 | Stronger opponents: 0.9122 visiting goals |
+
+AEK and Celtic combine strong attacking residuals with positive home defensive effects. LASK remains close to neutral overall and does not show the same defensive signal. Viking reaches the attack ceiling, but its stronger-opponent attack residual is approximately neutral at `0.9910`.
 
 ### Spain and Germany 2024/25
 
