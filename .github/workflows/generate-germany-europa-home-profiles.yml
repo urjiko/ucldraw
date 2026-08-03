@@ -27,7 +27,7 @@ jobs:
           const vm = require('node:vm');
 
           (async () => {
-            const response = await fetch('https://raw.githubusercontent.com/openfootball/europe/master/germany/2024-25_de1.txt');
+            const response = await fetch('https://raw.githubusercontent.com/openfootball/deutschland/master/2024-25/1-bundesliga.txt');
             if (!response.ok) throw new Error(`OpenFootball request failed: ${response.status}`);
             const source = await response.text();
 
