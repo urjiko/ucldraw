@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#040b20">
+  <meta name="description" content="UEFA Draw Simulator kura, torba ve yapay zeka tahmin sisteminin nasıl çalıştığına dair ayrıntılı açıklama.">
+  <title>Sistem Nasıl Çalışıyor? | UEFA Draw Simulator</title>
+  <link rel="icon" type="image/png" href="../crests/pools/uefa_logo.png">
+  <link rel="stylesheet" href="../about.css">
+</head>
+<body>
+  <main class="about-shell">
+    <nav class="about-nav" aria-label="Sayfa navigasyonu">
+      <a class="back-link" href="../">← Simülatöre dön</a>
+      <span class="about-nav-label">UEFA Draw Simulator · Sistem açıklaması</span>
+    </nav>
+
+    <header class="about-hero">
+      <p class="about-kicker">Şeffaflık notu</p>
+      <h1>Sistem nasıl çalışıyor?</h1>
+      <p>
+        Bu sayfa torbaların nasıl oluşturulduğunu, kura motorunun hangi kısıtları uyguladığını,
+        skor tahminlerinin hangi verilerle üretildiğini ve sonuçların neden her çalıştırmada değişebildiğini açıklar.
+        Burada anlatılanlar uygulamanın mevcut kod davranışını özetler; gizemli bir “AI böyle istedi” perdesi yoktur.
+      </p>
+    </header>
+
+    <aside class="about-disclaimer">
+      <strong>Resmî olmayan bağımsız proje</strong>
+      <p>
+        Bu site UEFA, UEFA organizasyonları, ulusal federasyonlar veya kulüpler tarafından hazırlanmaz,
+        desteklenmez ya da onaylanmaz. İsimler, logolar ve marka unsurları yalnızca takımları ve turnuvaları
+        tanımlamak amacıyla kullanılır. Üretilen kura, fikstür, puan durumu ve skor tahminleri resmî değildir;
+        eğlence ve simülasyon amacı taşır.
+      </p>
+    </aside>
+
+    <section class="about-section" id="veri">
+      <h2>1. Takım havuzları ve kullanılan veriler</h2>
+      <p>
+        Her turnuvanın takım listesi proje içinde tanımlanan sezon havuzundan gelir. Kesin katılımcılar,
+        play-off havuzları ve gerektiğinde geçici yer tutucular ayrı gruplarda tutulur. Uygulama açıldığında bu
+        gruplar birleştirilir ve seçilen turnuvanın aktif takım listesi oluşturulur.
+      </p>
+      <p>
+        Kulüp katsayıları canlı bir dış servisten her sayfa açılışında çekilmez. Projede üretilmiş ve tarih damgası
+        bulunan bir katsayı görüntüsü kullanılır. Böylece aynı sürüm aynı takım sıralamasını üretir; dış sitenin
+        geçici olarak değişmesi veya erişilememesi torbaları rastgele bozmaz.
+      </p>
+      <div class="about-note">
+        <p>
+          Takım havuzları ve katsayı görüntüsü zaman içinde güncellenebilir. Bu nedenle bu simülatör, gerçek UEFA
+          duyurularının yerine geçmez ve gelecekteki resmî katılımcı listesini garanti etmez.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section" id="torbalar">
+      <h2>2. Torba sistemi nasıl belirleniyor?</h2>
+      <p>
+        Takımlar önce UEFA kulüp katsayısına göre yüksekten düşüğe sıralanır. Katsayı eşitse proje içindeki resmî
+        katsayı sırası kullanılır; o da eşitse takım adı alfabetik olarak devreye girer. Katsayısı bulunamayan bir
+        takım, bilinen katsayılı takımların arkasına yerleştirilir.
+      </p>
+      <p>
+        Mevcut Şampiyonlar Ligi yapılandırmasında son şampiyon, kodda tanımlı olduğu sürece ilk sıraya alınır.
+        Ardından sıralanmış liste, turnuvanın torba sayısına göre eşit parçalara bölünür.
+      </p>
+
+      <div class="about-grid">
+        <article class="about-card">
+          <strong>Şampiyonlar Ligi</strong>
+          <p>36 takım, 4 torba, her torbada 9 takım. Her takım her torbadan 2 rakiple karşılaşır.</p>
+        </article>
+        <article class="about-card">
+          <strong>Avrupa Ligi</strong>
+          <p>36 takım, 4 torba, her torbada 9 takım. Her takım her torbadan 2 rakiple karşılaşır.</p>
+        </article>
+        <article class="about-card">
+          <strong>Konferans Ligi</strong>
+          <p>36 takım, 6 torba, her torbada 6 takım. Her takım her torbadan 1 rakiple karşılaşır.</p>
+        </article>
+        <article class="about-card">
+          <strong>Tahmindeki etkisi</strong>
+          <p>Torba, takım gücü hesabında küçük bir düzeltme sağlar; ana ağırlık kulüp katsayısındadır.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-section" id="kura">
+      <h2>3. Kura neye göre yapılıyor?</h2>
+      <p>
+        Kura motoru önce bütün takımlar için gerekli rakip sayısını hesaplar, ardından kurallara uyan eşleşmeleri
+        oluşturur. Her adımda seçenek sayısı en az olan takım ve torba ihtiyacı önce çözülür. Bu yaklaşım, kolay
+        eşleşmeleri erkenden tüketip son takımda çıkmaza girme riskini azaltır.
+      </p>
+      <p>Bir eşleşmenin kabul edilmesi için şu şartların tamamı sağlanır:</p>
+      <ul>
+        <li>Takım kendisiyle eşleşemez.</li>
+        <li>Aynı ülkeden iki takım birbirine rakip olamaz.</li>
+        <li>Aynı rakip iki kez seçilemez.</li>
+        <li>Her takım, her torbadan yapılandırmada belirtilen sayıda rakip alır.</li>
+        <li>Bir takım, aynı yabancı federasyondan en fazla iki rakiple karşılaşabilir.</li>
+        <li>Eşleşme iki takımın da kalan torba ihtiyacını aynı anda karşılamalıdır.</li>
+      </ul>
+      <p>
+        Motor olası seçenekleri rastgeleleştirir, fakat yalnızca geçerli adaylar arasından seçim yapar. Bir deneme
+        ileride çözülemeyen bir çıkmaza ulaşırsa işlem baştan denenir. Sonuç bu yüzden rastlantısaldır, fakat kurallar
+        rastlantıya bırakılmaz.
+      </p>
+    </section>
+
+    <section class="about-section" id="saha-ve-hafta">
+      <h2>4. İç saha, deplasman ve maç haftaları</h2>
+      <p>
+        Eşleşmeler tamamlandıktan sonra sistem her maçın ev sahibini belirler. Şampiyonlar Ligi ve Avrupa Ligi’nde
+        her takım, her torbadan aldığı iki rakibin birini evinde, diğerini deplasmanda oynar. Böylece sekiz maçın
+        dördü iç sahada, dördü deplasmanda olur.
+      </p>
+      <p>
+        Konferans Ligi’nde altı torba üç ikili gruba ayrılır: 1–2, 3–4 ve 5–6. Her takım bu ikililerin her birinde
+        bir iç saha ve bir deplasman maçı alır; toplamda üç iç saha ve üç deplasman maçı oluşur.
+      </p>
+      <p>
+        Son aşamada bütün eşleşmeler maç haftalarına dağıtılır. Bir takım aynı haftada birden fazla maç oynayamaz
+        ve her hafta turnuvadaki bütün takımların tam bir maç programı oluşturması gerekir. Üretilen fikstür bu
+        kontrollerden geçmezse kabul edilmez.
+      </p>
+    </section>
+
+    <section class="about-section" id="tahmin">
+      <h2>5. “Yapay Zeka Tahmini” neye göre çalışıyor?</h2>
+      <p>
+        Arayüzde “Yapay Zeka Tahmini” adı kullanılsa da sistem bir sohbet botu veya dışarıdaki üretken yapay zekâ
+        servisi değildir. Bu, kulüp katsayısı, torba konumu, iç saha geçmişi ve olasılıksal skor üretimini birleştiren
+        yerel bir tahmin modelidir.
+      </p>
+
+      <h3>5.1 Temel takım gücü</h3>
+      <p>
+        Takım gücü, kulüp katsayısının logaritmik dönüşümü ile torba konumunun küçük bir katkısından oluşur. Logaritma,
+        çok yüksek katsayıların düşük katsayılı takımları orantısız biçimde ezmesini sınırlar.
+      </p>
+      <div class="about-formula">güç = log₂(katsayı + 8) + torba_düzeltmesi</div>
+      <p>
+        İki takımın güç farkı kullanılarak temel gol beklentileri hesaplanır. İç saha takımı için başlangıç noktası
+        daha yüksektir; bu, modelin genel iç saha varsayımıdır.
+      </p>
+      <div class="about-formula">ev gol beklentisi = 1,48 + güç_farkı × 0,28</div>
+      <div class="about-formula">deplasman gol beklentisi = 1,02 − güç_farkı × 0,24</div>
+      <p>
+        Aşırı değerleri engellemek için bu beklentiler güvenli alt ve üst sınırlara sıkıştırılır. Böylece tek bir
+        katsayı farkı gerçekçi olmayan onlarca gollük skorlar üretmez.
+      </p>
+
+      <h3>5.2 Bağlamsal iç saha modeli</h3>
+      <p>
+        Aktif profili bulunan kulüplerde temel beklenti, doğrulanmış tarihsel iç saha maçlarından üretilen iki ayrı
+        çarpanla düzeltilir: ev sahibinin hücum üretimi ve deplasman takımının gol üretimi. İkinci değer “savunma
+        puanı” değildir; rakibin baz beklentiye göre ne kadar gol attığını gösterir.
+      </p>
+      <ul>
+        <li>Genel ve yerel lig iç saha performansı ayrı bağlamlarda izlenir.</li>
+        <li>Avrupa kupası maçları için ayrı bir bağlam kullanılabilir.</li>
+        <li>Rakip, güçlü, benzer veya zayıf olarak sınıflandırılır.</li>
+        <li>Aynı ülke federasyonuna karşı yeterli örnek varsa ülke eşleşmesi sinyali sınırlı ağırlıkla eklenir.</li>
+        <li>Yeni maçlara daha fazla ağırlık verilir; kullanılan yarı ömür 3 yıldır.</li>
+        <li>Az örnekli değerler doğrudan kullanılmaz, güven katsayısıyla nötr değere doğru geri çekilir.</li>
+        <li>Hücum çarpanı 0,84–1,18; deplasman gol çarpanı 0,82–1,16 sınırlarında tutulur.</li>
+      </ul>
+      <p>
+        Bir takım için yeterli tarihsel profil yoksa eski katsayı ve torba tabanlı model aynen korunur. Eksik veri,
+        uydurma bir iç saha avantajıyla doldurulmaz.
+      </p>
+
+      <h3>5.3 Skor nasıl seçiliyor?</h3>
+      <p>
+        Son gol beklentileri belirlendikten sonra ev ve deplasman golleri Poisson dağılımından örneklenir. Bu nedenle
+        model tek bir “kesin skor” hesaplamaz; aynı güç dengesi altında mümkün olan skorlardan birini üretir. Otomatik
+        tahminlerde goller 0 ile 6 arasında sınırlandırılır.
+      </p>
+      <p>
+        “Yapay Zeka Tahmini” düğmesine her basıldığında tahmin turu numarası artırılır. Bu numara rastgelelik tohumuna
+        eklenir ve bütün turnuva yeniden simüle edilir. Önceki otomatik veya manuel skorlar ile takım ve maç kilitleri
+        temizlenir. Böylece art arda iki tıklama aynı olasılık modelini kullanır, fakat yeni bir skor seti üretir.
+      </p>
+      <div class="about-note">
+        <p>
+          Daha güçlü takımın her simülasyonda kazanması beklenmez. Model olasılık üretir; sürpriz sonuçlar hata değil,
+          futbolun belirsizliğini temsil eden örneklerdir.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section" id="puan-durumu">
+      <h2>6. Puan durumu nasıl hesaplanıyor?</h2>
+      <p>
+        Galibiyet 3, beraberlik 1, mağlubiyet 0 puandır. Eşit puanlı takımlar aşağıdaki sırayla ayrılır:
+      </p>
+      <ol>
+        <li>Gol farkı</li>
+        <li>Atılan gol</li>
+        <li>Deplasmanda atılan gol</li>
+        <li>Galibiyet sayısı</li>
+        <li>Deplasman galibiyeti</li>
+        <li>Rakiplerin toplam puanı</li>
+        <li>Rakiplerin toplam gol farkı</li>
+        <li>Rakiplerin toplam attığı gol</li>
+        <li>Kulüp katsayısı</li>
+        <li>Takım adı</li>
+      </ol>
+      <p>
+        İlk 8 sıra doğrudan üst tura, 9–24 arası play-off bölgesine, 25 ve sonrası elenme bölgesine yerleştirilir.
+        Bu gösterim simülasyon içindir ve resmî turnuva kararının yerine geçmez.
+      </p>
+    </section>
+
+    <section class="about-section" id="sinirlar">
+      <h2>7. Modelin sınırları</h2>
+      <ul>
+        <li>Sakatlık, ceza, teknik direktör değişikliği, güncel kadro formu ve maç içi taktikler canlı olarak izlenmez.</li>
+        <li>Katsayılar takımın genel Avrupa performansını temsil eder; tek başına güncel sportif gücün kusursuz ölçüsü değildir.</li>
+        <li>Tarihsel iç saha verisi, gelecek sezonun aynı biçimde gerçekleşeceğini garanti etmez.</li>
+        <li>Üretilen sonuçlar bahis, yatırım veya başka bir finansal karar için tavsiye değildir.</li>
+        <li>Takım havuzları ve sezon tarihleri resmî duyurular geldikçe proje içinde ayrıca güncellenmelidir.</li>
+      </ul>
+    </section>
+
+    <footer class="about-footer">
+      <p>Bu açıklama, uygulamanın mevcut sürümündeki kura ve tahmin mantığını özetler.</p>
+    </footer>
+  </main>
+</body>
+</html>
