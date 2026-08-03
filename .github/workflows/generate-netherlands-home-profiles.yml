@@ -37,14 +37,14 @@ jobs:
             if (!Number.isFinite(associationFloor)) throw new Error('Missing Netherlands association floor.');
 
             const teams = {
-              'Ajax': { slug: 'ajax', name: 'Ajax', aliases: ['ajax'] },
+              'AFC Ajax': { slug: 'ajax', name: 'Ajax', aliases: ['ajax'] },
               'Almere City FC': { slug: 'almere', name: 'Almere City', aliases: ['almere'] },
               'AZ': { slug: 'azalkmaar', name: 'AZ Alkmaar', aliases: ['azalkmaar'] },
               'Feyenoord Rotterdam': { slug: 'feyenoord', name: 'Feyenoord', aliases: ['feyenoord'] },
               'Fortuna Sittard': { slug: 'fortuna', name: 'Fortuna Sittard', aliases: ['fortuna'] },
               'Go Ahead Eagles': { slug: 'goaheadeagles', name: 'Go Ahead Eagles', aliases: ['goaheadeagles'] },
               'FC Groningen': { slug: 'groningen', name: 'Groningen', aliases: ['groningen'] },
-              'sc Heerenveen': { slug: 'heerenveen', name: 'Heerenveen', aliases: ['heerenveen'] },
+              'SC Heerenveen': { slug: 'heerenveen', name: 'Heerenveen', aliases: ['heerenveen'] },
               'Heracles Almelo': { slug: 'heracles', name: 'Heracles', aliases: ['heracles'] },
               'NAC Breda': { slug: 'nac', name: 'NAC Breda', aliases: ['nac'] },
               'NEC': { slug: 'nec', name: 'NEC', aliases: ['nec'] },
