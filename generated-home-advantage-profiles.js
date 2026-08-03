@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 327,
-    "matches": 215,
+    "storedMatches": 347,
+    "matches": 235,
     "excludedStoredMatches": 112,
-    "teams": 10,
+    "teams": 11,
     "activeTeamScope": 42,
-    "domesticMatches": 203,
+    "domesticMatches": 223,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -22,6 +22,7 @@
       "data/home-advantage-matches/atleti-barcelona-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
+      "data/home-advantage-matches/brugge-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
@@ -147,7 +148,6 @@
     ]
   },
   "researchQueue": [
-    "brugge",
     "como",
     "feyenoord",
     "inter",
@@ -533,6 +533,77 @@
           "confidence": 0.5652,
           "samples": 17,
           "effectiveSample": 15.6
+        }
+      }
+    },
+    "brugge": {
+      "name": "Club Brugge",
+      "country": "BEL",
+      "attack": {
+        "overall": 1.0974,
+        "domestic": 1.1168,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.1168
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.5029,
+        "domestic": 0.6028,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.6028
+      },
+      "defenseConfidence": {
+        "overall": 0.5029,
+        "domestic": 0.6028,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.6028
+      },
+      "samples": {
+        "overall": {
+          "raw": 20,
+          "effective": 18.21
+        },
+        "domestic": {
+          "raw": 20,
+          "effective": 18.21
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 20,
+          "effective": 18.21
+        }
+      },
+      "associationMatchups": {
+        "BEL": {
+          "attack": 1.1168,
+          "defense": 1.16,
+          "confidence": 0.6028,
+          "samples": 20,
+          "effectiveSample": 18.21
         }
       }
     },
