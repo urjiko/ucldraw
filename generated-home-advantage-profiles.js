@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 491,
-    "matches": 379,
+    "storedMatches": 542,
+    "matches": 430,
     "excludedStoredMatches": 112,
-    "teams": 19,
+    "teams": 22,
     "activeTeamScope": 42,
-    "domesticMatches": 367,
+    "domesticMatches": 418,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -29,6 +29,7 @@
       "data/home-advantage-matches/feyenoord-psv-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
       "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
+      "data/home-advantage-matches/lens-lille-psg-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json"
     ]
   },
@@ -151,10 +152,7 @@
     ]
   },
   "researchQueue": [
-    "lens",
-    "lille",
     "porto",
-    "psg",
     "real",
     "realbetis",
     "shakhtar",
@@ -1099,6 +1097,148 @@
         }
       }
     },
+    "lens": {
+      "name": "Lens",
+      "country": "FRA",
+      "attack": {
+        "overall": 0.9486,
+        "domestic": 0.9374,
+        "europe": 1,
+        "vsStronger": 1.1007,
+        "vsSimilar": 0.8844,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.0422,
+        "domestic": 1.0514,
+        "europe": 1,
+        "vsStronger": 0.9804,
+        "vsSimilar": 1.0874,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4637,
+        "domestic": 0.5646,
+        "europe": 0,
+        "vsStronger": 0.2734,
+        "vsSimilar": 0.4793,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4637,
+        "domestic": 0.5646,
+        "europe": 0,
+        "vsStronger": 0.2734,
+        "vsSimilar": 0.4793,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.56
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.56
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 5,
+          "effective": 4.52
+        },
+        "vsSimilar": {
+          "raw": 12,
+          "effective": 11.04
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 0.9374,
+          "defense": 1.0514,
+          "confidence": 0.5646,
+          "samples": 17,
+          "effectiveSample": 15.56
+        }
+      }
+    },
+    "lille": {
+      "name": "Lille",
+      "country": "FRA",
+      "attack": {
+        "overall": 0.9972,
+        "domestic": 0.9966,
+        "europe": 1,
+        "vsStronger": 0.9874,
+        "vsSimilar": 0.975,
+        "vsWeaker": 1.0129
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0945,
+        "vsSimilar": 1.0061,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4631,
+        "domestic": 0.5641,
+        "europe": 0,
+        "vsStronger": 0.0655,
+        "vsSimilar": 0.189,
+        "vsWeaker": 0.4977
+      },
+      "defenseConfidence": {
+        "overall": 0.4631,
+        "domestic": 0.5641,
+        "europe": 0,
+        "vsStronger": 0.0655,
+        "vsSimilar": 0.189,
+        "vsWeaker": 0.4977
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.53
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.53
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.84
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.8
+        },
+        "vsWeaker": {
+          "raw": 13,
+          "effective": 11.89
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 0.9966,
+          "defense": 1.16,
+          "confidence": 0.5641,
+          "samples": 17,
+          "effectiveSample": 15.53
+        }
+      }
+    },
     "liverpool": {
       "name": "Liverpool",
       "country": "ENG",
@@ -1309,6 +1449,77 @@
           "confidence": 0.5916,
           "samples": 19,
           "effectiveSample": 17.38
+        }
+      }
+    },
+    "psg": {
+      "name": "Paris Saint-Germain",
+      "country": "FRA",
+      "attack": {
+        "overall": 1.1187,
+        "domestic": 1.1445,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.1445
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4631,
+        "domestic": 0.5641,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5641
+      },
+      "defenseConfidence": {
+        "overall": 0.4631,
+        "domestic": 0.5641,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5641
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.53
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.53
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 17,
+          "effective": 15.53
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 1.1445,
+          "defense": 1.16,
+          "confidence": 0.5641,
+          "samples": 17,
+          "effectiveSample": 15.53
         }
       }
     },

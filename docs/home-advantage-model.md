@@ -17,14 +17,14 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 491 verified home matches. The guaranteed-team filter currently includes 379 matches across 19 active profiles:
+The archive contains 542 verified home matches. The guaranteed-team filter currently includes 430 matches across 22 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
-- Bayern München, Borussia Dortmund, Feyenoord, PSV, RB Leipzig, and VfB Stuttgart: 17 each;
+- Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, PSV, RB Leipzig, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Lens.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Porto.
 
 ## Data batches
 
@@ -61,6 +61,18 @@ Spanish opponents without a higher individual value use `19.409`; German opponen
 | VfB Stuttgart | 1.1800 | Similar opponents: 0.9977 |
 
 Leipzig remains below the general attack ceiling but shows a strong residual against stronger opponents. Its similar-opponent visiting-goal multiplier is `0.9400`, a positive home defensive signal for that context. Stuttgart reaches the domestic attack ceiling, while its similar-opponent residual is essentially neutral and its single weaker-opponent observation is not treated as a broad conclusion.
+
+### France 2024/25
+
+`lens-lille-psg-2024-25.json` contains every Ligue 1 home match for Lens, Lille, and Paris Saint-Germain, 17 per club and 51 total. Scores come from OpenFootball's complete 306-match Ligue 1 season file. Strength values use the project's 2026 UEFA coefficient snapshot; French opponents without a higher individual coefficient use the `16.699` association floor. Historical pot values remain neutral at `1`.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Lens | 0.9374 | Stronger opponents: 1.1007 |
+| Lille | 0.9966 | Similar opponents: 0.9750 |
+| Paris Saint-Germain | 1.1445 | Weaker opponents: 1.1445 |
+
+Lens scored below the coefficient baseline overall but above it against stronger opponents. Its stronger-opponent visiting-goal multiplier is `0.9804`, a small positive home defensive effect in that context. Lille is approximately neutral overall, while Paris Saint-Germain shows a strong domestic attacking residual. All PSG league opponents fall into the weaker-opponent bucket under the current coefficient snapshot, so no unsupported similar- or stronger-opponent effect is emitted.
 
 ### Belgium 2024/25
 
