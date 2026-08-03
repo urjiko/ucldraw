@@ -1,0 +1,48 @@
+name: Inspect Conference playoff sources
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.head_ref == 'agent/add-conference-playoff-home-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Count source home fixtures
+        run: |
+          node <<'NODE'
+          const sources = {
+            italy: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/it.1.json',
+            england: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/en.1.json',
+            germany: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/de.1.json',
+            spain: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/es.1.json',
+            france: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json'
+          };
+
+          (async () => {
+            for (const [key, url] of Object.entries(sources)) {
+              const response = await fetch(url, { headers: { 'user-agent': 'UEFA-source-inspector/1.0' } });
+              if (!response.ok) throw new Error(`${key}: ${response.status}`);
+              const data = await response.json();
+              const counts = new Map();
+              for (const match of data.matches || []) {
+                if (!Array.isArray(match.score?.ft)) continue;
+                counts.set(match.team1, (counts.get(match.team1) || 0) + 1);
+              }
+              console.log(`JSON ${key} matches=${data.matches?.length}`);
+              console.log(JSON.stringify([...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))));
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
