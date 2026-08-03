@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 666 verified home matches. The guaranteed-team filter currently includes 554 matches across 29 active profiles:
+The archive contains 683 verified home matches. The guaranteed-team filter currently includes 571 matches across 30 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
-- Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
+- AZ Alkmaar, Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs now have active profiles, so the research queue begins with guaranteed Europa League club AZ Alkmaar.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar is the first completed guaranteed Europa League club, and the research queue now begins with Bayer Leverkusen.
 
 ## Data batches
 
@@ -136,14 +136,15 @@ Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goa
 
 ### Netherlands 2024/25
 
-`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. Results come from OpenFootball's complete 306-match Eredivisie season file. Club and opponent strength values use the project's 2026 UEFA coefficient snapshot.
+`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. `azalkmaar-2024-25.json` adds all 17 AZ Alkmaar home matches as the first guaranteed Europa League profile. Results come from OpenFootball's complete 306-match Eredivisie season file. Club and opponent strength values use the project's 2026 UEFA coefficient snapshot.
 
 | Club | Domestic attack | Notable context |
 |---|---:|---:|
+| AZ Alkmaar | 0.9596 | Similar opponents: 0.9385 |
 | Feyenoord | 1.0988 | Similar opponents: 1.0202 |
 | PSV | 1.1800 | Similar opponents: 1.0140 |
 
-PSV reaches the conservative attack ceiling, while Feyenoord remains below it with an overall attack residual of `1.0812`.
+AZ scores slightly below its coefficient baseline, with an overall attack residual of `0.9668` and a weaker-opponent value of `0.9843`. PSV reaches the conservative attack ceiling, while Feyenoord remains below it with an overall attack residual of `1.0812`.
 
 ## Interpretation
 

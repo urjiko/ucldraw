@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 666,
-    "matches": 554,
+    "storedMatches": 683,
+    "matches": 571,
     "excludedStoredMatches": 112,
-    "teams": 29,
+    "teams": 30,
     "activeTeamScope": 42,
-    "domesticMatches": 542,
+    "domesticMatches": 559,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -20,6 +20,7 @@
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/astonvilla-2024-25.json",
       "data/home-advantage-matches/atleti-barcelona-2024-25.json",
+      "data/home-advantage-matches/azalkmaar-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
       "data/home-advantage-matches/brugge-2024-25.json",
@@ -155,7 +156,6 @@
     ]
   },
   "researchQueue": [
-    "azalkmaar",
     "bayerleverkusen",
     "bournemouth",
     "celtavigo",
@@ -380,6 +380,77 @@
           "confidence": 0.5908,
           "samples": 19,
           "effectiveSample": 17.33
+        }
+      }
+    },
+    "azalkmaar": {
+      "name": "AZ Alkmaar",
+      "country": "NED",
+      "attack": {
+        "overall": 0.9668,
+        "domestic": 0.9596,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9385,
+        "vsWeaker": 0.9843
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.05,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.463,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1852,
+        "vsWeaker": 0.516
+      },
+      "defenseConfidence": {
+        "overall": 0.463,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1852,
+        "vsWeaker": 0.516
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.73
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.79
+        }
+      },
+      "associationMatchups": {
+        "NED": {
+          "attack": 0.9596,
+          "defense": 1.16,
+          "confidence": 0.564,
+          "samples": 17,
+          "effectiveSample": 15.52
         }
       }
     },
