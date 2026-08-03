@@ -11,10 +11,17 @@ const html = read('index.html');
 const controller = read('prediction-ai-controller.js');
 const share = read('prediction-share-v2.js');
 const css = read('prediction-share-v2.css');
+const footerScript = read('site-footer.js');
+const footerCss = read('site-footer.css');
+const aboutHtml = read('About/index.html');
+const aboutCss = read('about.css');
 
 assert.ok(html.includes('prediction-share-v2.css'));
 assert.ok(html.includes('prediction-ai-controller.js'));
 assert.ok(html.includes('prediction-share-v2.js'));
+assert.ok(html.includes('site-footer.css'));
+assert.ok(html.includes('site-footer.js'));
+assert.ok(html.indexOf('prediction-share-v7.js') < html.indexOf('site-footer.js'));
 assert.ok(html.indexOf('prediction-engine.js') < html.indexOf('prediction-ai-controller.js'));
 assert.ok(html.indexOf('prediction-ai-controller.js') < html.indexOf('prediction-ui.js'));
 assert.ok(html.indexOf('prediction-share.js') < html.indexOf('prediction-share-v2.js'));
@@ -23,7 +30,10 @@ assert.match(controller, /state\.scores = \{\}/);
 assert.match(controller, /state\.matchLocks = \{\}/);
 assert.match(controller, /state\.teamLocks = \{\}/);
 assert.match(controller, /function simulateMatchday\(state, matchday/);
-assert.match(controller, /simulateAdjustedScore\(match, state\.comp, state\.seed, version\)/);
+assert.match(controller, /state\.aiPredictionVersion = Number\(state\.aiPredictionVersion \|\| 0\) \+ 1/);
+assert.match(controller, /ai-run-/);
+assert.match(controller, /simulateAdjustedScore\(match, state\.comp, predictionSeed, version\)/);
+assert.match(controller, /score\.model\.predictionRun = predictionRun/);
 assert.match(controller, /__homeAdvantageModel: true/);
 assert.match(share, /Yapay Zeka Tahmini/);
 assert.match(share, /AI\.predictAll\(\)/);
@@ -42,6 +52,17 @@ assert.doesNotMatch(share, /`“\$\{snapshot\.activeName\}”`/);
 assert.doesNotMatch(share, /activeRow\.rank/);
 assert.match(css, /prediction-share-button[\s\S]*display: none !important/);
 assert.match(css, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+assert.match(footerScript, /Bağımsız ve resmi olmayan bir simülasyondur/);
+assert.match(footerScript, /href="About\/"/);
+assert.match(footerCss, /font-size: 0\.67rem/);
+assert.match(aboutHtml, /Sistem nasıl çalışıyor\?/);
+assert.match(aboutHtml, /Resmî olmayan bağımsız proje/);
+assert.match(aboutHtml, /Torba sistemi nasıl belirleniyor\?/);
+assert.match(aboutHtml, /Kura neye göre yapılıyor\?/);
+assert.match(aboutHtml, /“Yapay Zeka Tahmini” neye göre çalışıyor\?/);
+assert.match(aboutHtml, /Poisson dağılımından/);
+assert.match(aboutHtml, /aiPredictionVersion|tahmin turu numarası/);
+assert.match(aboutCss, /about-section/);
 
 const home = {
   name: 'Home FC',
@@ -106,5 +127,17 @@ assert.equal(wrappedState.activeMatchdays[1], true);
 assert.equal(wrappedState.activeMatchdays[2], true);
 assert.equal(wrappedState.rerollVersion[1], 1);
 assert.equal(wrappedState.rerollVersion[2], 1);
+assert.equal(wrappedState.aiPredictionVersion, 1);
+assert.equal(wrappedState.scores.m1.model.predictionRun, 1);
+assert.equal(wrappedState.scores.m2.model.predictionRun, 1);
+const firstPrediction = JSON.stringify(wrappedState.scores);
 
-console.log('League share card and AI prediction checks passed.');
+context.window.UCLDRAW_PREDICTION_AI.predictAll(wrappedState);
+assert.equal(wrappedState.aiPredictionVersion, 2);
+assert.equal(wrappedState.rerollVersion[1], 1);
+assert.equal(wrappedState.rerollVersion[2], 1);
+assert.equal(wrappedState.scores.m1.model.predictionRun, 2);
+assert.equal(wrappedState.scores.m2.model.predictionRun, 2);
+assert.notEqual(JSON.stringify(wrappedState.scores), firstPrediction);
+
+console.log('League share card, fresh AI prediction, footer and About page checks passed.');

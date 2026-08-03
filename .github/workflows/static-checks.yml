@@ -54,6 +54,7 @@ jobs:
           node --check prediction-share-v7.js
           node --check prediction-share-v8.js
           node --check prediction-share-v9.js
+          node --check site-footer.js
           node --check ui-refinement-v4.js
           node --check ui-refinement-v5.js
           node --check champions-font-loader.js
