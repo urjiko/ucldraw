@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 683,
-    "matches": 571,
+    "storedMatches": 717,
+    "matches": 605,
     "excludedStoredMatches": 112,
-    "teams": 30,
+    "teams": 32,
     "activeTeamScope": 42,
-    "domesticMatches": 559,
+    "domesticMatches": 593,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -31,6 +31,7 @@
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
       "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
+      "data/home-advantage-matches/leverkusen-hoffenheim-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json",
       "data/home-advantage-matches/porto-sporting-2024-25.json",
       "data/home-advantage-matches/real-betis-villarreal-2024-25.json",
@@ -156,11 +157,9 @@
     ]
   },
   "researchQueue": [
-    "bayerleverkusen",
     "bournemouth",
     "celtavigo",
     "crystalpalace",
-    "hoffenheim",
     "juventus",
     "marseille",
     "milan",
@@ -522,6 +521,77 @@
           "confidence": 0.5934,
           "samples": 19,
           "effectiveSample": 17.51
+        }
+      }
+    },
+    "bayerleverkusen": {
+      "name": "Bayer Leverkusen",
+      "country": "GER",
+      "attack": {
+        "overall": 1.0396,
+        "domestic": 1.0482,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9614,
+        "vsWeaker": 1.0649
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1277,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.463,
+        "domestic": 0.5639,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1381,
+        "vsWeaker": 0.5312
+      },
+      "defenseConfidence": {
+        "overall": 0.463,
+        "domestic": 0.5639,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1381,
+        "vsWeaker": 0.5312
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.92
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.6
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.0482,
+          "defense": 1.16,
+          "confidence": 0.5639,
+          "samples": 17,
+          "effectiveSample": 15.52
         }
       }
     },
@@ -1019,6 +1089,77 @@
           "confidence": 0.7091,
           "samples": 36,
           "effectiveSample": 29.25
+        }
+      }
+    },
+    "hoffenheim": {
+      "name": "Hoffenheim",
+      "country": "GER",
+      "attack": {
+        "overall": 1.1645,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 1,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 1,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4631,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0.564,
+        "vsSimilar": 0,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4631,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0.564,
+        "vsSimilar": 0,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.564,
+          "samples": 17,
+          "effectiveSample": 15.52
         }
       }
     },
