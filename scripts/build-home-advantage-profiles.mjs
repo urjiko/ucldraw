@@ -114,7 +114,8 @@ function loadPriorityScope() {
     { competition: 'champions', stage: 'guaranteed' },
     { competition: 'europa', stage: 'guaranteed' },
     { competition: 'champions', stage: 'playoffs' },
-    { competition: 'europa', stage: 'playoffs' }
+    { competition: 'europa', stage: 'playoffs' },
+    { competition: 'conference', stage: 'playoffs' }
   ];
   const priority = priorities.map(({ competition, stage }) => {
     const filenames = manifest?.[competition]?.[stage];

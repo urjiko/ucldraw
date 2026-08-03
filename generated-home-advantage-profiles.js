@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 1059,
-    "matches": 987,
+    "storedMatches": 1150,
+    "matches": 1078,
     "excludedStoredMatches": 72,
-    "teams": 51,
-    "activeTeamScope": 51,
-    "domesticMatches": 972,
+    "teams": 56,
+    "activeTeamScope": 56,
+    "domesticMatches": 1063,
     "europeanMatches": 15,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -20,6 +20,7 @@
       "data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/astonvilla-2024-25.json",
+      "data/home-advantage-matches/atalanta-brighton-freiburg-getafe-monaco-2024-25.json",
       "data/home-advantage-matches/atleti-barcelona-2024-25.json",
       "data/home-advantage-matches/azalkmaar-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
@@ -137,6 +138,17 @@
           "truidense",
           "viktoriaplzen"
         ]
+      },
+      {
+        "competition": "conference",
+        "stage": "playoffs",
+        "teams": [
+          "atalanta",
+          "brighton",
+          "freiburg",
+          "getafe",
+          "monaco"
+        ]
       }
     ],
     "teams": [
@@ -190,7 +202,12 @@
       "lillestrom",
       "trabzonspor",
       "truidense",
-      "viktoriaplzen"
+      "viktoriaplzen",
+      "atalanta",
+      "brighton",
+      "freiburg",
+      "getafe",
+      "monaco"
     ]
   },
   "researchQueue": [],
@@ -405,6 +422,77 @@
           "confidence": 0.5906,
           "samples": 19,
           "effectiveSample": 17.31
+        }
+      }
+    },
+    "atalanta": {
+      "name": "Atalanta",
+      "country": "ITA",
+      "attack": {
+        "overall": 1.0048,
+        "domestic": 1.0058,
+        "europe": 1,
+        "vsStronger": 0.9265,
+        "vsSimilar": 1.0353,
+        "vsWeaker": 1.0149
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.054,
+        "vsSimilar": 1.1238,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4926,
+        "domestic": 0.5928,
+        "europe": 0,
+        "vsStronger": 0.0735,
+        "vsSimilar": 0.2365,
+        "vsWeaker": 0.5162
+      },
+      "defenseConfidence": {
+        "overall": 0.4926,
+        "domestic": 0.5928,
+        "europe": 0,
+        "vsStronger": 0.0735,
+        "vsSimilar": 0.2365,
+        "vsWeaker": 0.5162
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.47
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.47
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.95
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.72
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.8
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 1.0058,
+          "defense": 1.16,
+          "confidence": 0.5928,
+          "samples": 19,
+          "effectiveSample": 17.47
         }
       }
     },
@@ -831,6 +919,77 @@
           "confidence": 0.592,
           "samples": 19,
           "effectiveSample": 17.42
+        }
+      }
+    },
+    "brighton": {
+      "name": "Brighton & Hove Albion",
+      "country": "ENG",
+      "attack": {
+        "overall": 1.1413,
+        "domestic": 1.1701,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 1.0812,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.0576,
+        "domestic": 1.0693,
+        "europe": 1,
+        "vsStronger": 1.0143,
+        "vsSimilar": 1.0773,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4913,
+        "domestic": 0.5916,
+        "europe": 0,
+        "vsStronger": 0.2763,
+        "vsSimilar": 0.5162,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4913,
+        "domestic": 0.5916,
+        "europe": 0,
+        "vsStronger": 0.2763,
+        "vsSimilar": 0.5162,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 5,
+          "effective": 4.58
+        },
+        "vsSimilar": {
+          "raw": 14,
+          "effective": 12.8
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 1.1701,
+          "defense": 1.0693,
+          "confidence": 0.5916,
+          "samples": 19,
+          "effectiveSample": 17.38
         }
       }
     },
@@ -1473,6 +1632,77 @@
         }
       }
     },
+    "freiburg": {
+      "name": "SC Freiburg",
+      "country": "GER",
+      "attack": {
+        "overall": 1.0455,
+        "domestic": 1.0554,
+        "europe": 1,
+        "vsStronger": 1.0198,
+        "vsSimilar": 0.9268,
+        "vsWeaker": 1.0826
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 0.9268,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4643,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0.193,
+        "vsSimilar": 0.0732,
+        "vsWeaker": 0.4954
+      },
+      "defenseConfidence": {
+        "overall": 0.4643,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0.193,
+        "vsSimilar": 0.0732,
+        "vsWeaker": 0.4954
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.87
+        },
+        "vsSimilar": {
+          "raw": 1,
+          "effective": 0.95
+        },
+        "vsWeaker": {
+          "raw": 13,
+          "effective": 11.78
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.0554,
+          "defense": 1.16,
+          "confidence": 0.5652,
+          "samples": 17,
+          "effectiveSample": 15.6
+        }
+      }
+    },
     "galatasaray": {
       "name": "Galatasaray",
       "country": "TUR",
@@ -1541,6 +1771,77 @@
           "confidence": 0.7091,
           "samples": 36,
           "effectiveSample": 29.25
+        }
+      }
+    },
+    "getafe": {
+      "name": "Getafe",
+      "country": "ESP",
+      "attack": {
+        "overall": 0.84,
+        "domestic": 0.84,
+        "europe": 1,
+        "vsStronger": 0.9579,
+        "vsSimilar": 0.84,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 0.9474,
+        "domestic": 0.9367,
+        "europe": 1,
+        "vsStronger": 0.9422,
+        "vsSimilar": 0.9721,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4902,
+        "domestic": 0.5905,
+        "europe": 0,
+        "vsStronger": 0.3176,
+        "vsSimilar": 0.4941,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4902,
+        "domestic": 0.5905,
+        "europe": 0,
+        "vsStronger": 0.3176,
+        "vsSimilar": 0.4941,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 6,
+          "effective": 5.58
+        },
+        "vsSimilar": {
+          "raw": 13,
+          "effective": 11.72
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 0.84,
+          "defense": 0.9367,
+          "confidence": 0.5905,
+          "samples": 19,
+          "effectiveSample": 17.31
         }
       }
     },
@@ -2393,6 +2694,77 @@
           "confidence": 0.5915,
           "samples": 19,
           "effectiveSample": 17.38
+        }
+      }
+    },
+    "monaco": {
+      "name": "AS Monaco",
+      "country": "FRA",
+      "attack": {
+        "overall": 1.1291,
+        "domestic": 1.1574,
+        "europe": 1,
+        "vsStronger": 1.0502,
+        "vsSimilar": 1.012,
+        "vsWeaker": 1.1448
+      },
+      "defense": {
+        "overall": 1.094,
+        "domestic": 1.1145,
+        "europe": 1,
+        "vsStronger": 1.1465,
+        "vsSimilar": 0.8673,
+        "vsWeaker": 1.1106
+      },
+      "confidence": {
+        "overall": 0.4614,
+        "domestic": 0.5624,
+        "europe": 0,
+        "vsStronger": 0.0698,
+        "vsSimilar": 0.1327,
+        "vsWeaker": 0.5139
+      },
+      "defenseConfidence": {
+        "overall": 0.4614,
+        "domestic": 0.5624,
+        "europe": 0,
+        "vsStronger": 0.0698,
+        "vsSimilar": 0.1327,
+        "vsWeaker": 0.5139
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.42
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.42
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.9
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.84
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.69
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 1.1574,
+          "defense": 1.1145,
+          "confidence": 0.5624,
+          "samples": 17,
+          "effectiveSample": 15.42
         }
       }
     },
