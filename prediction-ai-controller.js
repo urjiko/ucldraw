@@ -173,16 +173,21 @@
       state.rerollVersion[matchday] = Number(state.rerollVersion[matchday] || 0) + 1;
     }
     const version = Number(state.rerollVersion[matchday] || 0);
+    const predictionRun = Number(state.aiPredictionVersion || 0);
+    const predictionSeed = `${state.seed}:ai-run-${predictionRun}`;
     state.activeMatchdays[matchday] = true;
 
     for (const match of state.matches.filter((candidate) => candidate.matchday === matchday)) {
       if (match.id === protectedMatchId || isProtectedResult(state, match)) continue;
-      state.scores[match.id] = simulateAdjustedScore(match, state.comp, state.seed, version);
+      const score = simulateAdjustedScore(match, state.comp, predictionSeed, version);
+      score.model.predictionRun = predictionRun;
+      state.scores[match.id] = score;
     }
   }
 
   function createState(...args) {
     latestState = base.createState(...args);
+    latestState.aiPredictionVersion = Number(latestState.aiPredictionVersion || 0);
     return latestState;
   }
 
@@ -226,6 +231,8 @@
   function predictAll(state = latestState) {
     if (!state?.matches?.length) throw new Error('Yapay zeka tahmini için aktif bir turnuva bulunamadı.');
 
+    state.aiPredictionVersion = Number(state.aiPredictionVersion || 0) + 1;
+    const predictionRun = state.aiPredictionVersion;
     const lastMatchday = resetState(state);
     for (let matchday = 1; matchday <= lastMatchday; matchday += 1) simulateMatchday(state, matchday);
 
@@ -233,6 +240,7 @@
       detail: {
         state,
         matchdays: lastMatchday,
+        predictionRun,
         homeAdvantageProfileVersion: profileData().version || 0
       }
     }));
