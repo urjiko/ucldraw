@@ -7,16 +7,17 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 906,
-    "matches": 794,
+    "storedMatches": 974,
+    "matches": 862,
     "excludedStoredMatches": 112,
-    "teams": 42,
-    "activeTeamScope": 42,
-    "domesticMatches": 782,
+    "teams": 46,
+    "activeTeamScope": 46,
+    "domesticMatches": 850,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
+      "data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/astonvilla-2024-25.json",
       "data/home-advantage-matches/atleti-barcelona-2024-25.json",
@@ -114,6 +115,16 @@
           "sunderland",
           "torreense"
         ]
+      },
+      {
+        "competition": "champions",
+        "stage": "playoffs",
+        "teams": [
+          "aek",
+          "celtic",
+          "lask",
+          "viking"
+        ]
       }
     ],
     "teams": [
@@ -158,11 +169,86 @@
       "realsociedad",
       "rennais",
       "sunderland",
-      "torreense"
+      "torreense",
+      "aek",
+      "celtic",
+      "lask",
+      "viking"
     ]
   },
   "researchQueue": [],
   "profiles": {
+    "aek": {
+      "name": "AEK Athens",
+      "country": "GRE",
+      "attack": {
+        "overall": 1.0875,
+        "domestic": 1.1073,
+        "europe": 1,
+        "vsStronger": 0.9087,
+        "vsSimilar": 1.0044,
+        "vsWeaker": 1.168
+      },
+      "defense": {
+        "overall": 0.9169,
+        "domestic": 0.8981,
+        "europe": 1,
+        "vsStronger": 1.0984,
+        "vsSimilar": 0.9995,
+        "vsWeaker": 0.82
+      },
+      "confidence": {
+        "overall": 0.4459,
+        "domestic": 0.547,
+        "europe": 0,
+        "vsStronger": 0.2381,
+        "vsSimilar": 0.1329,
+        "vsWeaker": 0.4258
+      },
+      "defenseConfidence": {
+        "overall": 0.4459,
+        "domestic": 0.547,
+        "europe": 0,
+        "vsStronger": 0.2381,
+        "vsSimilar": 0.1329,
+        "vsWeaker": 0.4258
+      },
+      "samples": {
+        "overall": {
+          "raw": 16,
+          "effective": 14.49
+        },
+        "domestic": {
+          "raw": 16,
+          "effective": 14.49
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 4,
+          "effective": 3.75
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.84
+        },
+        "vsWeaker": {
+          "raw": 10,
+          "effective": 8.9
+        }
+      },
+      "associationMatchups": {
+        "GRE": {
+          "attack": 1.1073,
+          "defense": 0.8981,
+          "confidence": 0.547,
+          "samples": 16,
+          "effectiveSample": 14.49
+        }
+      }
+    },
     "arsenal": {
       "name": "Arsenal",
       "country": "ENG",
@@ -944,6 +1030,77 @@
         }
       }
     },
+    "celtic": {
+      "name": "Celtic",
+      "country": "SCO",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1033,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 0.9124,
+        "domestic": 0.8945,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0567,
+        "vsWeaker": 0.82
+      },
+      "confidence": {
+        "overall": 0.4907,
+        "domestic": 0.591,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.13,
+        "vsWeaker": 0.5644
+      },
+      "defenseConfidence": {
+        "overall": 0.4907,
+        "domestic": 0.591,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.13,
+        "vsWeaker": 0.5644
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.34
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.34
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.79
+        },
+        "vsWeaker": {
+          "raw": 17,
+          "effective": 15.55
+        }
+      },
+      "associationMatchups": {
+        "SCO": {
+          "attack": 1.18,
+          "defense": 0.8945,
+          "confidence": 0.591,
+          "samples": 19,
+          "effectiveSample": 17.34
+        }
+      }
+    },
     "city": {
       "name": "Manchester City",
       "country": "ENG",
@@ -1509,6 +1666,77 @@
           "confidence": 0.5902,
           "samples": 19,
           "effectiveSample": 17.28
+        }
+      }
+    },
+    "lask": {
+      "name": "LASK",
+      "country": "AUT",
+      "attack": {
+        "overall": 1.0202,
+        "domestic": 1.0245,
+        "europe": 1,
+        "vsStronger": 0.9351,
+        "vsSimilar": 1.0915,
+        "vsWeaker": 1.0074
+      },
+      "defense": {
+        "overall": 1.0762,
+        "domestic": 1.0922,
+        "europe": 1,
+        "vsStronger": 0.9879,
+        "vsSimilar": 1.035,
+        "vsWeaker": 1.0964
+      },
+      "confidence": {
+        "overall": 0.4792,
+        "domestic": 0.5799,
+        "europe": 0,
+        "vsStronger": 0.0649,
+        "vsSimilar": 0.1897,
+        "vsWeaker": 0.5185
+      },
+      "defenseConfidence": {
+        "overall": 0.4792,
+        "domestic": 0.5799,
+        "europe": 0,
+        "vsStronger": 0.0649,
+        "vsSimilar": 0.1897,
+        "vsWeaker": 0.5185
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.56
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.56
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.83
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.81
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.92
+        }
+      },
+      "associationMatchups": {
+        "AUT": {
+          "attack": 1.0245,
+          "defense": 1.0922,
+          "confidence": 0.5799,
+          "samples": 18,
+          "effectiveSample": 16.56
         }
       }
     },
@@ -3071,6 +3299,77 @@
           "confidence": 0.5632,
           "samples": 17,
           "effectiveSample": 15.47
+        }
+      }
+    },
+    "viking": {
+      "name": "Viking",
+      "country": "NOR",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 0.991,
+        "vsSimilar": 1.18,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.028,
+        "domestic": 1.0349,
+        "europe": 1,
+        "vsStronger": 0.9122,
+        "vsSimilar": 1.116,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4051,
+        "domestic": 0.5053,
+        "europe": 0,
+        "vsStronger": 0.168,
+        "vsSimilar": 0.4504,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4051,
+        "domestic": 0.5053,
+        "europe": 0,
+        "vsStronger": 0.168,
+        "vsSimilar": 0.4504,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 15,
+          "effective": 12.26
+        },
+        "domestic": {
+          "raw": 15,
+          "effective": 12.26
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.42
+        },
+        "vsSimilar": {
+          "raw": 12,
+          "effective": 9.83
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "NOR": {
+          "attack": 1.18,
+          "defense": 1.0349,
+          "confidence": 0.5053,
+          "samples": 15,
+          "effectiveSample": 12.26
         }
       }
     },

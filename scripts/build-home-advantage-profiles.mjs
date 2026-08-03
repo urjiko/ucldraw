@@ -112,7 +112,8 @@ function loadPriorityScope() {
   const manifest = context.window.UCLDRAW_POOL_MANIFEST;
   const priorities = [
     { competition: 'champions', stage: 'guaranteed' },
-    { competition: 'europa', stage: 'guaranteed' }
+    { competition: 'europa', stage: 'guaranteed' },
+    { competition: 'champions', stage: 'playoffs' }
   ];
   const priority = priorities.map(({ competition, stage }) => {
     const filenames = manifest?.[competition]?.[stage];
@@ -127,7 +128,7 @@ function loadPriorityScope() {
   });
   const teams = priority.flatMap((group) => group.teams);
   if (new Set(teams).size !== teams.length) {
-    throw new Error('Guaranteed Champions/Europa scope contains a duplicate team slug.');
+    throw new Error('Active home-advantage scope contains a duplicate team slug.');
   }
   return {
     source: 'generated-team-pools.js',
