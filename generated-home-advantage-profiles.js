@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 865,
-    "matches": 753,
+    "storedMatches": 906,
+    "matches": 794,
     "excludedStoredMatches": 112,
-    "teams": 40,
+    "teams": 42,
     "activeTeamScope": 42,
-    "domesticMatches": 741,
+    "domesticMatches": 782,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -39,7 +39,8 @@
       "data/home-advantage-matches/marseille-rennes-2024-25.json",
       "data/home-advantage-matches/porto-sporting-2024-25.json",
       "data/home-advantage-matches/real-betis-villarreal-2024-25.json",
-      "data/home-advantage-matches/shakhtar-slavia-2024-25.json"
+      "data/home-advantage-matches/shakhtar-slavia-2024-25.json",
+      "data/home-advantage-matches/sunderland-torreense-2024-25.json"
     ]
   },
   "methodology": {
@@ -160,10 +161,7 @@
       "torreense"
     ]
   },
-  "researchQueue": [
-    "sunderland",
-    "torreense"
-  ],
+  "researchQueue": [],
   "profiles": {
     "arsenal": {
       "name": "Arsenal",
@@ -2931,6 +2929,148 @@
           "confidence": 0.5639,
           "samples": 17,
           "effectiveSample": 15.51
+        }
+      }
+    },
+    "sunderland": {
+      "name": "Sunderland",
+      "country": "ENG",
+      "attack": {
+        "overall": 0.935,
+        "domestic": 0.9235,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9235,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 0.8822,
+        "domestic": 0.8614,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.8614,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.5487,
+        "domestic": 0.6459,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.6459,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.5487,
+        "domestic": 0.6459,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.6459,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 24,
+          "effective": 21.89
+        },
+        "domestic": {
+          "raw": 24,
+          "effective": 21.89
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 24,
+          "effective": 21.89
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 0.9235,
+          "defense": 0.8614,
+          "confidence": 0.6459,
+          "samples": 24,
+          "effectiveSample": 21.89
+        }
+      }
+    },
+    "torreense": {
+      "name": "Torreense",
+      "country": "POR",
+      "attack": {
+        "overall": 1.0434,
+        "domestic": 1.0528,
+        "europe": 1,
+        "vsStronger": 1.0899,
+        "vsSimilar": 1.0241,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.1271,
+        "domestic": 1.1549,
+        "europe": 1,
+        "vsStronger": 1.0917,
+        "vsSimilar": 1.1024,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4623,
+        "domestic": 0.5632,
+        "europe": 0,
+        "vsStronger": 0.1358,
+        "vsSimilar": 0.531,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4623,
+        "domestic": 0.5632,
+        "europe": 0,
+        "vsStronger": 0.1358,
+        "vsSimilar": 0.531,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.47
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.47
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.88
+        },
+        "vsSimilar": {
+          "raw": 15,
+          "effective": 13.59
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "POR": {
+          "attack": 1.0528,
+          "defense": 1.1549,
+          "confidence": 0.5632,
+          "samples": 17,
+          "effectiveSample": 15.47
         }
       }
     },
