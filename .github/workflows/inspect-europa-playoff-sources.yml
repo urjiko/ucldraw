@@ -1,0 +1,78 @@
+name: Inspect Europa playoff sources
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.head_ref == 'agent/add-europa-playoff-home-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Count source home fixtures
+        run: |
+          node <<'NODE'
+          const sources = {
+            greece: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/gr.1.json',
+            turkey: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/tr.1.json',
+            belgium: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/be.1.json',
+            norway: 'https://raw.githubusercontent.com/openfootball/europe/master/norway/2024_no1.txt',
+            czech: 'https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt'
+          };
+
+          function countJson(source) {
+            const counts = new Map();
+            for (const match of source.matches || []) {
+              if (!Array.isArray(match.score?.ft)) continue;
+              counts.set(match.team1, (counts.get(match.team1) || 0) + 1);
+            }
+            return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+          }
+
+          function countText(text) {
+            const counts = new Map();
+            let currentDate = null;
+            let parsed = 0;
+            for (const line of text.split(/\r?\n/)) {
+              if (/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+[A-Z][a-z]{2}\s+\d{1,2}/.test(line)) {
+                currentDate = line.trim();
+                continue;
+              }
+              const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+.*)?$/);
+              if (!match || !currentDate) continue;
+              parsed += 1;
+              const home = match[1].trim();
+              counts.set(home, (counts.get(home) || 0) + 1);
+            }
+            return { parsed, counts: [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0])) };
+          }
+
+          (async () => {
+            const responses = Object.fromEntries(await Promise.all(Object.entries(sources).map(async ([key, url]) => {
+              const response = await fetch(url, { headers: { 'user-agent': 'UEFA-source-inspector/1.0' } });
+              if (!response.ok) throw new Error(`${key}: ${response.status}`);
+              return [key, response];
+            })));
+            for (const key of ['greece', 'turkey', 'belgium']) {
+              const data = await responses[key].json();
+              console.log(`JSON ${key} matches=${data.matches?.length}`);
+              console.log(JSON.stringify(countJson(data)));
+            }
+            for (const key of ['norway', 'czech']) {
+              const result = countText(await responses[key].text());
+              console.log(`TEXT ${key} parsed=${result.parsed}`);
+              console.log(JSON.stringify(result.counts));
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
