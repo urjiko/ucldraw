@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 633,
-    "matches": 521,
+    "storedMatches": 666,
+    "matches": 554,
     "excludedStoredMatches": 112,
-    "teams": 27,
+    "teams": 29,
     "activeTeamScope": 42,
-    "domesticMatches": 509,
+    "domesticMatches": 542,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -32,7 +32,8 @@
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json",
       "data/home-advantage-matches/porto-sporting-2024-25.json",
-      "data/home-advantage-matches/real-betis-villarreal-2024-25.json"
+      "data/home-advantage-matches/real-betis-villarreal-2024-25.json",
+      "data/home-advantage-matches/shakhtar-slavia-2024-25.json"
     ]
   },
   "methodology": {
@@ -154,8 +155,6 @@
     ]
   },
   "researchQueue": [
-    "shakhtar",
-    "slavia",
     "azalkmaar",
     "bayerleverkusen",
     "bournemouth",
@@ -1872,6 +1871,148 @@
           "confidence": 0.5913,
           "samples": 19,
           "effectiveSample": 17.36
+        }
+      }
+    },
+    "shakhtar": {
+      "name": "Shakhtar Donetsk",
+      "country": "UKR",
+      "attack": {
+        "overall": 1.1245,
+        "domestic": 1.1538,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.1538
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4297,
+        "domestic": 0.5306,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5306
+      },
+      "defenseConfidence": {
+        "overall": 0.4297,
+        "domestic": 0.5306,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5306
+      },
+      "samples": {
+        "overall": {
+          "raw": 15,
+          "effective": 13.56
+        },
+        "domestic": {
+          "raw": 15,
+          "effective": 13.56
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.56
+        }
+      },
+      "associationMatchups": {
+        "UKR": {
+          "attack": 1.1538,
+          "defense": 1.16,
+          "confidence": 0.5306,
+          "samples": 15,
+          "effectiveSample": 13.56
+        }
+      }
+    },
+    "slavia": {
+      "name": "Slavia Praha",
+      "country": "CZE",
+      "attack": {
+        "overall": 1.1442,
+        "domestic": 1.1747,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0413,
+        "vsWeaker": 1.1654
+      },
+      "defense": {
+        "overall": 0.8419,
+        "domestic": 0.82,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0028,
+        "vsWeaker": 0.82
+      },
+      "confidence": {
+        "overall": 0.4759,
+        "domestic": 0.5766,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1333,
+        "vsWeaker": 0.5471
+      },
+      "defenseConfidence": {
+        "overall": 0.4759,
+        "domestic": 0.5766,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1333,
+        "vsWeaker": 0.5471
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.34
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.34
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.85
+        },
+        "vsWeaker": {
+          "raw": 16,
+          "effective": 14.5
+        }
+      },
+      "associationMatchups": {
+        "CZE": {
+          "attack": 1.1747,
+          "defense": 0.82,
+          "confidence": 0.5766,
+          "samples": 18,
+          "effectiveSample": 16.34
         }
       }
     },

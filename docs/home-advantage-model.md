@@ -17,14 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 633 verified home matches. The guaranteed-team filter currently includes 521 matches across 27 active profiles:
+The archive contains 666 verified home matches. The guaranteed-team filter currently includes 554 matches across 29 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
 - Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
-- Club Brugge: 20, including the championship play-off round.
+- Club Brugge: 20, including the championship play-off round;
+- Shakhtar Donetsk: 15;
+- Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Shakhtar Donetsk.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs now have active profiles, so the research queue begins with guaranteed Europa League club AZ Alkmaar.
 
 ## Data batches
 
@@ -94,6 +96,17 @@ Lens scored below the coefficient baseline overall but above it against stronger
 | Sporting CP | 1.1129 | Weaker opponents: 1.1303 |
 
 Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.
+
+### Ukraine and Czechia 2024/25
+
+`shakhtar-slavia-2024-25.json` contains all 15 Shakhtar Donetsk Ukrainian Premier League home matches and all 18 Slavia Prague Czech First League home matches. Slavia's records include its three championship-round home fixtures. Ukrainian opponents without a higher individual coefficient use the `5.182` association floor; Czech opponents use `9.705`.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Shakhtar Donetsk | 1.1538 | Weaker opponents: 1.1538 |
+| Slavia Prague | 1.1747 | Domestic visiting-goal multiplier: 0.8200 |
+
+All Shakhtar league opponents fall into the weaker-opponent bucket under the current coefficient snapshot, so no unsupported similar- or stronger-opponent effect is emitted. Slavia remains just below the attack ceiling and combines that signal with a visiting-goal multiplier at the conservative `0.82` floor. Its similar-opponent attack value is `1.0413`, while the broader weaker-opponent attack value is `1.1654`.
 
 ### Belgium 2024/25
 
