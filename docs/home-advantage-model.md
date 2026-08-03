@@ -17,14 +17,14 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 457 verified home matches. The guaranteed-team filter currently includes 345 matches across 17 active profiles:
+The archive contains 491 verified home matches. The guaranteed-team filter currently includes 379 matches across 19 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
-- Bayern München, Borussia Dortmund, Feyenoord, and PSV: 17 each;
+- Bayern München, Borussia Dortmund, Feyenoord, PSV, RB Leipzig, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is RB Leipzig.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Lens.
 
 ## Data batches
 
@@ -46,18 +46,21 @@ English clubs without an individual coefficient use the `23.903` association flo
 ### Spain and Germany 2024/25
 
 - `atleti-barcelona-2024-25.json`: 38 La Liga matches;
-- `bayern-bvb-2024-25.json`: 34 Bundesliga matches.
+- `bayern-bvb-2024-25.json`: 34 Bundesliga matches;
+- `leipzig-stuttgart-2024-25.json`: 34 Bundesliga matches.
 
 Spanish opponents without a higher individual value use `19.409`; German opponents use `18.580`.
 
-| Club | Domestic attack |
-|---|---:|
-| Atlético Madrid | 1.1061 |
-| Barcelona | 1.1800 |
-| Bayern München | 1.1800 |
-| Borussia Dortmund | 1.1800 |
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Atlético Madrid | 1.1061 | Similar opponents: 1.1184 |
+| Barcelona | 1.1800 | Similar opponents: 1.1055 |
+| Bayern München | 1.1800 | Similar opponents: 0.9930 |
+| Borussia Dortmund | 1.1800 | Overall: 1.1710 |
+| RB Leipzig | 1.0758 | Stronger opponents: 1.1707 |
+| VfB Stuttgart | 1.1800 | Similar opponents: 0.9977 |
 
-Barcelona, Bayern, and Dortmund reach the conservative attack ceiling. Bayern remains approximately neutral against similar-strength opponents at `0.9930`, while Atlético's similar-opponent value is `1.1184`.
+Leipzig remains below the general attack ceiling but shows a strong residual against stronger opponents. Its similar-opponent visiting-goal multiplier is `0.9400`, a positive home defensive signal for that context. Stuttgart reaches the domestic attack ceiling, while its similar-opponent residual is essentially neutral and its single weaker-opponent observation is not treated as a broad conclusion.
 
 ### Belgium 2024/25
 
@@ -83,20 +86,18 @@ All 20 domestic opponents fall into the weaker-opponent bucket under the current
 | Napoli | 0.9873 | Domestic visiting-goal multiplier: 0.9089 |
 | Roma | 1.0170 | Weaker opponents: 1.0533 |
 
-Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goal multiplier indicates a positive home defensive effect in this sample. Como has both stronger- and similar-opponent observations; Inter and Roma are driven mostly by weaker-opponent matches because of their higher coefficients.
+Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goal multiplier indicates a positive home defensive effect in this sample.
 
 ### Netherlands 2024/25
 
-`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. Results come from OpenFootball's complete 306-match Eredivisie season file. Club and opponent strength values use the project's 2026 UEFA coefficient snapshot; Dutch clubs without a higher individual value use the Netherlands association floor from the same generated coefficient source.
+`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. Results come from OpenFootball's complete 306-match Eredivisie season file. Club and opponent strength values use the project's 2026 UEFA coefficient snapshot.
 
 | Club | Domestic attack | Notable context |
 |---|---:|---:|
 | Feyenoord | 1.0988 | Similar opponents: 1.0202 |
 | PSV | 1.1800 | Similar opponents: 1.0140 |
 
-PSV reaches the conservative attack ceiling, while its similar-opponent residual is approximately neutral. Feyenoord remains below the ceiling with an overall attack residual of `1.0812`. Both clubs' domestic visiting-goal multipliers reach `1.1600`, so this single-season sample does not support a positive home defensive adjustment for either club.
-
-The source uses `AFC Ajax` and `SC Heerenveen`; those exact names are normalized to the project's `ajax` and `heerenveen` slugs. This prevents the four Feyenoord/PSV home fixtures against those clubs from being silently omitted.
+PSV reaches the conservative attack ceiling, while Feyenoord remains below it with an overall attack residual of `1.0812`.
 
 ## Interpretation
 

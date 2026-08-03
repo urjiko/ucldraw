@@ -28,9 +28,9 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 457, 'Stored source archive must contain 457 home matches.');
+assert.equal(records.length, 491, 'Stored source archive must contain 491 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 442);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 476);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of [
   'arsenal', 'astonvilla', 'atleti', 'barcelona', 'city', 'como', 'inter',
@@ -39,7 +39,7 @@ for (const slug of [
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 19);
 }
 assert.equal(records.filter((match) => match.homeSlug === 'brugge').length, 20);
-for (const slug of ['bayern', 'bvb', 'feyenoord', 'psv']) {
+for (const slug of ['bayern', 'bvb', 'feyenoord', 'leipzig', 'psv', 'stuttgart']) {
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 17);
 }
 assert.match(builderSource, /competition: 'champions', stage: 'guaranteed'/);
@@ -52,12 +52,12 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 457);
-assert.equal(generated.sourceSummary.matches, 345);
+assert.equal(generated.sourceSummary.storedMatches, 491);
+assert.equal(generated.sourceSummary.matches, 379);
 assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
-assert.equal(generated.sourceSummary.teams, 17);
+assert.equal(generated.sourceSummary.teams, 19);
 assert.equal(generated.sourceSummary.activeTeamScope, 42);
-assert.equal(generated.sourceSummary.domesticMatches, 333);
+assert.equal(generated.sourceSummary.domesticMatches, 367);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -84,11 +84,13 @@ const expectedDomesticAttack = {
   feyenoord: 1.0988,
   galatasaray: 1.18,
   inter: 1.0253,
+  leipzig: 1.0758,
   liverpool: 1.0948,
   manu: 0.84,
   napoli: 0.9873,
   psv: 1.18,
-  roma: 1.017
+  roma: 1.017,
+  stuttgart: 1.18
 };
 for (const [slug, multiplier] of Object.entries(expectedDomesticAttack)) {
   assert.equal(generated.profiles[slug].attack.domestic, multiplier);
@@ -106,15 +108,20 @@ assert.equal(generated.profiles.como.attack.vsStronger, 1.0466);
 assert.equal(generated.profiles.feyenoord.attack.overall, 1.0812);
 assert.equal(generated.profiles.feyenoord.attack.vsSimilar, 1.0202);
 assert.equal(generated.profiles.inter.attack.vsWeaker, 1.0527);
+assert.equal(generated.profiles.leipzig.attack.overall, 1.0623);
+assert.equal(generated.profiles.leipzig.attack.vsStronger, 1.1707);
+assert.equal(generated.profiles.leipzig.defense.vsSimilar, 0.94);
 assert.equal(generated.profiles.manu.attack.vsSimilar, 0.8892);
 assert.equal(generated.profiles.napoli.defense.domestic, 0.9089);
 assert.equal(generated.profiles.psv.attack.vsSimilar, 1.014);
 assert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);
+assert.equal(generated.profiles.stuttgart.attack.vsSimilar, 0.9977);
+assert.equal(generated.profiles.stuttgart.attack.vsWeaker, 0.9697);
 assert.equal(generated.profiles.fenerbahce, undefined);
 
-assert.equal(generated.researchQueue[0], 'leipzig');
-assert.equal(generated.researchQueue[11], 'villareal');
-assert.equal(generated.researchQueue[12], 'azalkmaar');
+assert.equal(generated.researchQueue[0], 'lens');
+assert.equal(generated.researchQueue[9], 'villareal');
+assert.equal(generated.researchQueue[10], 'azalkmaar');
 assert.equal(generated.researchQueue.at(-1), 'torreense');
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
