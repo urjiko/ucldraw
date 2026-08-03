@@ -17,14 +17,14 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 423 verified home matches. The guaranteed-team filter currently includes 311 matches across 15 active profiles:
+The archive contains 457 verified home matches. The guaranteed-team filter currently includes 345 matches across 17 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
-- Bayern München and Borussia Dortmund: 17 each;
+- Bayern München, Borussia Dortmund, Feyenoord, and PSV: 17 each;
 - Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Feyenoord.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is RB Leipzig.
 
 ## Data batches
 
@@ -84,6 +84,19 @@ All 20 domestic opponents fall into the weaker-opponent bucket under the current
 | Roma | 1.0170 | Weaker opponents: 1.0533 |
 
 Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goal multiplier indicates a positive home defensive effect in this sample. Como has both stronger- and similar-opponent observations; Inter and Roma are driven mostly by weaker-opponent matches because of their higher coefficients.
+
+### Netherlands 2024/25
+
+`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. Results come from OpenFootball's complete 306-match Eredivisie season file. Club and opponent strength values use the project's 2026 UEFA coefficient snapshot; Dutch clubs without a higher individual value use the Netherlands association floor from the same generated coefficient source.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Feyenoord | 1.0988 | Similar opponents: 1.0202 |
+| PSV | 1.1800 | Similar opponents: 1.0140 |
+
+PSV reaches the conservative attack ceiling, while its similar-opponent residual is approximately neutral. Feyenoord remains below the ceiling with an overall attack residual of `1.0812`. Both clubs' domestic visiting-goal multipliers reach `1.1600`, so this single-season sample does not support a positive home defensive adjustment for either club.
+
+The source uses `AFC Ajax` and `SC Heerenveen`; those exact names are normalized to the project's `ajax` and `heerenveen` slugs. This prevents the four Feyenoord/PSV home fixtures against those clubs from being silently omitted.
 
 ## Interpretation
 
