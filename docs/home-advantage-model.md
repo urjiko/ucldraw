@@ -17,16 +17,17 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 865 verified home matches. The guaranteed-team filter currently includes 753 matches across 40 active profiles:
+The archive contains 906 verified home matches. The guaranteed-team filter currently includes 794 matches across all 42 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
-- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Marseille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Rennes, Sporting CP, and VfB Stuttgart: 17 each;
+- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Marseille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Rennes, Sporting CP, Torreense, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
-- Slavia Prague: 18, including the championship round.
+- Slavia Prague: 18, including the championship round;
+- Sunderland: 24, including its home Championship play-off semifinal.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, Juventus, Marseille, Milan, Real Sociedad, and Rennes are completed guaranteed Europa League clubs, and the research queue now begins with Sunderland.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs and all 13 guaranteed Europa League clubs now have active profiles. The guaranteed-team research queue is empty.
 
 ## Data batches
 
@@ -53,6 +54,14 @@ English clubs without an individual coefficient use the `23.903` association flo
 | Crystal Palace | 0.9824 | 1.1096 |
 
 Bournemouth scores below its coefficient baseline but shows a strong positive home defensive effect. Its attack values are `0.9967` against stronger opponents and `0.9308` against similar opponents. Crystal Palace is approximately neutral overall, rises to `1.1448` against stronger opponents, and falls to `0.9192` against similar opponents. Neither club has weaker-opponent observations under the current coefficient snapshot.
+
+`sunderland-torreense-2024-25.json` adds Sunderland's 23 regular Championship home matches plus its home play-off semifinal. The neutral Wembley final is not treated as a home fixture.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier |
+|---|---:|---:|
+| Sunderland | 0.9235 | 0.8614 |
+
+Sunderland scores below its coefficient baseline but shows a strong positive home defensive residual. All 24 observations fall into the similar-opponent bucket under the current coefficient snapshot.
 
 ### Spain and Germany 2024/25
 
@@ -132,6 +141,14 @@ Marseille reaches the conservative attack ceiling overall and against weaker opp
 | Sporting CP | 1.1129 | Weaker opponents: 1.1303 |
 
 Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.
+
+The final batch also contains all 17 Torreense Segunda Liga home matches. The pinned OpenFootball file provides scores through matchday 26; four later home results are completed from official Liga Portugal match records and carry a separate source key.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Torreense | 1.0528 | Similar opponents: 1.0241 |
+
+Torreense scores modestly above its coefficient baseline. Its domestic visiting-goal multiplier is `1.1549`, so this sample does not show a positive home defensive residual. No weaker-opponent observation exists under the current coefficient snapshot.
 
 ### Ukraine and Czechia 2024/25
 
