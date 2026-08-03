@@ -38,4 +38,4 @@ Opponent values use an individual coefficient when it can be matched in the same
 - Austria: `6.770`;
 - Norway: `8.247`.
 
-Historical pot fields remain neutral at `1` because these are domestic observations used to estimate residual home effects, not reconstructed UEFA draws.
+Historical pot fields remain neutral at `1` because these are domestic observations used to estimate residual home effects, not reconstructed UEFA draws. The generated runtime payload is checked byte-for-byte from the stored records.
