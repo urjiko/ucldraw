@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 755,
-    "matches": 643,
+    "storedMatches": 793,
+    "matches": 681,
     "excludedStoredMatches": 112,
-    "teams": 34,
+    "teams": 36,
     "activeTeamScope": 42,
-    "domesticMatches": 631,
+    "domesticMatches": 669,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -25,6 +25,7 @@
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
       "data/home-advantage-matches/bournemouth-palace-2024-25.json",
       "data/home-advantage-matches/brugge-2024-25.json",
+      "data/home-advantage-matches/celta-sociedad-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/como-inter-napoli-roma-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
@@ -158,11 +159,9 @@
     ]
   },
   "researchQueue": [
-    "celtavigo",
     "juventus",
     "marseille",
     "milan",
-    "realsociedad",
     "rennais",
     "sunderland",
     "torreense"
@@ -875,6 +874,77 @@
           "confidence": 0.564,
           "samples": 17,
           "effectiveSample": 15.52
+        }
+      }
+    },
+    "celtavigo": {
+      "name": "Celta Vigo",
+      "country": "ESP",
+      "attack": {
+        "overall": 1.1571,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 1.0569,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 0.9661,
+        "domestic": 0.9591,
+        "europe": 1,
+        "vsStronger": 0.9288,
+        "vsSimilar": 1.0164,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4897,
+        "domestic": 0.5901,
+        "europe": 0,
+        "vsStronger": 0.3111,
+        "vsSimilar": 0.497,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4897,
+        "domestic": 0.5901,
+        "europe": 0,
+        "vsStronger": 0.3111,
+        "vsSimilar": 0.497,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.28
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.28
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 6,
+          "effective": 5.42
+        },
+        "vsSimilar": {
+          "raw": 13,
+          "effective": 11.86
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 1.18,
+          "defense": 0.9591,
+          "confidence": 0.5901,
+          "samples": 19,
+          "effectiveSample": 17.28
         }
       }
     },
@@ -2153,6 +2223,77 @@
           "confidence": 0.5912,
           "samples": 19,
           "effectiveSample": 17.35
+        }
+      }
+    },
+    "realsociedad": {
+      "name": "Real Sociedad",
+      "country": "ESP",
+      "attack": {
+        "overall": 0.84,
+        "domestic": 0.84,
+        "europe": 1,
+        "vsStronger": 0.9213,
+        "vsSimilar": 1.0061,
+        "vsWeaker": 0.84
+      },
+      "defense": {
+        "overall": 1.1259,
+        "domestic": 1.1517,
+        "europe": 1,
+        "vsStronger": 0.9624,
+        "vsSimilar": 0.8691,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4905,
+        "domestic": 0.5909,
+        "europe": 0,
+        "vsStronger": 0.1774,
+        "vsSimilar": 0.1309,
+        "vsWeaker": 0.5187
+      },
+      "defenseConfidence": {
+        "overall": 0.4905,
+        "domestic": 0.5909,
+        "europe": 0,
+        "vsStronger": 0.1774,
+        "vsSimilar": 0.1309,
+        "vsWeaker": 0.5187
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.59
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.81
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.93
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 0.84,
+          "defense": 1.1517,
+          "confidence": 0.5909,
+          "samples": 19,
+          "effectiveSample": 17.33
         }
       }
     },
