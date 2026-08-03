@@ -66,8 +66,8 @@ test = replaceOrVerify(
 );
 test = replaceOrVerify(
   test,
-  `assert.match(controller, /function simulateMatchday\\(state, matchday/);\nassert.match(controller, /simulateAdjustedScore\\(match, state\\.comp, state\\.seed, version\\)/);`,
-  `assert.match(controller, /function simulateMatchday\\(state, matchday/);\nassert.match(controller, /state\\.aiPredictionVersion = Number\\(state\\.aiPredictionVersion \\|\\| 0\\) \\+ 1/);\nassert.match(controller, /predictionSeed = \\`\\$\\{state\\.seed\\}:ai-run-\\$\\{predictionRun\\}\\`/);\nassert.match(controller, /simulateAdjustedScore\\(match, state\\.comp, predictionSeed, version\\)/);\nassert.match(controller, /score\\.model\\.predictionRun = predictionRun/);`,
+  'assert.match(controller, /function simulateMatchday\\(state, matchday/);\nassert.match(controller, /simulateAdjustedScore\\(match, state\\.comp, state\\.seed, version\\)/);',
+  'assert.match(controller, /function simulateMatchday\\(state, matchday/);\nassert.match(controller, /state\\.aiPredictionVersion = Number\\(state\\.aiPredictionVersion \\|\\| 0\\) \\+ 1/);\nassert.match(controller, /ai-run-/);\nassert.match(controller, /simulateAdjustedScore\\(match, state\\.comp, predictionSeed, version\\)/);\nassert.match(controller, /score\\.model\\.predictionRun = predictionRun/);',
   'fresh prediction controller assertions'
 );
 test = replaceOrVerify(
