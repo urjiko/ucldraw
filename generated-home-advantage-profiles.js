@@ -7,13 +7,13 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 974,
-    "matches": 862,
-    "excludedStoredMatches": 112,
-    "teams": 46,
-    "activeTeamScope": 46,
-    "domesticMatches": 850,
-    "europeanMatches": 12,
+    "storedMatches": 1059,
+    "matches": 987,
+    "excludedStoredMatches": 72,
+    "teams": 51,
+    "activeTeamScope": 51,
+    "domesticMatches": 972,
+    "europeanMatches": 15,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
@@ -29,6 +29,7 @@
       "data/home-advantage-matches/celta-sociedad-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/como-inter-napoli-roma-2024-25.json",
+      "data/home-advantage-matches/crete-lillestrom-trabzonspor-truidense-viktoriaplzen-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/feyenoord-psv-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
@@ -125,6 +126,17 @@
           "lask",
           "viking"
         ]
+      },
+      {
+        "competition": "europa",
+        "stage": "playoffs",
+        "teams": [
+          "crete",
+          "lillestrom",
+          "trabzonspor",
+          "truidense",
+          "viktoriaplzen"
+        ]
       }
     ],
     "teams": [
@@ -173,7 +185,12 @@
       "aek",
       "celtic",
       "lask",
-      "viking"
+      "viking",
+      "crete",
+      "lillestrom",
+      "trabzonspor",
+      "truidense",
+      "viktoriaplzen"
     ]
   },
   "researchQueue": [],
@@ -1243,6 +1260,77 @@
         }
       }
     },
+    "crete": {
+      "name": "OFI Crete",
+      "country": "GRE",
+      "attack": {
+        "overall": 0.9955,
+        "domestic": 0.9945,
+        "europe": 1,
+        "vsStronger": 0.84,
+        "vsSimilar": 1.0824,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 1.1051,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.447,
+        "domestic": 0.548,
+        "europe": 0,
+        "vsStronger": 0.23,
+        "vsSimilar": 0.4774,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.447,
+        "domestic": 0.548,
+        "europe": 0,
+        "vsStronger": 0.23,
+        "vsSimilar": 0.4774,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 16,
+          "effective": 14.55
+        },
+        "domestic": {
+          "raw": 16,
+          "effective": 14.55
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 4,
+          "effective": 3.59
+        },
+        "vsSimilar": {
+          "raw": 12,
+          "effective": 10.96
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "GRE": {
+          "attack": 0.9945,
+          "defense": 1.16,
+          "confidence": 0.548,
+          "samples": 16,
+          "effectiveSample": 14.55
+        }
+      }
+    },
     "crystalpalace": {
       "name": "Crystal Palace",
       "country": "ENG",
@@ -1950,6 +2038,77 @@
           "confidence": 0.5641,
           "samples": 17,
           "effectiveSample": 15.53
+        }
+      }
+    },
+    "lillestrom": {
+      "name": "Lillestrøm",
+      "country": "NOR",
+      "attack": {
+        "overall": 0.9381,
+        "domestic": 0.9229,
+        "europe": 1,
+        "vsStronger": 1.0137,
+        "vsSimilar": 0.8696,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4066,
+        "domestic": 0.5069,
+        "europe": 0,
+        "vsStronger": 0.4509,
+        "vsSimilar": 0.1714,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4066,
+        "domestic": 0.5069,
+        "europe": 0,
+        "vsStronger": 0.4509,
+        "vsSimilar": 0.1714,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 15,
+          "effective": 12.33
+        },
+        "domestic": {
+          "raw": 15,
+          "effective": 12.33
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 12,
+          "effective": 9.85
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.48
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "NOR": {
+          "attack": 0.9229,
+          "defense": 1.16,
+          "confidence": 0.5069,
+          "samples": 15,
+          "effectiveSample": 12.33
         }
       }
     },
@@ -3302,6 +3461,148 @@
         }
       }
     },
+    "trabzonspor": {
+      "name": "Trabzonspor",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 0.9057,
+        "vsStronger": 0.9771,
+        "vsSimilar": 1.18,
+        "vsWeaker": 1.1392
+      },
+      "defense": {
+        "overall": 1.1152,
+        "domestic": 1.1456,
+        "europe": 0.9405,
+        "vsStronger": 1.16,
+        "vsSimilar": 1.0228,
+        "vsWeaker": 0.9656
+      },
+      "confidence": {
+        "overall": 0.7327,
+        "domestic": 0.7961,
+        "europe": 0.172,
+        "vsStronger": 0.3348,
+        "vsSimilar": 0.7725,
+        "vsWeaker": 0.1764
+      },
+      "defenseConfidence": {
+        "overall": 0.7327,
+        "domestic": 0.7961,
+        "europe": 0.172,
+        "vsStronger": 0.3348,
+        "vsSimilar": 0.7725,
+        "vsWeaker": 0.1764
+      },
+      "samples": {
+        "overall": {
+          "raw": 58,
+          "effective": 49.35
+        },
+        "domestic": {
+          "raw": 55,
+          "effective": 46.85
+        },
+        "europe": {
+          "raw": 3,
+          "effective": 2.49
+        },
+        "vsStronger": {
+          "raw": 7,
+          "effective": 6.04
+        },
+        "vsSimilar": {
+          "raw": 48,
+          "effective": 40.74
+        },
+        "vsWeaker": {
+          "raw": 3,
+          "effective": 2.57
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.18,
+          "defense": 1.1456,
+          "confidence": 0.7961,
+          "samples": 55,
+          "effectiveSample": 46.85
+        }
+      }
+    },
+    "truidense": {
+      "name": "Sint-Truiden",
+      "country": "BEL",
+      "attack": {
+        "overall": 1.0828,
+        "domestic": 1.1004,
+        "europe": 1,
+        "vsStronger": 0.9767,
+        "vsSimilar": 1.1232,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0193,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4742,
+        "domestic": 0.575,
+        "europe": 0,
+        "vsStronger": 0.2693,
+        "vsSimilar": 0.4961,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4742,
+        "domestic": 0.575,
+        "europe": 0,
+        "vsStronger": 0.2693,
+        "vsSimilar": 0.4961,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.24
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.24
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 5,
+          "effective": 4.42
+        },
+        "vsSimilar": {
+          "raw": 13,
+          "effective": 11.81
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "BEL": {
+          "attack": 1.1004,
+          "defense": 1.16,
+          "confidence": 0.575,
+          "samples": 18,
+          "effectiveSample": 16.24
+        }
+      }
+    },
     "viking": {
       "name": "Viking",
       "country": "NOR",
@@ -3370,6 +3671,77 @@
           "confidence": 0.5053,
           "samples": 15,
           "effectiveSample": 12.26
+        }
+      }
+    },
+    "viktoriaplzen": {
+      "name": "Viktoria Plzeň",
+      "country": "CZE",
+      "attack": {
+        "overall": 1.0956,
+        "domestic": 1.1159,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9748,
+        "vsWeaker": 1.1347
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0116,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4764,
+        "domestic": 0.5771,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1886,
+        "vsWeaker": 0.531
+      },
+      "defenseConfidence": {
+        "overall": 0.4764,
+        "domestic": 0.5771,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1886,
+        "vsWeaker": 0.531
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.38
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.38
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.79
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.59
+        }
+      },
+      "associationMatchups": {
+        "CZE": {
+          "attack": 1.1159,
+          "defense": 1.16,
+          "confidence": 0.5771,
+          "samples": 18,
+          "effectiveSample": 16.38
         }
       }
     },
