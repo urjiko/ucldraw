@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 831,
-    "matches": 719,
+    "storedMatches": 865,
+    "matches": 753,
     "excludedStoredMatches": 112,
-    "teams": 38,
+    "teams": 40,
     "activeTeamScope": 42,
-    "domesticMatches": 707,
+    "domesticMatches": 741,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -36,6 +36,7 @@
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
       "data/home-advantage-matches/leverkusen-hoffenheim-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json",
+      "data/home-advantage-matches/marseille-rennes-2024-25.json",
       "data/home-advantage-matches/porto-sporting-2024-25.json",
       "data/home-advantage-matches/real-betis-villarreal-2024-25.json",
       "data/home-advantage-matches/shakhtar-slavia-2024-25.json"
@@ -160,8 +161,6 @@
     ]
   },
   "researchQueue": [
-    "marseille",
-    "rennais",
     "sunderland",
     "torreense"
   ],
@@ -1870,6 +1869,77 @@
         }
       }
     },
+    "marseille": {
+      "name": "Marseille",
+      "country": "FRA",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 0.9323,
+        "vsSimilar": 1.17,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0883,
+        "vsSimilar": 1.1145,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4639,
+        "domestic": 0.5649,
+        "europe": 0,
+        "vsStronger": 0.0677,
+        "vsSimilar": 0.2361,
+        "vsWeaker": 0.4782
+      },
+      "defenseConfidence": {
+        "overall": 0.4639,
+        "domestic": 0.5649,
+        "europe": 0,
+        "vsStronger": 0.0677,
+        "vsSimilar": 0.2361,
+        "vsWeaker": 0.4782
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.58
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.58
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.87
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.71
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 11
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5649,
+          "samples": 17,
+          "effectiveSample": 15.58
+        }
+      }
+    },
     "milan": {
       "name": "Milan",
       "country": "ITA",
@@ -2435,6 +2505,77 @@
           "confidence": 0.5909,
           "samples": 19,
           "effectiveSample": 17.33
+        }
+      }
+    },
+    "rennais": {
+      "name": "Rennes",
+      "country": "FRA",
+      "attack": {
+        "overall": 0.9658,
+        "domestic": 0.9583,
+        "europe": 1,
+        "vsStronger": 1.0003,
+        "vsSimilar": 0.9823,
+        "vsWeaker": 0.9618
+      },
+      "defense": {
+        "overall": 1.0329,
+        "domestic": 1.0401,
+        "europe": 1,
+        "vsStronger": 1.1472,
+        "vsSimilar": 1.0527,
+        "vsWeaker": 0.861
+      },
+      "confidence": {
+        "overall": 0.4617,
+        "domestic": 0.5627,
+        "europe": 0,
+        "vsStronger": 0.2296,
+        "vsSimilar": 0.0708,
+        "vsWeaker": 0.4771
+      },
+      "defenseConfidence": {
+        "overall": 0.4617,
+        "domestic": 0.5627,
+        "europe": 0,
+        "vsStronger": 0.2296,
+        "vsSimilar": 0.0708,
+        "vsWeaker": 0.4771
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.44
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.44
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 4,
+          "effective": 3.58
+        },
+        "vsSimilar": {
+          "raw": 1,
+          "effective": 0.91
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 10.95
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 0.9583,
+          "defense": 1.0401,
+          "confidence": 0.5627,
+          "samples": 17,
+          "effectiveSample": 15.44
         }
       }
     },
