@@ -17,14 +17,14 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 542 verified home matches. The guaranteed-team filter currently includes 430 matches across 22 active profiles:
+The archive contains 576 verified home matches. The guaranteed-team filter currently includes 464 matches across 24 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
-- Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, PSV, RB Leipzig, and VfB Stuttgart: 17 each;
+- Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Porto.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Real Madrid.
 
 ## Data batches
 
@@ -73,6 +73,17 @@ Leipzig remains below the general attack ceiling but shows a strong residual aga
 | Paris Saint-Germain | 1.1445 | Weaker opponents: 1.1445 |
 
 Lens scored below the coefficient baseline overall but above it against stronger opponents. Its stronger-opponent visiting-goal multiplier is `0.9804`, a small positive home defensive effect in that context. Lille is approximately neutral overall, while Paris Saint-Germain shows a strong domestic attacking residual. All PSG league opponents fall into the weaker-opponent bucket under the current coefficient snapshot, so no unsupported similar- or stronger-opponent effect is emitted.
+
+### Portugal 2024/25
+
+`porto-sporting-2024-25.json` contains every Primeira Liga home match for Porto and Sporting CP, 17 per club and 34 total. Scores come from OpenFootball's complete 306-match Primeira Liga season file. Strength values use the project's 2026 UEFA coefficient snapshot; Portuguese opponents without a higher individual coefficient use the `14.633` association floor. Historical pot values remain neutral at `1`.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Porto | 1.1002 | Weaker opponents: 1.1157 |
+| Sporting CP | 1.1129 | Weaker opponents: 1.1303 |
+
+Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.
 
 ### Belgium 2024/25
 
