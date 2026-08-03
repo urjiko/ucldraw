@@ -1,4 +1,4 @@
-name: Generate Spanish Europa home profiles
+name: Finalize Spanish Europa home profiles
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  finalize:
     if: github.head_ref == 'agent/add-celta-sociedad-europa-profiles'
     runs-on: ubuntu-latest
     steps:
@@ -20,114 +20,83 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Celta and Sociedad home matches
+      - name: Lock Spanish Europa regression values and documentation
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const vm = require('node:vm');
 
-          (async () => {
-            const response = await fetch('https://raw.githubusercontent.com/openfootball/espana/master/2024-25/1-liga.txt');
-            if (!response.ok) throw new Error(`OpenFootball request failed: ${response.status}`);
-            const source = await response.text();
+          function replaceChecked(text, before, after, label) {
+            if (!text.includes(before)) throw new Error(`Missing replacement target: ${label}`);
+            return text.replace(before, after);
+          }
 
-            const coefficientContext = { window: {}, Object };
-            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
-            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
-            const associationFloor = 19.409;
-            const teams = {
-              'Athletic Club': { slug: 'athleticbilbao', name: 'Athletic Club', aliases: ['athleticbilbao'] },
-              'Getafe CF': { slug: 'getafe', name: 'Getafe', aliases: ['getafe'] },
-              'Real Betis Balompié': { slug: 'realbetis', name: 'Real Betis', aliases: ['realbetis'] },
-              'Girona FC': { slug: 'girona', name: 'Girona', aliases: ['girona'] },
-              'RC Celta de Vigo': { slug: 'celtavigo', name: 'Celta Vigo', aliases: ['celtavigo'] },
-              'Deportivo Alavés': { slug: 'alaves', name: 'Alavés', aliases: ['alaves'] },
-              'UD Las Palmas': { slug: 'laspalmas', name: 'Las Palmas', aliases: ['laspalmas'] },
-              'Sevilla FC': { slug: 'sevilla', name: 'Sevilla', aliases: ['sevilla'] },
-              'CA Osasuna': { slug: 'osasuna', name: 'Osasuna', aliases: ['osasuna'] },
-              'Valencia CF': { slug: 'valencia', name: 'Valencia', aliases: ['valencia'] },
-              'FC Barcelona': { slug: 'barcelona', name: 'Barcelona', aliases: ['barcelona'] },
-              'Real Sociedad de Fútbol': { slug: 'realsociedad', name: 'Real Sociedad', aliases: ['realsociedad'] },
-              'Rayo Vallecano de Madrid': { slug: 'rayovallecano', name: 'Rayo Vallecano', aliases: ['rayovallecano'] },
-              'RCD Mallorca': { slug: 'mallorca', name: 'Mallorca', aliases: ['mallorca'] },
-              'Real Madrid CF': { slug: 'real', name: 'Real Madrid', aliases: ['real'] },
-              'Real Valladolid CF': { slug: 'valladolid', name: 'Real Valladolid', aliases: ['valladolid'] },
-              'RCD Espanyol de Barcelona': { slug: 'espanyol', name: 'Espanyol', aliases: ['espanyol'] },
-              'Villarreal CF': { slug: 'villareal', name: 'Villarreal', aliases: ['villareal'] },
-              'Club Atlético de Madrid': { slug: 'atleti', name: 'Atlético Madrid', aliases: ['atleti'] },
-              'CD Leganés': { slug: 'leganes', name: 'Leganés', aliases: ['leganes'] }
-            };
-            const targets = new Set(['celtavigo', 'realsociedad']);
-            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+          let test = fs.readFileSync('tests/home-advantage-model.test.js', 'utf8');
+          test = replaceChecked(test,
+            "assert.equal(records.length, 755, 'Stored source archive must contain 755 home matches.');",
+            "assert.equal(records.length, 793, 'Stored source archive must contain 793 home matches.');",
+            'archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 740);",
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 778);",
+            'domestic archive count');
+          test = replaceChecked(test,
+            "  'arsenal', 'astonvilla', 'atleti', 'barcelona', 'bournemouth', 'city', 'como',\n  'crystalpalace', 'inter', 'liverpool', 'manu', 'napoli', 'real', 'realbetis',\n  'roma', 'villareal'",
+            "  'arsenal', 'astonvilla', 'atleti', 'barcelona', 'bournemouth', 'celtavigo',\n  'city', 'como', 'crystalpalace', 'inter', 'liverpool', 'manu', 'napoli',\n  'real', 'realbetis', 'realsociedad', 'roma', 'villareal'",
+            '19-match team list');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.storedMatches, 755);\nassert.equal(generated.sourceSummary.matches, 643);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 34);",
+            "assert.equal(generated.sourceSummary.storedMatches, 793);\nassert.equal(generated.sourceSummary.matches, 681);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 36);",
+            'generated summary counts');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.domesticMatches, 631);",
+            "assert.equal(generated.sourceSummary.domesticMatches, 669);",
+            'active domestic count');
+          test = replaceChecked(test,
+            "  bvb: 1.18,\n  city: 1.113,",
+            "  bvb: 1.18,\n  celtavigo: 1.18,\n  city: 1.113,",
+            'Celta attack value');
+          test = replaceChecked(test,
+            "  realbetis: 0.9686,\n  roma: 1.017,",
+            "  realbetis: 0.9686,\n  realsociedad: 0.84,\n  roma: 1.017,",
+            'Sociedad attack value');
+          test = replaceChecked(test,
+            "assert.equal(generated.profiles.bvb.attack.overall, 1.171);\nassert.equal(generated.profiles.city.attack.vsWeaker, 1.1129);",
+            "assert.equal(generated.profiles.bvb.attack.overall, 1.171);\nassert.equal(generated.profiles.celtavigo.attack.overall, 1.1571);\nassert.equal(generated.profiles.celtavigo.attack.vsStronger, 1.18);\nassert.equal(generated.profiles.celtavigo.attack.vsSimilar, 1.0569);\nassert.equal(generated.profiles.celtavigo.defense.overall, 0.9661);\nassert.equal(generated.profiles.celtavigo.defense.domestic, 0.9591);\nassert.equal(generated.profiles.celtavigo.defense.vsStronger, 0.9288);\nassert.equal(generated.profiles.city.attack.vsWeaker, 1.1129);",
+            'Celta context assertions');
+          test = replaceChecked(test,
+            "assert.equal(generated.profiles.realbetis.defense.vsSimilar, 0.9432);\nassert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);",
+            "assert.equal(generated.profiles.realbetis.defense.vsSimilar, 0.9432);\nassert.equal(generated.profiles.realsociedad.attack.overall, 0.84);\nassert.equal(generated.profiles.realsociedad.attack.vsStronger, 0.9213);\nassert.equal(generated.profiles.realsociedad.attack.vsSimilar, 1.0061);\nassert.equal(generated.profiles.realsociedad.defense.overall, 1.1259);\nassert.equal(generated.profiles.realsociedad.defense.domestic, 1.1517);\nassert.equal(generated.profiles.realsociedad.defense.vsStronger, 0.9624);\nassert.equal(generated.profiles.realsociedad.defense.vsSimilar, 0.8691);\nassert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);",
+            'Sociedad context assertions');
+          test = replaceChecked(test,
+            "assert.equal(generated.researchQueue.length, 8);\nassert.equal(generated.researchQueue[0], 'celtavigo');",
+            "assert.equal(generated.researchQueue.length, 6);\nassert.equal(generated.researchQueue[0], 'juventus');",
+            'Europa queue');
+          fs.writeFileSync('tests/home-advantage-model.test.js', test);
 
-            function coefficientFor(team) {
-              for (const alias of team.aliases) {
-                const value = Number(coefficients[alias]?.coefficient);
-                if (Number.isFinite(value)) return value;
-              }
-              return associationFloor;
-            }
-
-            let currentYear = 2024;
-            let previousMonth = null;
-            let currentDate = null;
-            const records = [];
-            for (const line of source.split(/\r?\n/)) {
-              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
-              if (dateMatch) {
-                const month = monthIndex[dateMatch[1]];
-                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
-                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
-                previousMonth = month;
-                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
-                continue;
-              }
-              const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
-              if (!match || !currentDate) continue;
-              const home = teams[match[1].trim()];
-              const away = teams[match[2].trim()];
-              if (!home || !away || !targets.has(home.slug)) continue;
-              records.push({
-                date: currentDate,
-                competitionType: 'domestic',
-                competition: 'Spain Primera División 2024/25',
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: 'ESP',
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: 'ESP',
-                homeCoefficient: coefficientFor(home),
-                awayCoefficient: coefficientFor(away),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
-                homeGoals: Number(match[3]),
-                awayGoals: Number(match[4]),
-                sourceKey: 'openfootball-spain-2024-25'
-              });
-            }
-            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
-            if (records.length !== 38) throw new Error(`Expected 38 Spanish Europa home matches, received ${records.length}.`);
-            for (const slug of targets) {
-              const count = records.filter((record) => record.homeSlug === slug).length;
-              if (count !== 19) throw new Error(`Expected 19 ${slug} home matches, received ${count}.`);
-            }
-            fs.writeFileSync('data/home-advantage-matches/celta-sociedad-2024-25.json', `${JSON.stringify(records)}\n`);
-            console.log(JSON.stringify(Object.fromEntries([...targets].map((slug) => [slug, records.filter((record) => record.homeSlug === slug).length]))));
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
+          let docs = fs.readFileSync('docs/home-advantage-model.md', 'utf8');
+          docs = replaceChecked(docs,
+            'The archive contains 755 verified home matches. The guaranteed-team filter currently includes 643 matches across 34 active profiles:',
+            'The archive contains 793 verified home matches. The guaranteed-team filter currently includes 681 matches across 36 active profiles:',
+            'documentation counts');
+          docs = replaceChecked(docs,
+            '- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;',
+            '- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;',
+            'documentation Spanish Europa counts');
+          docs = replaceChecked(docs,
+            'AZ Alkmaar, Bayer Leverkusen, Bournemouth, Crystal Palace, and Hoffenheim are completed guaranteed Europa League clubs, and the research queue now begins with Celta Vigo.',
+            'AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, and Real Sociedad are completed guaranteed Europa League clubs, and the research queue now begins with Juventus.',
+            'documentation queue');
+          docs = replaceChecked(docs,
+            "Real Madrid remains below the attack ceiling and is weaker than neutral against the two similar-strength observations at `0.9119`. Real Betis scores below its overall coefficient baseline but rises above it against stronger opponents; its similar-opponent visiting-goal multiplier is `0.9432`. Villarreal reaches the domestic attack ceiling, while its similar-opponent attack residual is approximately neutral. The project keeps the historical runtime slug `villareal` for compatibility, while display text and source records use the correct club name.\n\n### France 2024/25",
+            "Real Madrid remains below the attack ceiling and is weaker than neutral against the two similar-strength observations at `0.9119`. Real Betis scores below its overall coefficient baseline but rises above it against stronger opponents; its similar-opponent visiting-goal multiplier is `0.9432`. Villarreal reaches the domestic attack ceiling, while its similar-opponent attack residual is approximately neutral. The project keeps the historical runtime slug `villareal` for compatibility, while display text and source records use the correct club name.\n\n`celta-sociedad-2024-25.json` adds all 38 La Liga home matches for two guaranteed Europa League clubs, 19 per club.\n\n| Club | Domestic attack | Notable context |\n|---|---:|---:|\n| Celta Vigo | 1.1800 | Stronger opponents: 1.1800 |\n| Real Sociedad | 0.8400 | Similar opponents: 1.0061 |\n\nCelta reaches the attack ceiling but also has a positive home defensive signal, with a domestic visiting-goal multiplier of `0.9591` and `0.9288` against stronger opponents. Real Sociedad reaches the conservative attack floor overall; however, its similar-opponent attack value is neutral and its corresponding visiting-goal multiplier is `0.8691`. Neither club has weaker-opponent observations under the current coefficient snapshot.\n\n### France 2024/25",
+            'Spanish Europa documentation');
+          fs.writeFileSync('docs/home-advantage-model.md', docs);
           NODE
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit verified Spanish Europa profiles
+      - name: Commit finalized Spanish Europa profiles
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/celta-sociedad-2024-25.json generated-home-advantage-profiles.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate Spanish Europa home profiles"
-            git push origin HEAD:agent/add-celta-sociedad-europa-profiles
-          fi
+          git rm .github/workflows/generate-spain-europa-home-profiles.yml
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md
+          git commit -m "Finalize Spanish Europa home profiles"
+          git push origin HEAD:agent/add-celta-sociedad-europa-profiles
