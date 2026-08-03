@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 793 verified home matches. The guaranteed-team filter currently includes 681 matches across 36 active profiles:
+The archive contains 831 verified home matches. The guaranteed-team filter currently includes 719 matches across 38 active profiles:
 
 - Galatasaray: 48;
-- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
+- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
 - AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, and Real Sociedad are completed guaranteed Europa League clubs, and the research queue now begins with Juventus.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, Juventus, Milan, and Real Sociedad are completed guaranteed Europa League clubs, and the research queue now begins with Marseille.
 
 ## Data batches
 
@@ -160,6 +160,15 @@ All 20 domestic opponents fall into the weaker-opponent bucket under the current
 | Roma | 1.0170 | Weaker opponents: 1.0533 |
 
 Napoli's attack residual is approximately neutral, but its `0.9089` visiting-goal multiplier indicates a positive home defensive effect in this sample.
+
+`juventus-milan-2024-25.json` adds all 38 Serie A home matches for two guaranteed Europa League clubs, 19 per club.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Juventus | 0.9539 | Similar opponents: 0.8521 |
+| Milan | 0.9424 | Similar opponents: 0.8400 |
+
+Juventus and Milan both score below their coefficient baselines at home in this season. Juventus rises to `1.0256` against weaker opponents and has a positive home defensive signal against its single stronger-opponent observation at `0.9277`. Milan also rises above neutral against weaker opponents at `1.0328`, while its similar-opponent attack value reaches the conservative `0.84` floor. The values remain residuals after coefficient adjustment, not raw league rankings.
 
 ### Netherlands 2024/25
 
