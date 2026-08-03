@@ -7,19 +7,21 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 255,
-    "matches": 143,
+    "storedMatches": 327,
+    "matches": 215,
     "excludedStoredMatches": 112,
-    "teams": 6,
+    "teams": 10,
     "activeTeamScope": 42,
-    "domesticMatches": 131,
+    "domesticMatches": 203,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/astonvilla-2024-25.json",
+      "data/home-advantage-matches/atleti-barcelona-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
+      "data/home-advantage-matches/bayern-bvb-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
@@ -145,11 +147,7 @@
     ]
   },
   "researchQueue": [
-    "atleti",
-    "barcelona",
-    "bayern",
     "brugge",
-    "bvb",
     "como",
     "feyenoord",
     "inter",
@@ -322,6 +320,290 @@
           "confidence": 0.5906,
           "samples": 19,
           "effectiveSample": 17.31
+        }
+      }
+    },
+    "atleti": {
+      "name": "Atlético Madrid",
+      "country": "ESP",
+      "attack": {
+        "overall": 1.0881,
+        "domestic": 1.1061,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1184,
+        "vsWeaker": 1.0631
+      },
+      "defense": {
+        "overall": 1.1012,
+        "domestic": 1.1219,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.16,
+        "vsWeaker": 0.9736
+      },
+      "confidence": {
+        "overall": 0.4905,
+        "domestic": 0.5908,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1892,
+        "vsWeaker": 0.5476
+      },
+      "defenseConfidence": {
+        "overall": 0.4905,
+        "domestic": 0.5908,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1892,
+        "vsWeaker": 0.5476
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.8
+        },
+        "vsWeaker": {
+          "raw": 16,
+          "effective": 14.53
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 1.1061,
+          "defense": 1.1219,
+          "confidence": 0.5908,
+          "samples": 19,
+          "effectiveSample": 17.33
+        }
+      }
+    },
+    "barcelona": {
+      "name": "Barcelona",
+      "country": "ESP",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1055,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4931,
+        "domestic": 0.5934,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.136,
+        "vsWeaker": 0.5655
+      },
+      "defenseConfidence": {
+        "overall": 0.4931,
+        "domestic": 0.5934,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.136,
+        "vsWeaker": 0.5655
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.51
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.51
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.89
+        },
+        "vsWeaker": {
+          "raw": 17,
+          "effective": 15.62
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5934,
+          "samples": 19,
+          "effectiveSample": 17.51
+        }
+      }
+    },
+    "bayern": {
+      "name": "Bayern München",
+      "country": "GER",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.993,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0919,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4642,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.132,
+        "vsWeaker": 0.5344
+      },
+      "defenseConfidence": {
+        "overall": 0.4642,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.132,
+        "vsWeaker": 0.5344
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.82
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.77
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5652,
+          "samples": 17,
+          "effectiveSample": 15.6
+        }
+      }
+    },
+    "bvb": {
+      "name": "Borussia Dortmund",
+      "country": "GER",
+      "attack": {
+        "overall": 1.171,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0267,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0566,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.463,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1804,
+        "vsWeaker": 0.5177
+      },
+      "defenseConfidence": {
+        "overall": 0.463,
+        "domestic": 0.564,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1804,
+        "vsWeaker": 0.5177
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.52
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.64
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.88
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.564,
+          "samples": 17,
+          "effectiveSample": 15.52
         }
       }
     },

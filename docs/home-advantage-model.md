@@ -17,25 +17,27 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 255 verified home matches. The guaranteed-team filter currently includes 143:
+The archive contains 327 verified home matches. The guaranteed-team filter currently includes 215:
 
 - Galatasaray: 48 matches;
 - Arsenal: 19 Premier League home matches;
 - Aston Villa: 19 Premier League home matches;
 - Manchester City: 19 Premier League home matches;
 - Liverpool: 19 Premier League home matches;
-- Manchester United: 19 Premier League home matches.
+- Manchester United: 19 Premier League home matches;
+- Atlético Madrid: 19 La Liga home matches;
+- Barcelona: 19 La Liga home matches;
+- Bayern München: 17 Bundesliga home matches;
+- Borussia Dortmund: 17 Bundesliga home matches.
 
 The remaining 112 archived records are retained but excluded from runtime generation.
 
 ## English 2024/25 batches
 
-The English source files contain every league home match from the 2024/25 season for five guaranteed Champions League clubs:
+The two English source files contain every league home match from the 2024/25 season for five guaranteed Champions League clubs:
 
 - `arsenal-liverpool-2024-25.json`: 38 matches;
-- `astonvilla-2024-25.json`: 19 matches;
-- `city-2024-25.json`: 19 matches;
-- `manu-2024-25.json`: 19 matches.
+- `astonvilla-city-manu-2024-25.json`: 57 matches.
 
 Match scores come from the OpenFootball England 2024/25 Premier League dataset. Strength values use the project's 2026 UEFA coefficient snapshot. English clubs without an individual coefficient use the English association floor of `23.903`. Historical pot values are fixed at `1`, so modern draw pots are not projected backwards.
 
@@ -58,6 +60,26 @@ Context examples:
 - Manchester United against similar opponents: `0.8892`;
 - Arsenal against similar opponents: `1.1547`;
 - Liverpool against weaker opponents: `1.0763`.
+
+## Spain and Germany 2024/25 batches
+
+The next guaranteed-Champions batch adds every domestic league home match from 2024/25 for four clubs:
+
+- `atleti-barcelona-2024-25.json`: 38 La Liga matches;
+- `bayern-bvb-2024-25.json`: 34 Bundesliga matches.
+
+Scores come from the OpenFootball Spain and Germany season datasets. The project’s 2026 UEFA coefficient snapshot supplies individual club values above the association minimum. Other Spanish opponents use the `19.409` association floor; other German opponents use `18.580`. Historical pot values remain fixed at `1`.
+
+Generated domestic attack residuals:
+
+| Club | Multiplier |
+|---|---:|
+| Atlético Madrid | 1.1061 |
+| Barcelona | 1.1800 |
+| Bayern München | 1.1800 |
+| Borussia Dortmund | 1.1800 |
+
+Barcelona and Bayern reach the conservative attack ceiling. Dortmund reaches the domestic ceiling while its broader overall value is `1.1710`. Atlético remains below the ceiling and shows a stronger `1.1184` signal against similar-strength opponents. Bayern’s similar-opponent attack value is approximately neutral at `0.9930`, despite its large weaker-opponent residual.
 
 ## Files
 
