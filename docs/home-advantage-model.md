@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 717 verified home matches. The guaranteed-team filter currently includes 605 matches across 32 active profiles:
+The archive contains 755 verified home matches. The guaranteed-team filter currently includes 643 matches across 34 active profiles:
 
 - Galatasaray: 48;
-- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
+- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Como, Crystal Palace, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
 - AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, and Hoffenheim are completed guaranteed Europa League clubs, and the research queue now begins with Bournemouth.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Crystal Palace, and Hoffenheim are completed guaranteed Europa League clubs, and the research queue now begins with Celta Vigo.
 
 ## Data batches
 
@@ -44,6 +44,15 @@ English clubs without an individual coefficient use the `23.903` association flo
 | Manchester City | 1.1130 |
 | Liverpool | 1.0948 |
 | Manchester United | 0.8400 |
+
+`bournemouth-palace-2024-25.json` adds all 38 Premier League home matches for two guaranteed Europa League clubs, 19 per club.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier |
+|---|---:|---:|
+| Bournemouth | 0.9345 | 0.8499 |
+| Crystal Palace | 0.9824 | 1.1096 |
+
+Bournemouth scores below its coefficient baseline but shows a strong positive home defensive effect. Its attack values are `0.9967` against stronger opponents and `0.9308` against similar opponents. Crystal Palace is approximately neutral overall, rises to `1.1448` against stronger opponents, and falls to `0.9192` against similar opponents. Neither club has weaker-opponent observations under the current coefficient snapshot.
 
 ### Spain and Germany 2024/25
 
