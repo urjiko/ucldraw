@@ -20,197 +20,187 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Champions playoff home matches
+      - name: Lock playoff scope regressions and documentation
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const vm = require('node:vm');
+          python - <<'PY'
+          from pathlib import Path
 
-          (async () => {
-            const updater = await import('./scripts/update-uefa-coefficients.mjs');
-            const urls = {
-              greece: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/gr.1.json',
-              scotland: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/sco.1.json',
-              austria: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/at.1.json',
-              norway: 'https://raw.githubusercontent.com/openfootball/europe/master/norway/2024_no1.txt',
-              coefficients: updater.SOURCE_URL
-            };
-            const responses = Object.fromEntries(await Promise.all(Object.entries(urls).map(async ([key, url]) => {
-              const response = await fetch(url, { headers: { 'user-agent': 'UEFA-home-profile-builder/1.0' } });
-              if (!response.ok) throw new Error(`${key} source request failed: ${response.status}`);
-              return [key, response];
-            })));
+          test_path = Path('tests/home-advantage-model.test.js')
+          text = test_path.read_text()
+          replacements = {
+            "assert.equal(records.length, 906, 'Stored source archive must contain 906 home matches.');": "assert.equal(records.length, 974, 'Stored source archive must contain 974 home matches.');",
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 891);": "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 959);",
+            "assert.equal(generated.sourceSummary.storedMatches, 906);": "assert.equal(generated.sourceSummary.storedMatches, 974);",
+            "assert.equal(generated.sourceSummary.matches, 794);": "assert.equal(generated.sourceSummary.matches, 862);",
+            "assert.equal(generated.sourceSummary.teams, 42);": "assert.equal(generated.sourceSummary.teams, 46);",
+            "assert.equal(generated.sourceSummary.activeTeamScope, 42);": "assert.equal(generated.sourceSummary.activeTeamScope, 46);",
+            "assert.equal(generated.sourceSummary.domesticMatches, 782);": "assert.equal(generated.sourceSummary.domesticMatches, 850);",
+            "assert.equal(generated.scope.teams.length, 42);": "assert.equal(generated.scope.teams.length, 46);",
+            "assert.equal(new Set(generated.scope.teams).size, 42);": "assert.equal(new Set(generated.scope.teams).size, 46);",
+            "console.log('Guaranteed-team home profile checks passed.');": "console.log('Active-scope home profile checks passed.');"
+          }
+          for old, new in replacements.items():
+            if old in text:
+              text = text.replace(old, new)
+            elif new not in text:
+              raise SystemExit(f'missing test replacement anchor: {old}')
 
-            const [greece, scotland, austria, norway, coefficientHtml] = await Promise.all([
-              responses.greece.json(),
-              responses.scotland.json(),
-              responses.austria.json(),
-              responses.norway.text(),
-              responses.coefficients.text()
-            ]);
-            const rankingRows = updater.parseKassiesaRows(coefficientHtml);
-            if (rankingRows.length < 300) throw new Error(`Expected full coefficient ranking, received ${rankingRows.length} rows.`);
+          if "match.homeSlug === 'aek'" not in text:
+            anchor = "assert.equal(records.filter((match) => match.homeSlug === 'slavia').length, 18);\n"
+            block = anchor + """assert.equal(records.filter((match) => match.homeSlug === 'aek').length, 16);
+assert.equal(records.filter((match) => match.homeSlug === 'celtic').length, 19);
+assert.equal(records.filter((match) => match.homeSlug === 'lask').length, 18);
+assert.equal(records.filter((match) => match.homeSlug === 'viking').length, 15);
+"""
+            if anchor not in text: raise SystemExit('missing target count anchor')
+            text = text.replace(anchor, block)
 
-            const coefficientContext = { window: {}, Object };
-            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
-            const generatedCoefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
+          if "stage: 'playoffs'" not in text:
+            anchor = "assert.match(builderSource, /competition: 'europa', stage: 'guaranteed'/);\n"
+            if anchor not in text: raise SystemExit('missing builder scope anchor')
+            text = text.replace(anchor, anchor + "assert.match(builderSource, /competition: 'champions', stage: 'playoffs'/);\n")
 
-            const floors = Object.fromEntries(['GRE', 'SCO', 'AUT', 'NOR'].map((country) => {
-              const values = rankingRows.filter((row) => row.country === country).map((row) => row.countryPart).filter(Number.isFinite);
-              if (!values.length) throw new Error(`No association floor found for ${country}.`);
-              return [country, Math.max(...values)];
-            }));
+          if "generated.scope.priority[2].competition" not in text:
+            anchor = "assert.equal(generated.scope.priority[1].teams.length, 13);\nassert.equal(generated.scope.teams.length, 46);\n"
+            block = """assert.equal(generated.scope.priority[1].teams.length, 13);
+assert.equal(generated.scope.priority[2].competition, 'champions');
+assert.equal(generated.scope.priority[2].stage, 'playoffs');
+assert.deepEqual(Array.from(generated.scope.priority[2].teams), ['aek', 'celtic', 'lask', 'viking']);
+assert.equal(generated.scope.teams.length, 46);
+"""
+            if anchor not in text: raise SystemExit('missing scope assertion anchor')
+            text = text.replace(anchor, block)
 
-            const teamAliases = {
-              'AEK Athen': { slug: 'aek', name: 'AEK Athens', aliases: ['AEK Athens'] },
-              'Olympiakos Piraeus': { slug: 'olympiacos', name: 'Olympiakos Piraeus', aliases: ['Olympiakos Piraeus'] },
-              'PAOK Saloniki': { slug: 'paok', name: 'PAOK Thessaloniki', aliases: ['PAOK Thessaloniki'] },
-              'Panathinaikos': { slug: 'panathinaikos', name: 'Panathinaikos', aliases: ['Panathinaikos'] },
-              'OFI Heraklion': { slug: 'crete', name: 'OFI Crete', aliases: ['OFI Crete', 'OFI Heraklion'] },
-              'Aris Saloniki': { name: 'Aris Thessaloniki', aliases: ['Aris Thessaloniki', 'Aris Saloniki'] },
-              'Celtic FC': { slug: 'celtic', name: 'Celtic', aliases: ['Celtic'] },
-              'Rangers FC': { slug: 'rangers', name: 'Rangers', aliases: ['Glasgow Rangers', 'Rangers'] },
-              'Hibernian FC': { slug: 'hibernian', name: 'Hibernian', aliases: ['Hibernian'] },
-              'Heart of Midlothian': { slug: 'hearts', name: 'Heart of Midlothian', aliases: ['Heart of Midlothian'] },
-              'LASK': { slug: 'lask', name: 'LASK', aliases: ['LASK'] },
-              'RB Salzburg': { slug: 'salzburg', name: 'RB Salzburg', aliases: ['FC Salzburg', 'Salzburg'] },
-              'Sturm Graz': { slug: 'strumgraz', name: 'Sturm Graz', aliases: ['Sturm Graz'] },
-              'Rapid Wien': { slug: 'rapid', name: 'Rapid Wien', aliases: ['Rapid Wien'] },
-              'Austria Wien': { slug: 'austriawien', name: 'Austria Wien', aliases: ['Austria Wien'] },
-              'Viking FK': { slug: 'viking', name: 'Viking', aliases: ['Viking Stavanger', 'Viking FK'] },
-              'FK Bodø/Glimt': { slug: 'bodo', name: 'Bodø/Glimt', aliases: ['Bodø/Glimt', 'Bodo/Glimt'] },
-              'SK Brann': { slug: 'brann', name: 'Brann', aliases: ['SK Brann Bergen', 'Brann Bergen', 'SK Brann'] },
-              'Tromsø IL': { slug: 'tromso', name: 'Tromsø', aliases: ['Tromsø IL', 'Tromso IL'] },
-              'Lillestrøm SK': { slug: 'lillestrom', name: 'Lillestrøm', aliases: ['Lillestrøm SK', 'Lillestrom SK'] }
-            };
+          if "  aek: 1.1073," not in text:
+            anchor = "const expectedDomesticAttack = {\n  arsenal: 0.9824,"
+            block = """const expectedDomesticAttack = {
+  aek: 1.1073,
+  arsenal: 0.9824,
+  celtic: 1.18,
+  lask: 1.0245,
+  viking: 1.18,"""
+            if anchor not in text: raise SystemExit('missing attack map anchor')
+            text = text.replace(anchor, block)
 
-            function simpleSlug(value) {
-              return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-                .replace(/\b(?:fc|afc|fk|bk|sk|sc|ac|cf|nfc|if|il)\b/g, '')
-                .replace(/[^a-z0-9]+/g, '') || 'unknown';
-            }
+          if "generated.profiles.aek.attack.overall" not in text:
+            anchor = "assert.equal(generated.profiles.astonvilla.attack.vsStronger, 1.0687);\n"
+            block = """assert.equal(generated.profiles.aek.attack.overall, 1.0875);
+assert.equal(generated.profiles.aek.attack.vsStronger, 0.9087);
+assert.equal(generated.profiles.aek.attack.vsWeaker, 1.168);
+assert.equal(generated.profiles.aek.defense.domestic, 0.8981);
+assert.equal(generated.profiles.aek.defense.vsWeaker, 0.82);
+assert.equal(generated.profiles.aek.samples.overall.raw, 16);
+assert.equal(generated.profiles.celtic.attack.overall, 1.18);
+assert.equal(generated.profiles.celtic.attack.vsSimilar, 1.1033);
+assert.equal(generated.profiles.celtic.defense.domestic, 0.8945);
+assert.equal(generated.profiles.celtic.defense.vsWeaker, 0.82);
+assert.equal(generated.profiles.celtic.samples.overall.raw, 19);
+assert.equal(generated.profiles.lask.attack.overall, 1.0202);
+assert.equal(generated.profiles.lask.attack.vsStronger, 0.9351);
+assert.equal(generated.profiles.lask.attack.vsSimilar, 1.0915);
+assert.equal(generated.profiles.lask.defense.domestic, 1.0922);
+assert.equal(generated.profiles.lask.samples.overall.raw, 18);
+assert.equal(generated.profiles.viking.attack.overall, 1.18);
+assert.equal(generated.profiles.viking.attack.vsStronger, 0.991);
+assert.equal(generated.profiles.viking.attack.vsSimilar, 1.18);
+assert.equal(generated.profiles.viking.defense.vsStronger, 0.9122);
+assert.equal(generated.profiles.viking.samples.overall.raw, 15);
+assert.equal(generated.profiles.astonvilla.attack.vsStronger, 1.0687);
+"""
+            if anchor not in text: raise SystemExit('missing profile assertion anchor')
+            text = text.replace(anchor, block)
+          test_path.write_text(text)
 
-            function team(sourceName, country, targetSlug = null) {
-              const configured = teamAliases[sourceName] || {};
-              return {
-                slug: targetSlug || configured.slug || simpleSlug(sourceName),
-                name: configured.name || sourceName.replace(/\s+(?:FC|AFC|FK|BK|SK|SC|AC|CF|IF|IL)$/i, ''),
-                country,
-                aliases: configured.aliases || [sourceName]
-              };
-            }
+          doc_path = Path('docs/home-advantage-model.md')
+          doc = doc_path.read_text()
+          old_intro = """Profile work follows the guaranteed-team groups in `generated-team-pools.js`:
 
-            function coefficientFor(candidate) {
-              if (candidate.slug && Number.isFinite(Number(generatedCoefficients[candidate.slug]?.coefficient))) {
-                return Number(generatedCoefficients[candidate.slug].coefficient);
-              }
-              const normalized = new Set(candidate.aliases.map((name) => updater.normalize(name)));
-              const row = rankingRows.find((entry) => entry.country === candidate.country && normalized.has(updater.normalize(entry.officialName)));
-              return row ? row.coefficient : floors[candidate.country];
-            }
+1. `champions.guaranteed`;
+2. `europa.guaranteed`.
 
-            const targets = new Map([
-              ['AEK Athen', { slug: 'aek', country: 'GRE', competition: 'Greek Super League 2024/25' }],
-              ['Celtic FC', { slug: 'celtic', country: 'SCO', competition: 'Scottish Premiership 2024/25' }],
-              ['LASK', { slug: 'lask', country: 'AUT', competition: 'Austrian Bundesliga 2024/25' }],
-              ['Viking FK', { slug: 'viking', country: 'NOR', competition: 'Norwegian Eliteserien 2024' }]
-            ]);
-            const records = [];
+Missing guaranteed Champions League clubs always remain ahead of the first guaranteed Europa League club. Qualifying-stage records may stay in the archive, but they do not affect runtime generation unless their club is also in an active guaranteed group.
 
-            function addRecord({ date, homeSource, awaySource, homeGoals, awayGoals, target }) {
-              const home = team(homeSource, target.country, target.slug);
-              const away = team(awaySource, target.country);
-              records.push({
-                date,
-                competitionType: 'domestic',
-                competition: target.competition,
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: home.country,
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: away.country,
-                homeCoefficient: coefficientFor(home),
-                awayCoefficient: coefficientFor(away),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
-                homeGoals: Number(homeGoals),
-                awayGoals: Number(awayGoals),
-                sourceKey: `openfootball-${target.country.toLowerCase()}-2024-25`
-              });
-            }
+Current manifest scope:
 
-            for (const source of [greece, scotland, austria]) {
-              if (!Array.isArray(source.matches) || !source.matches.length) throw new Error(`${source.name || 'JSON league'} has no matches.`);
-              for (const match of source.matches) {
-                const target = targets.get(match.team1);
-                if (!target) continue;
-                const score = match.score?.ft;
-                if (!Array.isArray(score) || score.length !== 2) throw new Error(`Missing FT score: ${match.date} ${match.team1} v ${match.team2}`);
-                addRecord({ date: match.date, homeSource: match.team1, awaySource: match.team2, homeGoals: score[0], awayGoals: score[1], target });
-              }
-            }
+- 29 guaranteed Champions League clubs;
+- 13 guaranteed Europa League clubs;
+- 42 unique active clubs.
 
-            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-            let currentYear = 2024;
-            let previousMonth = null;
-            let currentDate = null;
-            let norwayMatchCount = 0;
-            for (const line of norway.split(/\r?\n/)) {
-              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
-              if (dateMatch) {
-                const month = monthIndex[dateMatch[1]];
-                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
-                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
-                previousMonth = month;
-                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
-                continue;
-              }
-              const result = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
-              if (!result || !currentDate) continue;
-              norwayMatchCount += 1;
-              const target = targets.get(result[1].trim());
-              if (!target) continue;
-              addRecord({ date: currentDate, homeSource: result[1].trim(), awaySource: result[2].trim(), homeGoals: result[3], awayGoals: result[4], target });
-            }
-            if (norwayMatchCount !== 240) throw new Error(`Expected 240 Norwegian matches, received ${norwayMatchCount}.`);
+## Current snapshot
 
-            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
-            const expected = { aek: 16, celtic: 19, lask: 18, viking: 15 };
-            for (const [slug, count] of Object.entries(expected)) {
-              const actual = records.filter((record) => record.homeSlug === slug).length;
-              if (actual !== count) throw new Error(`Expected ${count} ${slug} home matches, received ${actual}.`);
-            }
-            if (records.length !== 68) throw new Error(`Expected 68 Champions playoff home matches, received ${records.length}.`);
+The archive contains 906 verified home matches. The guaranteed-team filter currently includes 794 matches across all 42 active profiles:
+"""
+          new_intro = """Profile work follows the active groups in `generated-team-pools.js`:
 
-            fs.writeFileSync('data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json', `${JSON.stringify(records)}\n`);
+1. `champions.guaranteed`;
+2. `europa.guaranteed`;
+3. `champions.playoffs`.
 
-            const builderPath = 'scripts/build-home-advantage-profiles.mjs';
-            let builder = fs.readFileSync(builderPath, 'utf8');
-            const oldPriorities = `  const priorities = [\n    { competition: 'champions', stage: 'guaranteed' },\n    { competition: 'europa', stage: 'guaranteed' }\n  ];`;
-            const newPriorities = `  const priorities = [\n    { competition: 'champions', stage: 'guaranteed' },\n    { competition: 'europa', stage: 'guaranteed' },\n    { competition: 'champions', stage: 'playoffs' }\n  ];`;
-            if (!builder.includes(newPriorities)) {
-              if (!builder.includes(oldPriorities)) throw new Error('Priority scope block changed unexpectedly.');
-              builder = builder.replace(oldPriorities, newPriorities);
-            }
-            builder = builder.replace('Guaranteed Champions/Europa scope contains a duplicate team slug.', 'Active home-advantage scope contains a duplicate team slug.');
-            fs.writeFileSync(builderPath, builder);
+Guaranteed Champions and Europa clubs remain the first two priorities. The next active group is the four-club Champions League play-off pool. Records outside these configured groups remain archived but do not affect runtime generation.
 
-            console.log(JSON.stringify({ counts: expected, floors, stored: records.length }));
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
-          NODE
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit verified Champions playoff profiles
+Current manifest scope:
+
+- 29 guaranteed Champions League clubs;
+- 13 guaranteed Europa League clubs;
+- 4 Champions League play-off clubs;
+- 46 unique active clubs.
+
+## Current snapshot
+
+The archive contains 974 verified home matches. The active-team filter currently includes 862 matches across all 46 active profiles:
+"""
+          if old_intro in doc:
+            doc = doc.replace(old_intro, new_intro)
+          elif new_intro not in doc:
+            raise SystemExit('missing documentation intro anchor')
+
+          old_list = """- Slavia Prague: 18, including the championship round;
+- Sunderland: 24, including its home Championship play-off semifinal.
+
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs and all 13 guaranteed Europa League clubs now have active profiles. The guaranteed-team research queue is empty.
+"""
+          new_list = """- Slavia Prague: 18, including the championship round;
+- Sunderland: 24, including its home Championship play-off semifinal;
+- AEK Athens: 16;
+- Celtic: 19;
+- LASK: 18, including two European-place play-off home fixtures;
+- Viking: 15.
+
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, and all four Champions League play-off clubs now have active profiles. The active-scope research queue is empty.
+"""
+          if old_list in doc:
+            doc = doc.replace(old_list, new_list)
+          elif new_list not in doc:
+            raise SystemExit('missing documentation snapshot anchor')
+
+          if '### Champions League play-off clubs, 2024/25' not in doc:
+            anchor = "\n### Spain and Germany 2024/25\n"
+            section = """
+### Champions League play-off clubs, 2024/25
+
+`aek-celtic-lask-viking-2024-25.json` adds 68 domestic home matches for the four clubs in `champions.playoffs`: AEK Athens 16, Celtic 19, LASK 18, and Viking 15. The LASK sample includes two home European-place play-off fixtures. Opponents without a higher individual coefficient use the parsed 2026 association floors: Greece `9.682`, Scotland `6.410`, Austria `6.770`, and Norway `8.247`.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier | Notable context |
+|---|---:|---:|---|
+| AEK Athens | 1.1073 | 0.8981 | Weaker opponents: 1.1680 attack / 0.8200 visiting goals |
+| Celtic | 1.1800 | 0.8945 | Weaker opponents: 1.1800 attack / 0.8200 visiting goals |
+| LASK | 1.0245 | 1.0922 | Similar opponents: 1.0915 attack |
+| Viking | 1.1800 | 1.0349 | Stronger opponents: 0.9122 visiting goals |
+
+AEK and Celtic combine strong attacking residuals with positive home defensive effects. LASK remains close to neutral overall and does not show the same defensive signal. Viking reaches the attack ceiling, but its stronger-opponent attack residual is approximately neutral at `0.9910`.
+"""
+            if anchor not in doc: raise SystemExit('missing documentation section anchor')
+            doc = doc.replace(anchor, section + anchor)
+          doc_path.write_text(doc)
+          PY
+      - name: Run profile regression test
+        run: node tests/home-advantage-model.test.js
+      - name: Commit finalized playoff profiles
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json scripts/build-home-advantage-profiles.mjs generated-home-advantage-profiles.js
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md
           if ! git diff --cached --quiet; then
-            git commit -m "Generate Champions playoff home profiles"
+            git commit -m "Lock Champions playoff home profile regressions"
             git push origin HEAD:agent/add-champions-playoff-home-profiles
           fi
