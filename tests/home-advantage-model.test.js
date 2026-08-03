@@ -51,7 +51,7 @@ assert.equal(generated.sourceSummary.teams, 3);
 assert.equal(generated.sourceSummary.activeTeamScope, 42);
 assert.equal(generated.sourceSummary.domesticMatches, 74);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
-assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-25');
+assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
 
 assert.equal(generated.scope.priority.length, 2);
