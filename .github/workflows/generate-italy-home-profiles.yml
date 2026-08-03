@@ -6,13 +6,16 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -123,10 +126,12 @@ jobs:
           NODE
       - name: Regenerate profile payload
         run: node scripts/build-home-advantage-profiles.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: italy-home-profile-snapshot
-          path: |
-            data/home-advantage-matches/como-inter-napoli-roma-2024-25.json
-            generated-home-advantage-profiles.js
-          if-no-files-found: error
+      - name: Commit verified Italian profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/como-inter-napoli-roma-2024-25.json generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate Italian guaranteed profiles [italy profile snapshot]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
