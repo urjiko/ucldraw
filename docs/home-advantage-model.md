@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 683 verified home matches. The guaranteed-team filter currently includes 571 matches across 30 active profiles:
+The archive contains 717 verified home matches. The guaranteed-team filter currently includes 605 matches across 32 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
-- AZ Alkmaar, Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
+- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar is the first completed guaranteed Europa League club, and the research queue now begins with Bayer Leverkusen.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, and Hoffenheim are completed guaranteed Europa League clubs, and the research queue now begins with Bournemouth.
 
 ## Data batches
 
@@ -63,6 +63,15 @@ Spanish opponents without a higher individual value use `19.409`; German opponen
 | VfB Stuttgart | 1.1800 | Similar opponents: 0.9977 |
 
 Leipzig remains below the general attack ceiling but shows a strong residual against stronger opponents. Its similar-opponent visiting-goal multiplier is `0.9400`, a positive home defensive signal for that context. Stuttgart reaches the domestic attack ceiling, while its similar-opponent residual is essentially neutral and its single weaker-opponent observation is not treated as a broad conclusion.
+
+`leverkusen-hoffenheim-2024-25.json` adds 34 Bundesliga home matches for the guaranteed Europa League scope, 17 per club.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Bayer Leverkusen | 1.0482 | Weaker opponents: 1.0649 |
+| Hoffenheim | 1.1800 | Stronger opponents: 1.1800 |
+
+Leverkusen remains close to neutral against similar opponents at `0.9614`, while its similar-opponent visiting-goal multiplier is `1.1277`. Hoffenheim reaches the attack ceiling. Under the current coefficient snapshot, all 17 Hoffenheim league opponents fall into the stronger-opponent bucket, so no unsupported similar- or weaker-opponent effect is emitted.
 
 The follow-up Spanish batch `real-betis-villarreal-2024-25.json` adds 57 more La Liga home matches, 19 per club.
 
