@@ -27,6 +27,7 @@ jobs:
             spain: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/es.1.json',
             france: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json'
           };
+          const targets = new Set(['Atalanta BC', 'Brighton & Hove Albion FC', 'SC Freiburg', 'Getafe CF', 'AS Monaco FC']);
 
           (async () => {
             for (const [key, url] of Object.entries(sources)) {
@@ -34,12 +35,15 @@ jobs:
               if (!response.ok) throw new Error(`${key}: ${response.status}`);
               const data = await response.json();
               const counts = new Map();
+              const missing = [];
               for (const match of data.matches || []) {
+                if (targets.has(match.team1) && !Array.isArray(match.score?.ft)) missing.push(match);
                 if (!Array.isArray(match.score?.ft)) continue;
                 counts.set(match.team1, (counts.get(match.team1) || 0) + 1);
               }
               console.log(`JSON ${key} matches=${data.matches?.length}`);
-              console.log(JSON.stringify([...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))));
+              console.log(JSON.stringify([...counts.entries()].filter(([team]) => targets.has(team))));
+              if (missing.length) console.log(`MISSING ${key} ${JSON.stringify(missing)}`);
             }
           })().catch((error) => {
             console.error(error);
