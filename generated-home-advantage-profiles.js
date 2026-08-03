@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 347,
-    "matches": 235,
+    "storedMatches": 423,
+    "matches": 311,
     "excludedStoredMatches": 112,
-    "teams": 11,
+    "teams": 15,
     "activeTeamScope": 42,
-    "domesticMatches": 223,
+    "domesticMatches": 299,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -24,6 +24,7 @@
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
       "data/home-advantage-matches/brugge-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
+      "data/home-advantage-matches/como-inter-napoli-roma-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
       "data/home-advantage-matches/manu-2024-25.json"
@@ -148,19 +149,15 @@
     ]
   },
   "researchQueue": [
-    "como",
     "feyenoord",
-    "inter",
     "leipzig",
     "lens",
     "lille",
-    "napoli",
     "porto",
     "psg",
     "psv",
     "real",
     "realbetis",
-    "roma",
     "shakhtar",
     "slavia",
     "sporting",
@@ -749,6 +746,77 @@
         }
       }
     },
+    "como": {
+      "name": "Como",
+      "country": "ITA",
+      "attack": {
+        "overall": 1.0515,
+        "domestic": 1.062,
+        "europe": 1,
+        "vsStronger": 1.0466,
+        "vsSimilar": 1.0454,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.0847,
+        "domestic": 1.102,
+        "europe": 1,
+        "vsStronger": 1.0185,
+        "vsSimilar": 1.1229,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4929,
+        "domestic": 0.5932,
+        "europe": 0,
+        "vsStronger": 0.3183,
+        "vsSimilar": 0.4978,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4929,
+        "domestic": 0.5932,
+        "europe": 0,
+        "vsStronger": 0.3183,
+        "vsSimilar": 0.4978,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.5
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.5
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 6,
+          "effective": 5.6
+        },
+        "vsSimilar": {
+          "raw": 13,
+          "effective": 11.89
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 1.062,
+          "defense": 1.102,
+          "confidence": 0.5932,
+          "samples": 19,
+          "effectiveSample": 17.5
+        }
+      }
+    },
     "galatasaray": {
       "name": "Galatasaray",
       "country": "TUR",
@@ -817,6 +885,77 @@
           "confidence": 0.7091,
           "samples": 36,
           "effectiveSample": 29.25
+        }
+      }
+    },
+    "inter": {
+      "name": "Internazionale",
+      "country": "ITA",
+      "attack": {
+        "overall": 1.021,
+        "domestic": 1.0253,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9246,
+        "vsWeaker": 1.0527
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0052,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4908,
+        "domestic": 0.5912,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.0754,
+        "vsWeaker": 0.5771
+      },
+      "defenseConfidence": {
+        "overall": 0.4908,
+        "domestic": 0.5912,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.0754,
+        "vsWeaker": 0.5771
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.35
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.35
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 1,
+          "effective": 0.98
+        },
+        "vsWeaker": {
+          "raw": 18,
+          "effective": 16.37
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 1.0253,
+          "defense": 1.16,
+          "confidence": 0.5912,
+          "samples": 19,
+          "effectiveSample": 17.35
         }
       }
     },
@@ -959,6 +1098,148 @@
           "confidence": 0.5908,
           "samples": 19,
           "effectiveSample": 17.33
+        }
+      }
+    },
+    "napoli": {
+      "name": "Napoli",
+      "country": "ITA",
+      "attack": {
+        "overall": 0.9894,
+        "domestic": 0.9873,
+        "europe": 1,
+        "vsStronger": 0.972,
+        "vsSimilar": 0.9922,
+        "vsWeaker": 1.0002
+      },
+      "defense": {
+        "overall": 0.9243,
+        "domestic": 0.9089,
+        "europe": 1,
+        "vsStronger": 0.9244,
+        "vsSimilar": 1.0993,
+        "vsWeaker": 0.8568
+      },
+      "confidence": {
+        "overall": 0.4913,
+        "domestic": 0.5916,
+        "europe": 0,
+        "vsStronger": 0.1324,
+        "vsSimilar": 0.187,
+        "vsWeaker": 0.516
+      },
+      "defenseConfidence": {
+        "overall": 0.4913,
+        "domestic": 0.5916,
+        "europe": 0,
+        "vsStronger": 0.1324,
+        "vsSimilar": 0.187,
+        "vsWeaker": 0.516
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.83
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.76
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.79
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 0.9873,
+          "defense": 0.9089,
+          "confidence": 0.5916,
+          "samples": 19,
+          "effectiveSample": 17.38
+        }
+      }
+    },
+    "roma": {
+      "name": "Roma",
+      "country": "ITA",
+      "attack": {
+        "overall": 1.0141,
+        "domestic": 1.017,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9265,
+        "vsWeaker": 1.0533
+      },
+      "defense": {
+        "overall": 1.0816,
+        "domestic": 1.0983,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0657,
+        "vsWeaker": 1.0614
+      },
+      "confidence": {
+        "overall": 0.491,
+        "domestic": 0.5913,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.2365,
+        "vsWeaker": 0.5321
+      },
+      "defenseConfidence": {
+        "overall": 0.491,
+        "domestic": 0.5913,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.2365,
+        "vsWeaker": 0.5321
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.36
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.36
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.72
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.65
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 1.017,
+          "defense": 1.0983,
+          "confidence": 0.5913,
+          "samples": 19,
+          "effectiveSample": 17.36
         }
       }
     }
