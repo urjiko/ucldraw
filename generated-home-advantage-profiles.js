@@ -2045,11 +2045,11 @@
       "name": "Lillestrøm",
       "country": "NOR",
       "attack": {
-        "overall": 0.9381,
-        "domestic": 0.9229,
+        "overall": 0.9373,
+        "domestic": 0.9219,
         "europe": 1,
-        "vsStronger": 1.0137,
-        "vsSimilar": 0.8696,
+        "vsStronger": 0.9705,
+        "vsSimilar": 0.9199,
         "vsWeaker": 1
       },
       "defense": {
@@ -2064,16 +2064,16 @@
         "overall": 0.4066,
         "domestic": 0.5069,
         "europe": 0,
-        "vsStronger": 0.4509,
-        "vsSimilar": 0.1714,
+        "vsStronger": 0.47,
+        "vsSimilar": 0.1237,
         "vsWeaker": 0
       },
       "defenseConfidence": {
         "overall": 0.4066,
         "domestic": 0.5069,
         "europe": 0,
-        "vsStronger": 0.4509,
-        "vsSimilar": 0.1714,
+        "vsStronger": 0.47,
+        "vsSimilar": 0.1237,
         "vsWeaker": 0
       },
       "samples": {
@@ -2090,12 +2090,12 @@
           "effective": 0
         },
         "vsStronger": {
-          "raw": 12,
-          "effective": 9.85
+          "raw": 13,
+          "effective": 10.64
         },
         "vsSimilar": {
-          "raw": 3,
-          "effective": 2.48
+          "raw": 2,
+          "effective": 1.69
         },
         "vsWeaker": {
           "raw": 0,
@@ -2104,7 +2104,7 @@
       },
       "associationMatchups": {
         "NOR": {
-          "attack": 0.9229,
+          "attack": 0.9219,
           "defense": 1.16,
           "confidence": 0.5069,
           "samples": 15,
@@ -3470,31 +3470,31 @@
         "europe": 0.9057,
         "vsStronger": 0.9771,
         "vsSimilar": 1.18,
-        "vsWeaker": 1.1392
+        "vsWeaker": 0.9747
       },
       "defense": {
-        "overall": 1.1152,
-        "domestic": 1.1456,
+        "overall": 1.1103,
+        "domestic": 1.1399,
         "europe": 0.9405,
         "vsStronger": 1.16,
-        "vsSimilar": 1.0228,
-        "vsWeaker": 0.9656
+        "vsSimilar": 1.0222,
+        "vsWeaker": 0.9357
       },
       "confidence": {
         "overall": 0.7327,
         "domestic": 0.7961,
         "europe": 0.172,
         "vsStronger": 0.3348,
-        "vsSimilar": 0.7725,
-        "vsWeaker": 0.1764
+        "vsSimilar": 0.7798,
+        "vsWeaker": 0.0643
       },
       "defenseConfidence": {
         "overall": 0.7327,
         "domestic": 0.7961,
         "europe": 0.172,
         "vsStronger": 0.3348,
-        "vsSimilar": 0.7725,
-        "vsWeaker": 0.1764
+        "vsSimilar": 0.7798,
+        "vsWeaker": 0.0643
       },
       "samples": {
         "overall": {
@@ -3514,18 +3514,18 @@
           "effective": 6.04
         },
         "vsSimilar": {
-          "raw": 48,
-          "effective": 40.74
+          "raw": 50,
+          "effective": 42.48
         },
         "vsWeaker": {
-          "raw": 3,
-          "effective": 2.57
+          "raw": 1,
+          "effective": 0.83
         }
       },
       "associationMatchups": {
         "TUR": {
           "attack": 1.18,
-          "defense": 1.1456,
+          "defense": 1.1399,
           "confidence": 0.7961,
           "samples": 55,
           "effectiveSample": 46.85
@@ -3536,11 +3536,11 @@
       "name": "Sint-Truiden",
       "country": "BEL",
       "attack": {
-        "overall": 1.0828,
-        "domestic": 1.1004,
+        "overall": 1.0825,
+        "domestic": 1.1,
         "europe": 1,
         "vsStronger": 0.9767,
-        "vsSimilar": 1.1232,
+        "vsSimilar": 1.1228,
         "vsWeaker": 1
       },
       "defense": {
@@ -3595,7 +3595,7 @@
       },
       "associationMatchups": {
         "BEL": {
-          "attack": 1.1004,
+          "attack": 1.1,
           "defense": 1.16,
           "confidence": 0.575,
           "samples": 18,
@@ -3678,12 +3678,12 @@
       "name": "Viktoria Plzeň",
       "country": "CZE",
       "attack": {
-        "overall": 1.0956,
-        "domestic": 1.1159,
+        "overall": 1.1107,
+        "domestic": 1.1341,
         "europe": 1,
         "vsStronger": 1,
         "vsSimilar": 0.9748,
-        "vsWeaker": 1.1347
+        "vsWeaker": 1.155
       },
       "defense": {
         "overall": 1.16,
@@ -3737,7 +3737,7 @@
       },
       "associationMatchups": {
         "CZE": {
-          "attack": 1.1159,
+          "attack": 1.1341,
           "defense": 1.16,
           "confidence": 0.5771,
           "samples": 18,
