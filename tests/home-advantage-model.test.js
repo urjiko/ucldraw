@@ -28,13 +28,14 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 327, 'Stored source archive must contain 327 home matches.');
+assert.equal(records.length, 347, 'Stored source archive must contain 347 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 312);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 332);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of ['arsenal', 'astonvilla', 'atleti', 'barcelona', 'city', 'liverpool', 'manu']) {
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 19);
 }
+assert.equal(records.filter((match) => match.homeSlug === 'brugge').length, 20);
 for (const slug of ['bayern', 'bvb']) {
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 17);
 }
@@ -48,12 +49,12 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 327);
-assert.equal(generated.sourceSummary.matches, 215);
+assert.equal(generated.sourceSummary.storedMatches, 347);
+assert.equal(generated.sourceSummary.matches, 235);
 assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
-assert.equal(generated.sourceSummary.teams, 10);
+assert.equal(generated.sourceSummary.teams, 11);
 assert.equal(generated.sourceSummary.activeTeamScope, 42);
-assert.equal(generated.sourceSummary.domesticMatches, 203);
+assert.equal(generated.sourceSummary.domesticMatches, 223);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -73,6 +74,7 @@ const expectedDomesticAttack = {
   atleti: 1.1061,
   barcelona: 1.18,
   bayern: 1.18,
+  brugge: 1.1168,
   bvb: 1.18,
   city: 1.113,
   galatasaray: 1.18,
@@ -85,15 +87,17 @@ for (const [slug, multiplier] of Object.entries(expectedDomesticAttack)) {
 assert.equal(generated.profiles.astonvilla.attack.vsStronger, 1.0687);
 assert.equal(generated.profiles.atleti.attack.vsSimilar, 1.1184);
 assert.equal(generated.profiles.barcelona.attack.vsSimilar, 1.1055);
+assert.equal(generated.profiles.brugge.attack.overall, 1.0974);
+assert.equal(generated.profiles.brugge.attack.vsWeaker, 1.1168);
 assert.equal(generated.profiles.bayern.attack.vsSimilar, 0.993);
 assert.equal(generated.profiles.bvb.attack.overall, 1.171);
 assert.equal(generated.profiles.city.attack.vsWeaker, 1.1129);
 assert.equal(generated.profiles.manu.attack.vsSimilar, 0.8892);
 assert.equal(generated.profiles.fenerbahce, undefined);
 
-assert.equal(generated.researchQueue[0], 'brugge');
-assert.equal(generated.researchQueue[18], 'villareal');
-assert.equal(generated.researchQueue[19], 'azalkmaar');
+assert.equal(generated.researchQueue[0], 'como');
+assert.equal(generated.researchQueue[17], 'villareal');
+assert.equal(generated.researchQueue[18], 'azalkmaar');
 assert.equal(generated.researchQueue.at(-1), 'torreense');
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
