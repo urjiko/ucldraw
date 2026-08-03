@@ -6,20 +6,22 @@ Profile work follows the active groups in `generated-team-pools.js`:
 
 1. `champions.guaranteed`;
 2. `europa.guaranteed`;
-3. `champions.playoffs`.
+3. `champions.playoffs`;
+4. `europa.playoffs`.
 
-Guaranteed Champions and Europa clubs remain the first two priorities. The next active group is the four-club Champions League play-off pool. Records outside these configured groups remain archived but do not affect runtime generation.
+Guaranteed Champions and Europa clubs remain the first two priorities, followed by the Champions and Europa play-off pools. All four configured groups are complete. Records outside these groups remain archived and do not affect runtime generation.
 
 Current manifest scope:
 
 - 29 guaranteed Champions League clubs;
 - 13 guaranteed Europa League clubs;
 - 4 Champions League play-off clubs;
-- 46 unique active clubs.
+- 5 Europa League play-off clubs;
+- 51 unique active clubs.
 
 ## Current snapshot
 
-The archive contains 974 verified home matches. The active-team filter currently includes 862 matches across all 46 active profiles:
+The archive contains 1,059 verified home matches. The active-team filter currently includes 987 matches across all 51 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
@@ -31,9 +33,14 @@ The archive contains 974 verified home matches. The active-team filter currently
 - AEK Athens: 16;
 - Celtic: 19;
 - LASK: 18, including two European-place play-off home fixtures;
-- Viking: 15.
+- Viking: 15;
+- OFI Crete: 16;
+- Lillestrøm: 15;
+- Trabzonspor: 58 total observations, including 55 domestic and 3 European matches;
+- Sint-Truiden: 18;
+- Viktoria Plzeň: 18.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, and all four Champions League play-off clubs now have active profiles. The active-scope research queue is empty.
+The remaining 72 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, all four Champions League play-off clubs, and all five Europa League play-off clubs now have active profiles. The active-scope research queue is empty.
 
 ## Data batches
 
@@ -81,6 +88,20 @@ Sunderland scores below its coefficient baseline but shows a strong positive hom
 | Viking | 1.1800 | 1.0349 | Stronger opponents: 0.9122 visiting goals |
 
 AEK and Celtic combine strong attacking residuals with positive home defensive effects. LASK remains close to neutral overall and does not show the same defensive signal. Viking reaches the attack ceiling, but its stronger-opponent attack residual is approximately neutral at `0.9910`.
+
+### Europa League play-off clubs, 2024/25
+
+`crete-lillestrom-trabzonspor-truidense-viktoriaplzen-2024-25.json` adds 85 domestic home matches for the five clubs in `europa.playoffs`: OFI Crete 16, Lillestrøm 15, Trabzonspor 18, Sint-Truiden 18, and Viktoria Plzeň 18. Belgian and Czech post-split fixtures are retained. Activating Trabzonspor also brings 40 existing archived observations into runtime scope, producing a 58-match profile with 55 domestic and 3 European matches.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier | Notable context |
+|---|---:|---:|---|
+| OFI Crete | 0.9945 | 1.1600 | Similar opponents: 1.0824 attack |
+| Lillestrøm | 0.9219 | 1.1600 | Stronger opponents: 0.9705 attack |
+| Trabzonspor | 1.1800 | 1.1399 | Europe attack: 0.9057; 58 total observations |
+| Sint-Truiden | 1.1000 | 1.1600 | Similar opponents: 1.1228 attack |
+| Viktoria Plzeň | 1.1341 | 1.1600 | Weaker opponents: 1.1550 attack |
+
+OFI is nearly neutral overall but improves against similar opponents. Lillestrøm remains below its coefficient baseline. Trabzonspor reaches the attack ceiling domestically, while its European sample is below neutral. Sint-Truiden and Viktoria Plzeň show clear positive domestic attacking residuals. A visiting-goal multiplier above 1 means opponents scored above the coefficient baseline; it is not a defensive bonus.
 
 ### Spain and Germany 2024/25
 

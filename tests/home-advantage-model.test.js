@@ -28,9 +28,9 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 974, 'Stored source archive must contain 974 home matches.');
+assert.equal(records.length, 1059, 'Stored source archive must contain 1059 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 959);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 1044);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of [
   'arsenal', 'astonvilla', 'atleti', 'barcelona', 'bournemouth', 'celtavigo',
@@ -46,6 +46,11 @@ assert.equal(records.filter((match) => match.homeSlug === 'aek').length, 16);
 assert.equal(records.filter((match) => match.homeSlug === 'celtic').length, 19);
 assert.equal(records.filter((match) => match.homeSlug === 'lask').length, 18);
 assert.equal(records.filter((match) => match.homeSlug === 'viking').length, 15);
+assert.equal(records.filter((match) => match.homeSlug === 'crete').length, 16);
+assert.equal(records.filter((match) => match.homeSlug === 'lillestrom').length, 15);
+assert.equal(records.filter((match) => match.homeSlug === 'trabzonspor').length, 58);
+assert.equal(records.filter((match) => match.homeSlug === 'truidense').length, 18);
+assert.equal(records.filter((match) => match.homeSlug === 'viktoriaplzen').length, 18);
 assert.equal(records.filter((match) => match.homeSlug === 'sunderland').length, 24);
 assert.equal(records.filter((match) => match.homeSlug === 'sunderland' && match.date === '2025-05-13').length, 1);
 assert.equal(records.filter((match) => match.sourceKey === 'liga-portugal-official-2024-25').length, 4);
@@ -59,6 +64,7 @@ for (const slug of [
 assert.match(builderSource, /competition: 'champions', stage: 'guaranteed'/);
 assert.match(builderSource, /competition: 'europa', stage: 'guaranteed'/);
 assert.match(builderSource, /competition: 'champions', stage: 'playoffs'/);
+assert.match(builderSource, /competition: 'europa', stage: 'playoffs'/);
 assert.match(builderSource, /Duplicate home-advantage match/);
 
 const generatedContext = { window: {}, Object };
@@ -67,13 +73,13 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 974);
-assert.equal(generated.sourceSummary.matches, 862);
-assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
-assert.equal(generated.sourceSummary.teams, 46);
-assert.equal(generated.sourceSummary.activeTeamScope, 46);
-assert.equal(generated.sourceSummary.domesticMatches, 850);
-assert.equal(generated.sourceSummary.europeanMatches, 12);
+assert.equal(generated.sourceSummary.storedMatches, 1059);
+assert.equal(generated.sourceSummary.matches, 987);
+assert.equal(generated.sourceSummary.excludedStoredMatches, 72);
+assert.equal(generated.sourceSummary.teams, 51);
+assert.equal(generated.sourceSummary.activeTeamScope, 51);
+assert.equal(generated.sourceSummary.domesticMatches, 972);
+assert.equal(generated.sourceSummary.europeanMatches, 15);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
 
@@ -86,14 +92,22 @@ assert.equal(generated.scope.priority[1].teams.length, 13);
 assert.equal(generated.scope.priority[2].competition, 'champions');
 assert.equal(generated.scope.priority[2].stage, 'playoffs');
 assert.deepEqual(Array.from(generated.scope.priority[2].teams), ['aek', 'celtic', 'lask', 'viking']);
-assert.equal(generated.scope.teams.length, 46);
-assert.equal(new Set(generated.scope.teams).size, 46);
+assert.equal(generated.scope.priority[3].competition, 'europa');
+assert.equal(generated.scope.priority[3].stage, 'playoffs');
+assert.deepEqual(Array.from(generated.scope.priority[3].teams), ['crete', 'lillestrom', 'trabzonspor', 'truidense', 'viktoriaplzen']);
+assert.equal(generated.scope.teams.length, 51);
+assert.equal(new Set(generated.scope.teams).size, 51);
 
 const expectedDomesticAttack = {
   aek: 1.1073,
   arsenal: 0.9824,
   celtic: 1.18,
+  crete: 0.9945,
   lask: 1.0245,
+  lillestrom: 0.9219,
+  trabzonspor: 1.18,
+  truidense: 1.1,
+  viktoriaplzen: 1.1341,
   viking: 1.18,
   astonvilla: 1.021,
   atleti: 1.1061,
@@ -161,6 +175,37 @@ assert.equal(generated.profiles.viking.attack.vsStronger, 0.991);
 assert.equal(generated.profiles.viking.attack.vsSimilar, 1.18);
 assert.equal(generated.profiles.viking.defense.vsStronger, 0.9122);
 assert.equal(generated.profiles.viking.samples.overall.raw, 15);
+assert.equal(generated.profiles.crete.attack.overall, 0.9955);
+assert.equal(generated.profiles.crete.attack.vsStronger, 0.84);
+assert.equal(generated.profiles.crete.attack.vsSimilar, 1.0824);
+assert.equal(generated.profiles.crete.defense.domestic, 1.16);
+assert.equal(generated.profiles.crete.defense.vsSimilar, 1.1051);
+assert.equal(generated.profiles.crete.samples.overall.raw, 16);
+assert.equal(generated.profiles.lillestrom.attack.overall, 0.9373);
+assert.equal(generated.profiles.lillestrom.attack.vsStronger, 0.9705);
+assert.equal(generated.profiles.lillestrom.attack.vsSimilar, 0.9199);
+assert.equal(generated.profiles.lillestrom.defense.domestic, 1.16);
+assert.equal(generated.profiles.lillestrom.samples.overall.raw, 15);
+assert.equal(generated.profiles.trabzonspor.attack.overall, 1.18);
+assert.equal(generated.profiles.trabzonspor.attack.europe, 0.9057);
+assert.equal(generated.profiles.trabzonspor.attack.vsStronger, 0.9771);
+assert.equal(generated.profiles.trabzonspor.attack.vsSimilar, 1.18);
+assert.equal(generated.profiles.trabzonspor.attack.vsWeaker, 0.9747);
+assert.equal(generated.profiles.trabzonspor.defense.domestic, 1.1399);
+assert.equal(generated.profiles.trabzonspor.defense.europe, 0.9405);
+assert.equal(generated.profiles.trabzonspor.samples.overall.raw, 58);
+assert.equal(generated.profiles.trabzonspor.samples.domestic.raw, 55);
+assert.equal(generated.profiles.trabzonspor.samples.europe.raw, 3);
+assert.equal(generated.profiles.truidense.attack.overall, 1.0825);
+assert.equal(generated.profiles.truidense.attack.vsStronger, 0.9767);
+assert.equal(generated.profiles.truidense.attack.vsSimilar, 1.1228);
+assert.equal(generated.profiles.truidense.defense.domestic, 1.16);
+assert.equal(generated.profiles.truidense.samples.overall.raw, 18);
+assert.equal(generated.profiles.viktoriaplzen.attack.overall, 1.1107);
+assert.equal(generated.profiles.viktoriaplzen.attack.vsSimilar, 0.9748);
+assert.equal(generated.profiles.viktoriaplzen.attack.vsWeaker, 1.155);
+assert.equal(generated.profiles.viktoriaplzen.defense.domestic, 1.16);
+assert.equal(generated.profiles.viktoriaplzen.samples.overall.raw, 18);
 assert.equal(generated.profiles.astonvilla.attack.vsStronger, 1.0687);
 assert.equal(generated.profiles.atleti.attack.vsSimilar, 1.1184);
 assert.equal(generated.profiles.azalkmaar.attack.overall, 0.9668);
