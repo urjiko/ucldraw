@@ -1,0 +1,133 @@
+name: Generate English Europa home profiles
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.head_ref == 'agent/add-bournemouth-palace-europa-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-bournemouth-palace-europa-profiles
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Bournemouth and Palace home matches
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          (async () => {
+            const response = await fetch('https://raw.githubusercontent.com/openfootball/england/master/2024-25/1-premierleague.txt');
+            if (!response.ok) throw new Error(`OpenFootball request failed: ${response.status}`);
+            const source = await response.text();
+
+            const coefficientContext = { window: {}, Object };
+            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
+            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
+            const associationFloor = 23.903;
+            const teams = {
+              'AFC Bournemouth': { slug: 'bournemouth', name: 'Bournemouth', aliases: ['bournemouth'] },
+              'Arsenal FC': { slug: 'arsenal', name: 'Arsenal', aliases: ['arsenal'] },
+              'Aston Villa FC': { slug: 'astonvilla', name: 'Aston Villa', aliases: ['astonvilla'] },
+              'Brentford FC': { slug: 'brentford', name: 'Brentford', aliases: ['brentford'] },
+              'Brighton & Hove Albion FC': { slug: 'brighton', name: 'Brighton', aliases: ['brighton'] },
+              'Chelsea FC': { slug: 'chelsea', name: 'Chelsea', aliases: ['chelsea'] },
+              'Crystal Palace FC': { slug: 'crystalpalace', name: 'Crystal Palace', aliases: ['crystalpalace'] },
+              'Everton FC': { slug: 'everton', name: 'Everton', aliases: ['everton'] },
+              'Fulham FC': { slug: 'fulham', name: 'Fulham', aliases: ['fulham'] },
+              'Ipswich Town FC': { slug: 'ipswich', name: 'Ipswich Town', aliases: ['ipswich'] },
+              'Leicester City FC': { slug: 'leicester', name: 'Leicester City', aliases: ['leicester'] },
+              'Liverpool FC': { slug: 'liverpool', name: 'Liverpool', aliases: ['liverpool'] },
+              'Manchester City FC': { slug: 'city', name: 'Manchester City', aliases: ['city'] },
+              'Manchester United FC': { slug: 'manu', name: 'Manchester United', aliases: ['manu'] },
+              'Newcastle United FC': { slug: 'newcastle', name: 'Newcastle United', aliases: ['newcastle'] },
+              'Nottingham Forest FC': { slug: 'nottinghamforest', name: 'Nottingham Forest', aliases: ['nottinghamforest'] },
+              'Southampton FC': { slug: 'southampton', name: 'Southampton', aliases: ['southampton'] },
+              'Tottenham Hotspur FC': { slug: 'tottenham', name: 'Tottenham Hotspur', aliases: ['tottenham'] },
+              'West Ham United FC': { slug: 'westham', name: 'West Ham United', aliases: ['westham'] },
+              'Wolverhampton Wanderers FC': { slug: 'wolves', name: 'Wolverhampton Wanderers', aliases: ['wolves'] }
+            };
+            const targets = new Set(['bournemouth', 'crystalpalace']);
+            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+
+            function coefficientFor(team) {
+              for (const alias of team.aliases) {
+                const value = Number(coefficients[alias]?.coefficient);
+                if (Number.isFinite(value)) return value;
+              }
+              return associationFloor;
+            }
+
+            let currentYear = 2024;
+            let previousMonth = null;
+            let currentDate = null;
+            const records = [];
+            for (const line of source.split(/\r?\n/)) {
+              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
+              if (dateMatch) {
+                const month = monthIndex[dateMatch[1]];
+                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
+                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
+                previousMonth = month;
+                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
+                continue;
+              }
+              const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
+              if (!match || !currentDate) continue;
+              const home = teams[match[1].trim()];
+              const away = teams[match[2].trim()];
+              if (!home || !away || !targets.has(home.slug)) continue;
+              records.push({
+                date: currentDate,
+                competitionType: 'domestic',
+                competition: 'English Premier League 2024/25',
+                homeSlug: home.slug,
+                homeName: home.name,
+                homeCountry: 'ENG',
+                awaySlug: away.slug,
+                awayName: away.name,
+                awayCountry: 'ENG',
+                homeCoefficient: coefficientFor(home),
+                awayCoefficient: coefficientFor(away),
+                homePot: 1,
+                awayPot: 1,
+                potCount: 1,
+                homeGoals: Number(match[3]),
+                awayGoals: Number(match[4]),
+                sourceKey: 'openfootball-england-2024-25'
+              });
+            }
+            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
+            if (records.length !== 38) throw new Error(`Expected 38 English Europa home matches, received ${records.length}.`);
+            for (const slug of targets) {
+              const count = records.filter((record) => record.homeSlug === slug).length;
+              if (count !== 19) throw new Error(`Expected 19 ${slug} home matches, received ${count}.`);
+            }
+            fs.writeFileSync('data/home-advantage-matches/bournemouth-palace-2024-25.json', `${JSON.stringify(records)}\n`);
+            console.log(JSON.stringify(Object.fromEntries([...targets].map((slug) => [slug, records.filter((record) => record.homeSlug === slug).length]))));
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Commit verified English Europa profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/bournemouth-palace-2024-25.json generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate English Europa home profiles"
+            git push origin HEAD:agent/add-bournemouth-palace-europa-profiles
+          fi
