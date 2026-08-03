@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 457,
-    "matches": 345,
+    "storedMatches": 491,
+    "matches": 379,
     "excludedStoredMatches": 112,
-    "teams": 17,
+    "teams": 19,
     "activeTeamScope": 42,
-    "domesticMatches": 333,
+    "domesticMatches": 367,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -28,6 +28,7 @@
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/feyenoord-psv-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
+      "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json"
     ]
   },
@@ -150,7 +151,6 @@
     ]
   },
   "researchQueue": [
-    "leipzig",
     "lens",
     "lille",
     "porto",
@@ -160,7 +160,6 @@
     "shakhtar",
     "slavia",
     "sporting",
-    "stuttgart",
     "villareal",
     "azalkmaar",
     "bayerleverkusen",
@@ -1029,6 +1028,77 @@
         }
       }
     },
+    "leipzig": {
+      "name": "RB Leipzig",
+      "country": "GER",
+      "attack": {
+        "overall": 1.0623,
+        "domestic": 1.0758,
+        "europe": 1,
+        "vsStronger": 1.1707,
+        "vsSimilar": 0.9987,
+        "vsWeaker": 1.0111
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0711,
+        "vsSimilar": 0.94,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4642,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0.1923,
+        "vsSimilar": 0.1253,
+        "vsWeaker": 0.4787
+      },
+      "defenseConfidence": {
+        "overall": 0.4642,
+        "domestic": 0.5652,
+        "europe": 0,
+        "vsStronger": 0.1923,
+        "vsSimilar": 0.1253,
+        "vsWeaker": 0.4787
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.6
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.86
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.72
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 11.02
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.0758,
+          "defense": 1.16,
+          "confidence": 0.5652,
+          "samples": 17,
+          "effectiveSample": 15.6
+        }
+      }
+    },
     "liverpool": {
       "name": "Liverpool",
       "country": "ENG",
@@ -1381,6 +1451,77 @@
           "confidence": 0.5913,
           "samples": 19,
           "effectiveSample": 17.36
+        }
+      }
+    },
+    "stuttgart": {
+      "name": "VfB Stuttgart",
+      "country": "GER",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 0.9977,
+        "vsWeaker": 0.9697
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.1229,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1.0258
+      },
+      "confidence": {
+        "overall": 0.4629,
+        "domestic": 0.5639,
+        "europe": 0,
+        "vsStronger": 0.3134,
+        "vsSimilar": 0.4333,
+        "vsWeaker": 0.0669
+      },
+      "defenseConfidence": {
+        "overall": 0.4629,
+        "domestic": 0.5639,
+        "europe": 0,
+        "vsStronger": 0.3134,
+        "vsSimilar": 0.4333,
+        "vsWeaker": 0.0669
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.51
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.51
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 6,
+          "effective": 5.48
+        },
+        "vsSimilar": {
+          "raw": 10,
+          "effective": 9.18
+        },
+        "vsWeaker": {
+          "raw": 1,
+          "effective": 0.86
+        }
+      },
+      "associationMatchups": {
+        "GER": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5639,
+          "samples": 17,
+          "effectiveSample": 15.51
         }
       }
     }
