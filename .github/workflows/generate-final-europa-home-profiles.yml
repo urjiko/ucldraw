@@ -41,7 +41,7 @@ jobs:
           (async () => {
             const [englishResponse, portugueseResponse] = await Promise.all([
               fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/en.2.json'),
-              fetch('https://raw.githubusercontent.com/openfootball/europe/master/portugal/2024-25_pt2.txt')
+              fetch('https://raw.githubusercontent.com/openfootball/europe/e27eb01726f394ddf9fa68b15d37b900487b5903/portugal/2024-25_pt2.txt')
             ]);
             if (!englishResponse.ok) throw new Error(`English source request failed: ${englishResponse.status}`);
             if (!portugueseResponse.ok) throw new Error(`Portuguese source request failed: ${portugueseResponse.status}`);
@@ -54,6 +54,9 @@ jobs:
             const regularEnglish = englishSource.matches.filter((match) => String(match.round).startsWith('Regular'));
             if (regularEnglish.length !== 552) {
               throw new Error(`Expected 552 regular Championship matches, received ${regularEnglish.length}.`);
+            }
+            if (!portugueseSource.includes('# Matches    306')) {
+              throw new Error('Portuguese source no longer declares the expected 306-match schedule.');
             }
 
             const coefficientContext = { window: {}, Object };
@@ -97,6 +100,28 @@ jobs:
               return floor;
             }
 
+            function normalizedRecord({ date, competition, home, away, homeGoals, awayGoals, floor, sourceKey }) {
+              return {
+                date,
+                competitionType: 'domestic',
+                competition,
+                homeSlug: home.slug,
+                homeName: home.name,
+                homeCountry: home.country,
+                awaySlug: away.slug,
+                awayName: away.name,
+                awayCountry: away.country,
+                homeCoefficient: coefficientFor(home, floor),
+                awayCoefficient: coefficientFor(away, floor),
+                homePot: 1,
+                awayPot: 1,
+                potCount: 1,
+                homeGoals: Number(homeGoals),
+                awayGoals: Number(awayGoals),
+                sourceKey
+              };
+            }
+
             const records = [];
             for (const match of englishSource.matches) {
               if (match.team1 !== 'Sunderland AFC') continue;
@@ -107,34 +132,23 @@ jobs:
               if (match.round === 'Finals, Final') {
                 throw new Error('A neutral Championship final was unexpectedly classified as a Sunderland home match.');
               }
-              const home = team(match.team1, 'ENG', 'sunderland');
-              const away = team(match.team2, 'ENG');
-              records.push({
+              records.push(normalizedRecord({
                 date: match.date,
-                competitionType: 'domestic',
                 competition: 'English Championship 2024/25',
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: home.country,
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: away.country,
-                homeCoefficient: coefficientFor(home, ENGLISH_FLOOR),
-                awayCoefficient: coefficientFor(away, ENGLISH_FLOOR),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
-                homeGoals: Number(score[0]),
-                awayGoals: Number(score[1]),
+                home: team(match.team1, 'ENG', 'sunderland'),
+                away: team(match.team2, 'ENG'),
+                homeGoals: score[0],
+                awayGoals: score[1],
+                floor: ENGLISH_FLOOR,
                 sourceKey: 'openfootball-england-championship-2024-25'
-              });
+              }));
             }
 
             const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
             let currentYear = 2024;
             let previousMonth = null;
             let currentDate = null;
-            const allPortugueseMatches = [];
+            const completedPortugueseMatches = [];
 
             for (const line of portugueseSource.split(/\r?\n/)) {
               const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
@@ -149,7 +163,7 @@ jobs:
 
               const result = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
               if (!result || !currentDate) continue;
-              allPortugueseMatches.push({
+              completedPortugueseMatches.push({
                 date: currentDate,
                 homeName: result[1].trim(),
                 awayName: result[2].trim(),
@@ -158,33 +172,38 @@ jobs:
               });
             }
 
-            if (allPortugueseMatches.length !== 306) {
-              throw new Error(`Expected 306 Portuguese Segunda Liga matches, received ${allPortugueseMatches.length}.`);
+            // The pinned OpenFootball file declares all 306 fixtures but only supplies
+            // scores for matchdays 1-26 (234 matches). Missing Torreense home results
+            // are completed below from official Liga Portugal match records.
+            if (completedPortugueseMatches.length !== 234) {
+              throw new Error(`Expected 234 scored Portuguese records in the pinned source, received ${completedPortugueseMatches.length}.`);
             }
 
-            for (const match of allPortugueseMatches) {
-              if (match.homeName !== 'União Torreense') continue;
-              const home = team(match.homeName, 'POR', 'torreense');
-              const away = team(match.awayName, 'POR');
-              records.push({
+            const torreenseCompleted = completedPortugueseMatches.filter((match) => match.homeName === 'União Torreense');
+            if (torreenseCompleted.length !== 13) {
+              throw new Error(`Expected 13 scored Torreense home matches in OpenFootball, received ${torreenseCompleted.length}.`);
+            }
+
+            const officialTorreenseComplements = [
+              { date: '2025-03-30', homeName: 'União Torreense', awayName: 'FC Porto B', homeGoals: 2, awayGoals: 4 },
+              { date: '2025-04-13', homeName: 'União Torreense', awayName: 'FC Felgueiras 1932', homeGoals: 1, awayGoals: 1 },
+              { date: '2025-04-26', homeName: 'União Torreense', awayName: 'CS Marítimo', homeGoals: 2, awayGoals: 2 },
+              { date: '2025-05-11', homeName: 'União Torreense', awayName: 'Leixões SC', homeGoals: 3, awayGoals: 2 }
+            ];
+
+            for (const match of [...torreenseCompleted, ...officialTorreenseComplements]) {
+              records.push(normalizedRecord({
                 date: match.date,
-                competitionType: 'domestic',
                 competition: 'Portuguese Segunda Liga 2024/25',
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: home.country,
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: away.country,
-                homeCoefficient: coefficientFor(home, PORTUGUESE_FLOOR),
-                awayCoefficient: coefficientFor(away, PORTUGUESE_FLOOR),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
+                home: team(match.homeName, 'POR', 'torreense'),
+                away: team(match.awayName, 'POR'),
                 homeGoals: match.homeGoals,
                 awayGoals: match.awayGoals,
-                sourceKey: 'openfootball-portugal-segunda-2024-25'
-              });
+                floor: PORTUGUESE_FLOOR,
+                sourceKey: officialTorreenseComplements.includes(match)
+                  ? 'liga-portugal-official-2024-25'
+                  : 'openfootball-portugal-segunda-2024-25'
+              }));
             }
 
             records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
@@ -195,8 +214,12 @@ jobs:
             ]));
             if (counts.sunderland !== 24) throw new Error(`Expected 24 Sunderland home matches, received ${counts.sunderland}.`);
             if (counts.torreense !== 17) throw new Error(`Expected 17 Torreense home matches, received ${counts.torreense}.`);
-            const sunderlandSemi = records.filter((record) => record.homeSlug === 'sunderland' && record.date === '2025-05-13');
-            if (sunderlandSemi.length !== 1) throw new Error('Sunderland home play-off semifinal is missing.');
+            if (!records.some((record) => record.homeSlug === 'sunderland' && record.date === '2025-05-13')) {
+              throw new Error('Sunderland home play-off semifinal is missing.');
+            }
+            if (records.filter((record) => record.sourceKey === 'liga-portugal-official-2024-25').length !== 4) {
+              throw new Error('Expected four official Liga Portugal result complements.');
+            }
 
             fs.writeFileSync('data/home-advantage-matches/sunderland-torreense-2024-25.json', `${JSON.stringify(records)}\n`);
             console.log(JSON.stringify(counts));
