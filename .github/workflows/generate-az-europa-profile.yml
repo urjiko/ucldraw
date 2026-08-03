@@ -1,4 +1,4 @@
-name: Generate AZ Europa home profile
+name: Finalize AZ Europa home profile
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  finalize:
     if: github.head_ref == 'agent/add-az-europa-home-profile'
     runs-on: ubuntu-latest
     steps:
@@ -20,106 +20,83 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build AZ home matches
+      - name: Lock AZ regression values and documentation
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const vm = require('node:vm');
 
-          (async () => {
-            const response = await fetch('https://raw.githubusercontent.com/openfootball/europe/master/netherlands/2024-25_nl1.txt');
-            if (!response.ok) throw new Error(`OpenFootball request failed: ${response.status}`);
-            const source = await response.text();
+          function replaceChecked(text, before, after, label) {
+            if (!text.includes(before)) throw new Error(`Missing replacement target: ${label}`);
+            return text.replace(before, after);
+          }
 
-            const coefficientContext = { window: {}, Object };
-            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
-            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
-            const associationFloor = 13.585;
-            const teams = {
-              'AFC Ajax': { slug: 'ajax', name: 'Ajax', aliases: ['ajax'] },
-              'Almere City FC': { slug: 'almere', name: 'Almere City', aliases: ['almere'] },
-              'AZ': { slug: 'azalkmaar', name: 'AZ Alkmaar', aliases: ['azalkmaar'] },
-              'Feyenoord Rotterdam': { slug: 'feyenoord', name: 'Feyenoord', aliases: ['feyenoord'] },
-              'Fortuna Sittard': { slug: 'fortuna', name: 'Fortuna Sittard', aliases: ['fortuna'] },
-              'Go Ahead Eagles': { slug: 'goaheadeagles', name: 'Go Ahead Eagles', aliases: ['goaheadeagles'] },
-              'FC Groningen': { slug: 'groningen', name: 'Groningen', aliases: ['groningen'] },
-              'SC Heerenveen': { slug: 'heerenveen', name: 'Heerenveen', aliases: ['heerenveen'] },
-              'Heracles Almelo': { slug: 'heracles', name: 'Heracles', aliases: ['heracles'] },
-              'NAC Breda': { slug: 'nac', name: 'NAC Breda', aliases: ['nac'] },
-              'NEC': { slug: 'nec', name: 'NEC', aliases: ['nec'] },
-              'PEC Zwolle': { slug: 'zwolle', name: 'PEC Zwolle', aliases: ['zwolle'] },
-              'PSV': { slug: 'psv', name: 'PSV', aliases: ['psv'] },
-              'RKC Waalwijk': { slug: 'rkc', name: 'RKC Waalwijk', aliases: ['rkc'] },
-              'Sparta Rotterdam': { slug: 'sparta', name: 'Sparta Rotterdam', aliases: ['sparta'] },
-              "FC Twente '65": { slug: 'twente', name: 'Twente', aliases: ['twente'] },
-              'FC Utrecht': { slug: 'utrecht', name: 'Utrecht', aliases: ['utrecht'] },
-              'Willem II Tilburg': { slug: 'willemii', name: 'Willem II', aliases: ['willemii'] }
-            };
-            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-            function coefficientFor(team) {
-              for (const alias of team.aliases) {
-                const value = Number(coefficients[alias]?.coefficient);
-                if (Number.isFinite(value)) return value;
-              }
-              return associationFloor;
-            }
+          let test = fs.readFileSync('tests/home-advantage-model.test.js', 'utf8');
+          test = replaceChecked(test,
+            "assert.equal(records.length, 666, 'Stored source archive must contain 666 home matches.');",
+            "assert.equal(records.length, 683, 'Stored source archive must contain 683 home matches.');",
+            'archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 651);",
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 668);",
+            'domestic archive count');
+          test = replaceChecked(test,
+            "  'bayern', 'bvb', 'feyenoord', 'leipzig', 'lens', 'lille', 'porto', 'psg',\n  'psv', 'sporting', 'stuttgart'",
+            "  'azalkmaar', 'bayern', 'bvb', 'feyenoord', 'leipzig', 'lens', 'lille', 'porto',\n  'psg', 'psv', 'sporting', 'stuttgart'",
+            '17-match team list');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.storedMatches, 666);\nassert.equal(generated.sourceSummary.matches, 554);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 29);",
+            "assert.equal(generated.sourceSummary.storedMatches, 683);\nassert.equal(generated.sourceSummary.matches, 571);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 30);",
+            'generated summary counts');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.domesticMatches, 542);",
+            "assert.equal(generated.sourceSummary.domesticMatches, 559);",
+            'active domestic count');
+          test = replaceChecked(test,
+            "  atleti: 1.1061,\n  barcelona: 1.18,",
+            "  atleti: 1.1061,\n  azalkmaar: 0.9596,\n  barcelona: 1.18,",
+            'AZ attack value');
+          test = replaceChecked(test,
+            "assert.equal(generated.profiles.atleti.attack.vsSimilar, 1.1184);\nassert.equal(generated.profiles.barcelona.attack.vsSimilar, 1.1055);",
+            "assert.equal(generated.profiles.atleti.attack.vsSimilar, 1.1184);\nassert.equal(generated.profiles.azalkmaar.attack.overall, 0.9668);\nassert.equal(generated.profiles.azalkmaar.attack.vsSimilar, 0.9385);\nassert.equal(generated.profiles.azalkmaar.attack.vsWeaker, 0.9843);\nassert.equal(generated.profiles.barcelona.attack.vsSimilar, 1.1055);",
+            'AZ context assertions');
+          test = replaceChecked(test,
+            "assert.equal(generated.researchQueue.length, 13);\nassert.equal(generated.researchQueue[0], 'azalkmaar');",
+            "assert.equal(generated.researchQueue.length, 12);\nassert.equal(generated.researchQueue[0], 'bayerleverkusen');",
+            'Europa queue');
+          fs.writeFileSync('tests/home-advantage-model.test.js', test);
 
-            let currentYear = 2024;
-            let previousMonth = null;
-            let currentDate = null;
-            const records = [];
-            for (const line of source.split(/\r?\n/)) {
-              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
-              if (dateMatch) {
-                const month = monthIndex[dateMatch[1]];
-                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
-                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
-                previousMonth = month;
-                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
-                continue;
-              }
-              const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
-              if (!match || !currentDate) continue;
-              const home = teams[match[1].trim()];
-              const away = teams[match[2].trim()];
-              if (!home || !away || home.slug !== 'azalkmaar') continue;
-              records.push({
-                date: currentDate,
-                competitionType: 'domestic',
-                competition: 'Netherlands Eredivisie 2024/25',
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: 'NED',
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: 'NED',
-                homeCoefficient: coefficientFor(home),
-                awayCoefficient: coefficientFor(away),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
-                homeGoals: Number(match[3]),
-                awayGoals: Number(match[4]),
-                sourceKey: 'openfootball-netherlands-2024-25'
-              });
-            }
-            records.sort((left, right) => left.date.localeCompare(right.date));
-            if (records.length !== 17) throw new Error(`Expected 17 AZ home matches, received ${records.length}.`);
-            fs.writeFileSync('data/home-advantage-matches/azalkmaar-2024-25.json', `${JSON.stringify(records)}\n`);
-            console.log(JSON.stringify({ azalkmaar: records.length }));
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
+          let docs = fs.readFileSync('docs/home-advantage-model.md', 'utf8');
+          docs = replaceChecked(docs,
+            'The archive contains 666 verified home matches. The guaranteed-team filter currently includes 554 matches across 29 active profiles:',
+            'The archive contains 683 verified home matches. The guaranteed-team filter currently includes 571 matches across 30 active profiles:',
+            'documentation counts');
+          docs = replaceChecked(docs,
+            '- Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;',
+            '- AZ Alkmaar, Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;',
+            'documentation AZ count');
+          docs = replaceChecked(docs,
+            'All 29 guaranteed Champions League clubs now have active profiles, so the research queue begins with guaranteed Europa League club AZ Alkmaar.',
+            'All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar is the first completed guaranteed Europa League club, and the research queue now begins with Bayer Leverkusen.',
+            'documentation queue');
+          docs = replaceChecked(docs,
+            "### Netherlands 2024/25\n\n`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club.",
+            "### Netherlands 2024/25\n\n`feyenoord-psv-2024-25.json` contains all 34 Eredivisie home matches for Feyenoord and PSV, 17 per club. `azalkmaar-2024-25.json` adds all 17 AZ Alkmaar home matches as the first guaranteed Europa League profile.",
+            'AZ Netherlands documentation');
+          docs = replaceChecked(docs,
+            "| Feyenoord | 1.0988 | Similar opponents: 1.0202 |\n| PSV | 1.1800 | Similar opponents: 1.0140 |",
+            "| AZ Alkmaar | 0.9596 | Similar opponents: 0.9385 |\n| Feyenoord | 1.0988 | Similar opponents: 1.0202 |\n| PSV | 1.1800 | Similar opponents: 1.0140 |",
+            'AZ documentation table');
+          docs = replaceChecked(docs,
+            'PSV reaches the conservative attack ceiling, while Feyenoord remains below it with an overall attack residual of `1.0812`.',
+            'AZ scores slightly below its coefficient baseline, with an overall attack residual of `0.9668` and a weaker-opponent value of `0.9843`. PSV reaches the conservative attack ceiling, while Feyenoord remains below it with an overall attack residual of `1.0812`.',
+            'AZ interpretation');
+          fs.writeFileSync('docs/home-advantage-model.md', docs);
           NODE
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit verified AZ profile
+      - name: Commit finalized AZ profile
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/azalkmaar-2024-25.json generated-home-advantage-profiles.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate AZ Europa home profile"
-            git push origin HEAD:agent/add-az-europa-home-profile
-          fi
+          git rm .github/workflows/generate-az-europa-profile.yml
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md
+          git commit -m "Finalize AZ Europa home profile"
+          git push origin HEAD:agent/add-az-europa-home-profile
