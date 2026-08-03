@@ -1,0 +1,127 @@
+name: Generate French Europa home profiles
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.head_ref == 'agent/add-marseille-rennes-europa-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-marseille-rennes-europa-profiles
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Marseille and Rennes home matches
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          (async () => {
+            const response = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json');
+            if (!response.ok) throw new Error(`OpenFootball request failed: ${response.status}`);
+            const source = await response.json();
+            if (!Array.isArray(source.matches) || source.matches.length !== 306) {
+              throw new Error(`Expected 306 Ligue 1 matches, received ${source.matches?.length}.`);
+            }
+
+            const coefficientContext = { window: {}, Object };
+            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
+            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
+            const associationFloor = 16.699;
+
+            const teams = {
+              'Le Havre AC': { slug: 'lehavre', name: 'Le Havre', aliases: ['lehavre'] },
+              'Paris Saint-Germain FC': { slug: 'psg', name: 'Paris Saint-Germain', aliases: ['psg'] },
+              'Stade Brestois 29': { slug: 'brest', name: 'Brest', aliases: ['brest'] },
+              'Olympique de Marseille': { slug: 'marseille', name: 'Marseille', aliases: ['marseille'] },
+              'Stade de Reims': { slug: 'reims', name: 'Reims', aliases: ['reims'] },
+              'Lille OSC': { slug: 'lille', name: 'Lille', aliases: ['lille'] },
+              'AS Monaco FC': { slug: 'monaco', name: 'Monaco', aliases: ['monaco'] },
+              'AS Saint-Étienne': { slug: 'saintetienne', name: 'Saint-Étienne', aliases: ['saintetienne'] },
+              'AJ Auxerre': { slug: 'auxerre', name: 'Auxerre', aliases: ['auxerre'] },
+              'OGC Nice': { slug: 'nice', name: 'Nice', aliases: ['nice'] },
+              'Montpellier HSC': { slug: 'montpellier', name: 'Montpellier', aliases: ['montpellier'] },
+              'RC Strasbourg Alsace': { slug: 'strasbourg', name: 'Strasbourg', aliases: ['strasbourg'] },
+              'Toulouse FC': { slug: 'toulouse', name: 'Toulouse', aliases: ['toulouse'] },
+              'FC Nantes': { slug: 'nantes', name: 'Nantes', aliases: ['nantes'] },
+              'Angers SCO': { slug: 'angers', name: 'Angers', aliases: ['angers'] },
+              'Racing Club de Lens': { slug: 'lens', name: 'Lens', aliases: ['lens'] },
+              'Stade Rennais FC 1901': { slug: 'rennais', name: 'Rennes', aliases: ['rennais'] },
+              'Olympique Lyonnais': { slug: 'lyon', name: 'Lyon', aliases: ['lyon'] }
+            };
+            const targets = new Set(['marseille', 'rennais']);
+
+            function coefficientFor(team) {
+              for (const alias of team.aliases) {
+                const value = Number(coefficients[alias]?.coefficient);
+                if (Number.isFinite(value)) return value;
+              }
+              return associationFloor;
+            }
+
+            const records = [];
+            for (const match of source.matches) {
+              const home = teams[match.team1];
+              const away = teams[match.team2];
+              const score = match.score?.ft;
+              if (!home || !away || !targets.has(home.slug)) continue;
+              if (!Array.isArray(score) || score.length !== 2) {
+                throw new Error(`Missing full-time score for ${match.date} ${match.team1} v ${match.team2}.`);
+              }
+
+              records.push({
+                date: match.date,
+                competitionType: 'domestic',
+                competition: 'French Ligue 1 2024/25',
+                homeSlug: home.slug,
+                homeName: home.name,
+                homeCountry: 'FRA',
+                awaySlug: away.slug,
+                awayName: away.name,
+                awayCountry: 'FRA',
+                homeCoefficient: coefficientFor(home),
+                awayCoefficient: coefficientFor(away),
+                homePot: 1,
+                awayPot: 1,
+                potCount: 1,
+                homeGoals: Number(score[0]),
+                awayGoals: Number(score[1]),
+                sourceKey: 'openfootball-france-2024-25'
+              });
+            }
+
+            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
+            if (records.length !== 34) throw new Error(`Expected 34 French Europa home matches, received ${records.length}.`);
+            for (const slug of targets) {
+              const count = records.filter((record) => record.homeSlug === slug).length;
+              if (count !== 17) throw new Error(`Expected 17 ${slug} home matches, received ${count}.`);
+            }
+
+            fs.writeFileSync('data/home-advantage-matches/marseille-rennes-2024-25.json', `${JSON.stringify(records)}\n`);
+            console.log(JSON.stringify(Object.fromEntries([...targets].map((slug) => [slug, records.filter((record) => record.homeSlug === slug).length]))));
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Commit verified French Europa profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/marseille-rennes-2024-25.json generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate Marseille and Rennes Europa profiles"
+            git push origin HEAD:agent/add-marseille-rennes-europa-profiles
+          fi
