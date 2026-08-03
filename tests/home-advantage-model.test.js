@@ -28,14 +28,14 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 793, 'Stored source archive must contain 793 home matches.');
+assert.equal(records.length, 831, 'Stored source archive must contain 831 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 778);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 816);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of [
   'arsenal', 'astonvilla', 'atleti', 'barcelona', 'bournemouth', 'celtavigo',
-  'city', 'como', 'crystalpalace', 'inter', 'liverpool', 'manu', 'napoli',
-  'real', 'realbetis', 'realsociedad', 'roma', 'villareal'
+  'city', 'como', 'crystalpalace', 'inter', 'juventus', 'liverpool', 'manu',
+  'milan', 'napoli', 'real', 'realbetis', 'realsociedad', 'roma', 'villareal'
 ]) {
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 19);
 }
@@ -58,12 +58,12 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 793);
-assert.equal(generated.sourceSummary.matches, 681);
+assert.equal(generated.sourceSummary.storedMatches, 831);
+assert.equal(generated.sourceSummary.matches, 719);
 assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
-assert.equal(generated.sourceSummary.teams, 36);
+assert.equal(generated.sourceSummary.teams, 38);
 assert.equal(generated.sourceSummary.activeTeamScope, 42);
-assert.equal(generated.sourceSummary.domesticMatches, 669);
+assert.equal(generated.sourceSummary.domesticMatches, 707);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -96,11 +96,13 @@ const expectedDomesticAttack = {
   galatasaray: 1.18,
   hoffenheim: 1.18,
   inter: 1.0253,
+  juventus: 0.9539,
   leipzig: 1.0758,
   lens: 0.9374,
   lille: 0.9966,
   liverpool: 1.0948,
   manu: 0.84,
+  milan: 0.9424,
   napoli: 0.9873,
   porto: 1.1002,
   psg: 1.1445,
@@ -159,6 +161,12 @@ assert.equal(generated.profiles.hoffenheim.attack.vsStronger, 1.18);
 assert.equal(generated.profiles.hoffenheim.defense.vsStronger, 1.16);
 assert.equal(generated.profiles.hoffenheim.samples.vsStronger.raw, 17);
 assert.equal(generated.profiles.inter.attack.vsWeaker, 1.0527);
+assert.equal(generated.profiles.juventus.attack.overall, 0.9618);
+assert.equal(generated.profiles.juventus.attack.vsStronger, 0.9846);
+assert.equal(generated.profiles.juventus.attack.vsSimilar, 0.8521);
+assert.equal(generated.profiles.juventus.attack.vsWeaker, 1.0256);
+assert.equal(generated.profiles.juventus.defense.domestic, 1.0224);
+assert.equal(generated.profiles.juventus.defense.vsStronger, 0.9277);
 assert.equal(generated.profiles.leipzig.attack.overall, 1.0623);
 assert.equal(generated.profiles.leipzig.attack.vsStronger, 1.1707);
 assert.equal(generated.profiles.leipzig.defense.vsSimilar, 0.94);
@@ -168,6 +176,12 @@ assert.equal(generated.profiles.lens.defense.vsStronger, 0.9804);
 assert.equal(generated.profiles.lille.attack.overall, 0.9972);
 assert.equal(generated.profiles.lille.attack.vsSimilar, 0.975);
 assert.equal(generated.profiles.manu.attack.vsSimilar, 0.8892);
+assert.equal(generated.profiles.milan.attack.overall, 0.9522);
+assert.equal(generated.profiles.milan.attack.vsStronger, 0.9862);
+assert.equal(generated.profiles.milan.attack.vsSimilar, 0.84);
+assert.equal(generated.profiles.milan.attack.vsWeaker, 1.0328);
+assert.equal(generated.profiles.milan.defense.domestic, 1.04);
+assert.equal(generated.profiles.milan.defense.vsSimilar, 0.9831);
 assert.equal(generated.profiles.napoli.defense.domestic, 0.9089);
 assert.equal(generated.profiles.porto.attack.overall, 1.0822);
 assert.equal(generated.profiles.porto.attack.vsSimilar, 0.9779);
@@ -206,8 +220,8 @@ assert.equal(generated.profiles.villareal.attack.vsSimilar, 1.0069);
 assert.equal(generated.profiles.villareal.defense.vsSimilar, 1.1224);
 assert.equal(generated.profiles.fenerbahce, undefined);
 
-assert.equal(generated.researchQueue.length, 6);
-assert.equal(generated.researchQueue[0], 'juventus');
+assert.equal(generated.researchQueue.length, 4);
+assert.equal(generated.researchQueue[0], 'marseille');
 assert.equal(generated.researchQueue.at(-1), 'torreense');
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
