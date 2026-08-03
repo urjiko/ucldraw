@@ -2,78 +2,92 @@
 
 ## Active research order
 
-Home-profile work now follows two guaranteed-team groups from `generated-team-pools.js`:
+Profile work follows two guaranteed-team groups from `generated-team-pools.js`:
 
 1. `champions.guaranteed`;
 2. `europa.guaranteed`.
 
-The generated queue preserves that order. Every missing guaranteed Champions League club appears before the first missing guaranteed Europa League club. Qualifying-stage clubs are retained in the historical archive but are outside the active runtime scope until the guaranteed groups are complete.
+The queue preserves that order. Missing guaranteed Champions League clubs always appear before the first guaranteed Europa League club. Qualifying-stage records remain stored but do not affect the active model until their priority group is enabled.
 
 Current manifest scope:
 
 - 29 guaranteed Champions League clubs;
 - 13 guaranteed Europa League clubs;
-- 42 unique clubs in total.
-
-The scope is read from the team-pool manifest rather than duplicated by hand. Moving a team in the project roster therefore changes the next generated queue automatically, because maintaining two supposedly authoritative lists is how spreadsheets become folklore.
+- 42 unique active clubs.
 
 ## Current snapshot
 
-The stored archive contains 198 verified home matches. The guaranteed-team filter currently includes 86:
+The archive contains 255 verified home matches. The guaranteed-team filter currently includes 143:
 
-- Galatasaray: 48 matches, including 12 European home matches;
-- Arsenal: 19 Premier League home matches from 2024/25;
-- Liverpool: 19 Premier League home matches from 2024/25.
+- Galatasaray: 48 matches;
+- Arsenal: 19 Premier League home matches;
+- Aston Villa: 19 Premier League home matches;
+- Manchester City: 19 Premier League home matches;
+- Liverpool: 19 Premier League home matches;
+- Manchester United: 19 Premier League home matches.
 
-The other 112 archived matches remain available but do not affect the current guaranteed-team runtime profiles. Fenerbahçe, Beşiktaş, Trabzonspor, İstanbul Başakşehir, and Samsunspor data is not deleted; those records can be reactivated when their competition or priority group is in scope.
+The remaining 112 archived records are retained but excluded from runtime generation.
 
-## Arsenal and Liverpool source batch
+## English 2024/25 batches
 
-`data/home-advantage-matches/arsenal-liverpool-2024-25.json` contains all 38 league home matches for the two clubs in 2024/25.
+The English source files contain every league home match from the 2024/25 season for five guaranteed Champions League clubs:
 
-- Match results: OpenFootball England 2024/25 Premier League dataset;
-- club-strength values: the project's 2026 UEFA five-year coefficient snapshot;
-- clubs without an individual UEFA value: the 2026 English association floor of `23.903`;
-- historical pot values: fixed at `1`, so present-day draw pots are not projected backwards.
+- `arsenal-liverpool-2024-25.json`: 38 matches;
+- `astonvilla-2024-25.json`: 19 matches;
+- `city-2024-25.json`: 19 matches;
+- `manu-2024-25.json`: 19 matches.
 
-The first generated signals are deliberately residuals against the existing coefficient model:
+Match scores come from the OpenFootball England 2024/25 Premier League dataset. Strength values use the project's 2026 UEFA coefficient snapshot. English clubs without an individual coefficient use the English association floor of `23.903`. Historical pot values are fixed at `1`, so modern draw pots are not projected backwards.
 
-- Arsenal domestic attack: `0.9824`;
-- Arsenal versus similar-strength opponents: `1.1547`;
-- Liverpool domestic attack: `1.0948`;
-- Liverpool versus weaker opponents: `1.0763`.
+Generated domestic attack residuals:
 
-Arsenal's broad value being close to neutral does not mean Arsenal was poor at home. The base model already expects a club with coefficient `119` to dominate many opponents. The profile measures what remained above or below that expectation, not whether supporters enjoyed the scoreline.
+| Club | Multiplier |
+|---|---:|
+| Arsenal | 0.9824 |
+| Aston Villa | 1.0210 |
+| Manchester City | 1.1130 |
+| Liverpool | 1.0948 |
+| Manchester United | 0.8400 |
+
+These are residuals after the existing UEFA-coefficient expectation. A value below `1.0` does not claim the club was objectively weak at home; it says the club scored below what the base model already expected from its coefficient and opponents. Manchester United reaches the conservative attack floor, preventing a single season from lowering expected goals without limit.
+
+Context examples:
+
+- Aston Villa against stronger opponents: `1.0687`;
+- Manchester City against weaker opponents: `1.1129`;
+- Manchester United against similar opponents: `0.8892`;
+- Arsenal against similar opponents: `1.1547`;
+- Liverpool against weaker opponents: `1.0763`.
 
 ## Files
 
 - `generated-team-pools.js`: guaranteed-team source of truth;
-- `data/home-advantage-matches.json`: original Turkish source batch;
+- `data/home-advantage-matches.json`: original source batch;
 - `data/home-advantage-matches/*.json`: modular club and season batches;
-- `scripts/build-home-advantage-profiles.mjs`: validation, filtering, profile generation, and queue ordering;
+- `scripts/build-home-advantage-profiles.mjs`: validation, filtering, generation, and queue ordering;
 - `generated-home-advantage-profiles.js`: deterministic runtime payload;
 - `prediction-ai-controller.js`: expected-goal adjustment layer;
-- `tests/home-advantage-model.test.js`: archive counts, scope priority, generated values, fallback behavior, and seeded reproducibility.
+- `tests/home-advantage-model.test.js`: archive, scope, values, fallback, and reproducibility checks.
 
 ## Method
 
-1. Load all stored match files and reject duplicate matches.
-2. Read guaranteed Champions and guaranteed Europa slugs from the pool manifest.
+1. Load every stored match and reject duplicates.
+2. Read guaranteed Champions and guaranteed Europa slugs from the manifest.
 3. Keep only matches whose home club belongs to those groups.
 4. Preserve the full archive's latest date as the recency anchor.
 5. Recreate base expected goals from UEFA coefficients.
-6. Measure actual-goal residuals separately for home attack and visiting goals.
+6. Measure home scoring and visiting scoring residuals separately.
 7. Split domestic, European, stronger, similar, and weaker-opponent contexts.
 8. Apply a three-year recency half-life and sample-size shrinkage.
 9. Clamp attack effects to `0.84–1.18` and visiting-goal effects to `0.82–1.16`.
-10. Emit the missing-team queue in Champions-guaranteed, then Europa-guaranteed order.
+10. Emit missing teams in Champions-guaranteed, then Europa-guaranteed order.
 
 ## Runtime behavior
 
 - Clubs with generated profiles receive contextual expected-goal adjustments.
-- Guaranteed clubs without data retain the previous coefficient and seeded Poisson algorithm exactly.
-- Clubs outside the active guaranteed scope receive no runtime profile even when archived data exists.
-- Draw construction, qualification paths, coefficient sorting, and deterministic seeds are unchanged.
+- Guaranteed clubs without data retain the previous coefficient and seeded Poisson model.
+- Clubs outside the active guaranteed scope receive no runtime profile, even when archived data exists.
+- Draw construction, qualification paths, coefficient sorting, and deterministic seeds remain unchanged.
 
 ## Update command
 
@@ -81,4 +95,4 @@ Arsenal's broad value being close to neutral does not mean Arsenal was poor at h
 node scripts/build-home-advantage-profiles.mjs
 ```
 
-The generated payload must remain byte-for-byte unchanged when neither the match archive nor the relevant guaranteed-team manifest entries have changed.
+The output must remain byte-for-byte unchanged when neither the match archive nor the guaranteed-team manifest changes.

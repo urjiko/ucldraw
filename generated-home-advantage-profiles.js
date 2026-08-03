@@ -7,20 +7,23 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 198,
-    "matches": 86,
+    "storedMatches": 255,
+    "matches": 143,
     "excludedStoredMatches": 112,
-    "teams": 3,
+    "teams": 6,
     "activeTeamScope": 42,
-    "domesticMatches": 74,
+    "domesticMatches": 131,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
+      "data/home-advantage-matches/astonvilla-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
+      "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
-      "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json"
+      "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
+      "data/home-advantage-matches/manu-2024-25.json"
     ]
   },
   "methodology": {
@@ -142,20 +145,17 @@
     ]
   },
   "researchQueue": [
-    "astonvilla",
     "atleti",
     "barcelona",
     "bayern",
     "brugge",
     "bvb",
-    "city",
     "como",
     "feyenoord",
     "inter",
     "leipzig",
     "lens",
     "lille",
-    "manu",
     "napoli",
     "porto",
     "psg",
@@ -251,6 +251,148 @@
           "confidence": 0.5916,
           "samples": 19,
           "effectiveSample": 17.38
+        }
+      }
+    },
+    "astonvilla": {
+      "name": "Aston Villa",
+      "country": "ENG",
+      "attack": {
+        "overall": 1.0174,
+        "domestic": 1.021,
+        "europe": 1,
+        "vsStronger": 1.0687,
+        "vsSimilar": 0.9227,
+        "vsWeaker": 1.0382
+      },
+      "defense": {
+        "overall": 1.1481,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0403,
+        "vsSimilar": 0.9315,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4902,
+        "domestic": 0.5906,
+        "europe": 0,
+        "vsStronger": 0.133,
+        "vsSimilar": 0.2749,
+        "vsWeaker": 0.4764
+      },
+      "defenseConfidence": {
+        "overall": 0.4902,
+        "domestic": 0.5906,
+        "europe": 0,
+        "vsStronger": 0.133,
+        "vsSimilar": 0.2749,
+        "vsWeaker": 0.4764
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.84
+        },
+        "vsSimilar": {
+          "raw": 5,
+          "effective": 4.55
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 10.92
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 1.021,
+          "defense": 1.16,
+          "confidence": 0.5906,
+          "samples": 19,
+          "effectiveSample": 17.31
+        }
+      }
+    },
+    "city": {
+      "name": "Manchester City",
+      "country": "ENG",
+      "attack": {
+        "overall": 1.0938,
+        "domestic": 1.113,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0166,
+        "vsWeaker": 1.1129
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.124,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4914,
+        "domestic": 0.5918,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1845,
+        "vsWeaker": 0.5502
+      },
+      "defenseConfidence": {
+        "overall": 0.4914,
+        "domestic": 0.5918,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1845,
+        "vsWeaker": 0.5502
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.39
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.39
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.72
+        },
+        "vsWeaker": {
+          "raw": 16,
+          "effective": 14.68
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 1.113,
+          "defense": 1.16,
+          "confidence": 0.5918,
+          "samples": 19,
+          "effectiveSample": 17.39
         }
       }
     },
@@ -393,6 +535,77 @@
           "confidence": 0.5919,
           "samples": 19,
           "effectiveSample": 17.41
+        }
+      }
+    },
+    "manu": {
+      "name": "Manchester United",
+      "country": "ENG",
+      "attack": {
+        "overall": 0.8561,
+        "domestic": 0.84,
+        "europe": 1,
+        "vsStronger": 0.8628,
+        "vsSimilar": 0.8892,
+        "vsWeaker": 0.919
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0134,
+        "vsSimilar": 1.0943,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4905,
+        "domestic": 0.5908,
+        "europe": 0,
+        "vsStronger": 0.1867,
+        "vsSimilar": 0.2364,
+        "vsWeaker": 0.475
+      },
+      "defenseConfidence": {
+        "overall": 0.4905,
+        "domestic": 0.5908,
+        "europe": 0,
+        "vsStronger": 0.1867,
+        "vsSimilar": 0.2364,
+        "vsWeaker": 0.475
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.33
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.75
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.71
+        },
+        "vsWeaker": {
+          "raw": 12,
+          "effective": 10.86
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 0.84,
+          "defense": 1.16,
+          "confidence": 0.5908,
+          "samples": 19,
+          "effectiveSample": 17.33
         }
       }
     }
