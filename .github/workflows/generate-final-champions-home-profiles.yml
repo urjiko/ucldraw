@@ -1,0 +1,171 @@
+name: Generate final guaranteed Champions profiles
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.head_ref == 'agent/complete-guaranteed-champions-home-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/complete-guaranteed-champions-home-profiles
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Shakhtar and Slavia home matches
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          (async () => {
+            const sources = [
+              {
+                url: 'https://raw.githubusercontent.com/openfootball/europe/master/ukraine/2024-25_ua1.txt',
+                country: 'UKR',
+                competition: 'Ukraine Premier League 2024/25',
+                targetName: 'Shakhtar Donetsk',
+                targetSlug: 'shakhtar',
+                expected: 15,
+                floor: 5.182,
+                sourceKey: 'openfootball-ukraine-2024-25'
+              },
+              {
+                url: 'https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt',
+                country: 'CZE',
+                competition: 'Czech First League 2024/25',
+                targetName: 'Slavia Praha',
+                targetSlug: 'slavia',
+                expected: 18,
+                floor: 9.705,
+                sourceKey: 'openfootball-czech-2024-25'
+              }
+            ];
+
+            const coefficientContext = { window: {}, Object };
+            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
+            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
+            const aliases = {
+              'Shakhtar Donetsk': ['shakhtar'],
+              'Dinamo Kiev': ['dynamokyiv'],
+              'Polissya Zhytomyr': ['polissya'],
+              'Kryvbas Kryvyi Rih': ['kryvbas'],
+              'Slavia Praha': ['slavia'],
+              'AC Sparta Praha': ['spartapraha'],
+              'Viktoria Plzeň': ['plzen'],
+              'Baník Ostrava': ['banikostrava'],
+              'Sigma Olomouc': ['sigmaolomouc'],
+              'FK Jablonec': ['jablonec'],
+              'FC Hradec Králové': ['hradeckralove']
+            };
+            const explicitSlugs = {
+              'Shakhtar Donetsk': 'shakhtar',
+              'Dinamo Kiev': 'dynamokyiv',
+              'Polissya Zhytomyr': 'polissya',
+              'Kryvbas Kryvyi Rih': 'kryvbas',
+              'Slavia Praha': 'slavia',
+              'AC Sparta Praha': 'spartapraha',
+              'Viktoria Plzeň': 'plzen',
+              'Baník Ostrava': 'banikostrava',
+              'Sigma Olomouc': 'sigmaolomouc',
+              'FK Jablonec': 'jablonec',
+              'FC Hradec Králové': 'hradeckralove'
+            };
+            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+
+            function normalizedSlug(name) {
+              if (explicitSlugs[name]) return explicitSlugs[name];
+              return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase().replace(/[^a-z0-9]+/g, '').replace(/^(fc|fk|nk|sk)/, '');
+            }
+
+            function coefficientFor(name, floor) {
+              for (const alias of aliases[name] || [normalizedSlug(name)]) {
+                const value = Number(coefficients[alias]?.coefficient);
+                if (Number.isFinite(value)) return value;
+              }
+              return floor;
+            }
+
+            const records = [];
+            for (const config of sources) {
+              const response = await fetch(config.url);
+              if (!response.ok) throw new Error(`${config.country} source request failed: ${response.status}`);
+              const text = await response.text();
+              let currentYear = 2024;
+              let previousMonth = null;
+              let currentDate = null;
+              let count = 0;
+
+              for (const line of text.split(/\r?\n/)) {
+                const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
+                if (dateMatch) {
+                  const month = monthIndex[dateMatch[1]];
+                  if (dateMatch[3]) currentYear = Number(dateMatch[3]);
+                  else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
+                  previousMonth = month;
+                  currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
+                  continue;
+                }
+
+                const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
+                if (!match || !currentDate || match[1].trim() !== config.targetName) continue;
+                const homeName = match[1].trim();
+                const awayName = match[2].trim();
+                records.push({
+                  date: currentDate,
+                  competitionType: 'domestic',
+                  competition: config.competition,
+                  homeSlug: config.targetSlug,
+                  homeName,
+                  homeCountry: config.country,
+                  awaySlug: normalizedSlug(awayName),
+                  awayName,
+                  awayCountry: config.country,
+                  homeCoefficient: coefficientFor(homeName, config.floor),
+                  awayCoefficient: coefficientFor(awayName, config.floor),
+                  homePot: 1,
+                  awayPot: 1,
+                  potCount: 1,
+                  homeGoals: Number(match[3]),
+                  awayGoals: Number(match[4]),
+                  sourceKey: config.sourceKey
+                });
+                count += 1;
+              }
+              if (count !== config.expected) {
+                throw new Error(`Expected ${config.expected} ${config.targetSlug} home matches, received ${count}.`);
+              }
+            }
+
+            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
+            if (records.length !== 33) throw new Error(`Expected 33 final Champions home matches, received ${records.length}.`);
+            fs.writeFileSync('data/home-advantage-matches/shakhtar-slavia-2024-25.json', `${JSON.stringify(records)}\n`);
+            console.log(JSON.stringify({
+              shakhtar: records.filter((record) => record.homeSlug === 'shakhtar').length,
+              slavia: records.filter((record) => record.homeSlug === 'slavia').length
+            }));
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Commit verified final Champions profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/shakhtar-slavia-2024-25.json generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate final guaranteed Champions profiles"
+            git push origin HEAD:agent/complete-guaranteed-champions-home-profiles
+          fi
