@@ -177,12 +177,12 @@ jobs:
             if (norwayMatchCount !== 240) throw new Error(`Expected 240 Norwegian matches, received ${norwayMatchCount}.`);
 
             records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
-            const expected = { aek: 16, celtic: 19, lask: 16, viking: 15 };
+            const expected = { aek: 16, celtic: 19, lask: 18, viking: 15 };
             for (const [slug, count] of Object.entries(expected)) {
               const actual = records.filter((record) => record.homeSlug === slug).length;
               if (actual !== count) throw new Error(`Expected ${count} ${slug} home matches, received ${actual}.`);
             }
-            if (records.length !== 66) throw new Error(`Expected 66 Champions playoff home matches, received ${records.length}.`);
+            if (records.length !== 68) throw new Error(`Expected 68 Champions playoff home matches, received ${records.length}.`);
 
             fs.writeFileSync('data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json', `${JSON.stringify(records)}\n`);
 
