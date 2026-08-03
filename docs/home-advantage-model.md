@@ -17,16 +17,16 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 831 verified home matches. The guaranteed-team filter currently includes 719 matches across 38 active profiles:
+The archive contains 865 verified home matches. The guaranteed-team filter currently includes 753 matches across 40 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
-- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
+- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Marseille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Rennes, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round;
 - Shakhtar Donetsk: 15;
 - Slavia Prague: 18, including the championship round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, Juventus, Milan, and Real Sociedad are completed guaranteed Europa League clubs, and the research queue now begins with Marseille.
+The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, Juventus, Marseille, Milan, Real Sociedad, and Rennes are completed guaranteed Europa League clubs, and the research queue now begins with Sunderland.
 
 ## Data batches
 
@@ -112,6 +112,15 @@ Celta reaches the attack ceiling but also has a positive home defensive signal, 
 | Paris Saint-Germain | 1.1445 | Weaker opponents: 1.1445 |
 
 Lens scored below the coefficient baseline overall but above it against stronger opponents. Its stronger-opponent visiting-goal multiplier is `0.9804`, a small positive home defensive effect in that context. Lille is approximately neutral overall, while Paris Saint-Germain shows a strong domestic attacking residual. All PSG league opponents fall into the weaker-opponent bucket under the current coefficient snapshot, so no unsupported similar- or stronger-opponent effect is emitted.
+
+`marseille-rennes-2024-25.json` adds all 34 Ligue 1 home matches for two guaranteed Europa League clubs, 17 per club.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Marseille | 1.1800 | Similar opponents: 1.1700 |
+| Rennes | 0.9583 | Weaker-opponent visiting-goal multiplier: 0.8610 |
+
+Marseille reaches the conservative attack ceiling overall and against weaker opponents, while its single stronger-opponent observation is below neutral at `0.9323`. Rennes remains slightly below its coefficient baseline in attack, but the `0.8610` visiting-goal multiplier against weaker opponents indicates a strong positive home defensive effect in that context.
 
 ### Portugal 2024/25
 
