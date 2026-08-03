@@ -1,0 +1,218 @@
+name: Generate final guaranteed Europa profiles
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.head_ref == 'agent/complete-guaranteed-europa-home-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/complete-guaranteed-europa-home-profiles
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Sunderland and Torreense home matches
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          const ENGLISH_FLOOR = 23.903;
+          const PORTUGUESE_FLOOR = 14.633;
+
+          function simpleSlug(value) {
+            return String(value)
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+              .replace(/\b(?:fc|afc|sc|cd|cf|gd|cs|ud|sl)\b/g, '')
+              .replace(/[^a-z0-9]+/g, '') || 'unknown';
+          }
+
+          (async () => {
+            const [englishResponse, portugueseResponse] = await Promise.all([
+              fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/en.2.json'),
+              fetch('https://raw.githubusercontent.com/openfootball/europe/master/portugal/2024-25_pt2.txt')
+            ]);
+            if (!englishResponse.ok) throw new Error(`English source request failed: ${englishResponse.status}`);
+            if (!portugueseResponse.ok) throw new Error(`Portuguese source request failed: ${portugueseResponse.status}`);
+
+            const englishSource = await englishResponse.json();
+            const portugueseSource = await portugueseResponse.text();
+            if (!Array.isArray(englishSource.matches) || englishSource.matches.length !== 557) {
+              throw new Error(`Expected 557 Championship matches including play-offs, received ${englishSource.matches?.length}.`);
+            }
+            const regularEnglish = englishSource.matches.filter((match) => String(match.round).startsWith('Regular'));
+            if (regularEnglish.length !== 552) {
+              throw new Error(`Expected 552 regular Championship matches, received ${regularEnglish.length}.`);
+            }
+
+            const coefficientContext = { window: {}, Object };
+            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
+            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
+
+            const aliases = {
+              'Sunderland AFC': ['sunderland'],
+              'Leeds United FC': ['leeds'],
+              'Sheffield United FC': ['sheffieldunited'],
+              'Burnley FC': ['burnley'],
+              'Coventry City FC': ['coventry'],
+              'West Bromwich Albion FC': ['westbrom'],
+              'Middlesbrough FC': ['middlesbrough'],
+              'Norwich City FC': ['norwich'],
+              'Watford FC': ['watford'],
+              'União Torreense': ['torreense'],
+              'CS Marítimo': ['maritimo'],
+              'GD Chaves': ['chaves'],
+              'FC Vizela': ['vizela'],
+              'FC Porto B': ['porto'],
+              'SL Benfica B': ['benfica']
+            };
+
+            function team(name, country, targetSlug = null) {
+              return {
+                slug: targetSlug || simpleSlug(name),
+                name: name
+                  .replace(/\s+(?:FC|AFC|SC)$/i, '')
+                  .replace(/^União Torreense$/, 'Torreense'),
+                country,
+                aliases: aliases[name] || [targetSlug || simpleSlug(name)]
+              };
+            }
+
+            function coefficientFor(candidate, floor) {
+              for (const alias of candidate.aliases) {
+                const value = Number(coefficients[alias]?.coefficient);
+                if (Number.isFinite(value)) return value;
+              }
+              return floor;
+            }
+
+            const records = [];
+            for (const match of englishSource.matches) {
+              if (match.team1 !== 'Sunderland AFC') continue;
+              const score = match.score?.ft;
+              if (!Array.isArray(score) || score.length !== 2) {
+                throw new Error(`Missing full-time score for ${match.date} ${match.team1} v ${match.team2}.`);
+              }
+              if (match.round === 'Finals, Final') {
+                throw new Error('A neutral Championship final was unexpectedly classified as a Sunderland home match.');
+              }
+              const home = team(match.team1, 'ENG', 'sunderland');
+              const away = team(match.team2, 'ENG');
+              records.push({
+                date: match.date,
+                competitionType: 'domestic',
+                competition: 'English Championship 2024/25',
+                homeSlug: home.slug,
+                homeName: home.name,
+                homeCountry: home.country,
+                awaySlug: away.slug,
+                awayName: away.name,
+                awayCountry: away.country,
+                homeCoefficient: coefficientFor(home, ENGLISH_FLOOR),
+                awayCoefficient: coefficientFor(away, ENGLISH_FLOOR),
+                homePot: 1,
+                awayPot: 1,
+                potCount: 1,
+                homeGoals: Number(score[0]),
+                awayGoals: Number(score[1]),
+                sourceKey: 'openfootball-england-championship-2024-25'
+              });
+            }
+
+            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+            let currentYear = 2024;
+            let previousMonth = null;
+            let currentDate = null;
+            const allPortugueseMatches = [];
+
+            for (const line of portugueseSource.split(/\r?\n/)) {
+              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
+              if (dateMatch) {
+                const month = monthIndex[dateMatch[1]];
+                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
+                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
+                previousMonth = month;
+                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
+                continue;
+              }
+
+              const result = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
+              if (!result || !currentDate) continue;
+              allPortugueseMatches.push({
+                date: currentDate,
+                homeName: result[1].trim(),
+                awayName: result[2].trim(),
+                homeGoals: Number(result[3]),
+                awayGoals: Number(result[4])
+              });
+            }
+
+            if (allPortugueseMatches.length !== 306) {
+              throw new Error(`Expected 306 Portuguese Segunda Liga matches, received ${allPortugueseMatches.length}.`);
+            }
+
+            for (const match of allPortugueseMatches) {
+              if (match.homeName !== 'União Torreense') continue;
+              const home = team(match.homeName, 'POR', 'torreense');
+              const away = team(match.awayName, 'POR');
+              records.push({
+                date: match.date,
+                competitionType: 'domestic',
+                competition: 'Portuguese Segunda Liga 2024/25',
+                homeSlug: home.slug,
+                homeName: home.name,
+                homeCountry: home.country,
+                awaySlug: away.slug,
+                awayName: away.name,
+                awayCountry: away.country,
+                homeCoefficient: coefficientFor(home, PORTUGUESE_FLOOR),
+                awayCoefficient: coefficientFor(away, PORTUGUESE_FLOOR),
+                homePot: 1,
+                awayPot: 1,
+                potCount: 1,
+                homeGoals: match.homeGoals,
+                awayGoals: match.awayGoals,
+                sourceKey: 'openfootball-portugal-segunda-2024-25'
+              });
+            }
+
+            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
+            if (records.length !== 41) throw new Error(`Expected 41 final Europa home matches, received ${records.length}.`);
+            const counts = Object.fromEntries(['sunderland', 'torreense'].map((slug) => [
+              slug,
+              records.filter((record) => record.homeSlug === slug).length
+            ]));
+            if (counts.sunderland !== 24) throw new Error(`Expected 24 Sunderland home matches, received ${counts.sunderland}.`);
+            if (counts.torreense !== 17) throw new Error(`Expected 17 Torreense home matches, received ${counts.torreense}.`);
+            const sunderlandSemi = records.filter((record) => record.homeSlug === 'sunderland' && record.date === '2025-05-13');
+            if (sunderlandSemi.length !== 1) throw new Error('Sunderland home play-off semifinal is missing.');
+
+            fs.writeFileSync('data/home-advantage-matches/sunderland-torreense-2024-25.json', `${JSON.stringify(records)}\n`);
+            console.log(JSON.stringify(counts));
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Commit verified final Europa profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/sunderland-torreense-2024-25.json generated-home-advantage-profiles.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate final guaranteed Europa profiles"
+            git push origin HEAD:agent/complete-guaranteed-europa-home-profiles
+          fi
