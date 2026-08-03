@@ -7,9 +7,10 @@ Profile work follows the active groups in `generated-team-pools.js`:
 1. `champions.guaranteed`;
 2. `europa.guaranteed`;
 3. `champions.playoffs`;
-4. `europa.playoffs`.
+4. `europa.playoffs`;
+5. `conference.playoffs`.
 
-Guaranteed Champions and Europa clubs remain the first two priorities, followed by the Champions and Europa play-off pools. All four configured groups are complete. Records outside these groups remain archived and do not affect runtime generation.
+Guaranteed Champions and Europa clubs remain the first two priorities, followed by the Champions, Europa, and Conference play-off pools. All five configured groups are complete. Records outside these groups remain archived and do not affect runtime generation.
 
 Current manifest scope:
 
@@ -17,11 +18,12 @@ Current manifest scope:
 - 13 guaranteed Europa League clubs;
 - 4 Champions League play-off clubs;
 - 5 Europa League play-off clubs;
-- 51 unique active clubs.
+- 5 Conference League play-off clubs;
+- 56 unique active clubs.
 
 ## Current snapshot
 
-The archive contains 1,059 verified home matches. The active-team filter currently includes 987 matches across all 51 active profiles:
+The archive contains 1,150 verified home matches. The active-team filter currently includes 1,078 matches across all 56 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
@@ -38,9 +40,11 @@ The archive contains 1,059 verified home matches. The active-team filter current
 - Lillestrøm: 15;
 - Trabzonspor: 58 total observations, including 55 domestic and 3 European matches;
 - Sint-Truiden: 18;
-- Viktoria Plzeň: 18.
+- Viktoria Plzeň: 18;
+- Atalanta, Brighton & Hove Albion, and Getafe: 19 each;
+- SC Freiburg and AS Monaco: 17 each.
 
-The remaining 72 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, all four Champions League play-off clubs, and all five Europa League play-off clubs now have active profiles. The active-scope research queue is empty.
+The remaining 72 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, all four Champions League play-off clubs, all five Europa League play-off clubs, and all five Conference League play-off clubs now have active profiles. The active-scope research queue is empty.
 
 ## Data batches
 
@@ -102,6 +106,20 @@ AEK and Celtic combine strong attacking residuals with positive home defensive e
 | Viktoria Plzeň | 1.1341 | 1.1600 | Weaker opponents: 1.1550 attack |
 
 OFI is nearly neutral overall but improves against similar opponents. Lillestrøm remains below its coefficient baseline. Trabzonspor reaches the attack ceiling domestically, while its European sample is below neutral. Sint-Truiden and Viktoria Plzeň show clear positive domestic attacking residuals. A visiting-goal multiplier above 1 means opponents scored above the coefficient baseline; it is not a defensive bonus.
+
+### Conference League play-off clubs, 2024/25
+
+`atalanta-brighton-freiburg-getafe-monaco-2024-25.json` adds 91 domestic home matches for the five clubs in `conference.playoffs`: Atalanta 19, Brighton & Hove Albion 19, SC Freiburg 17, Getafe 19, and AS Monaco 17. The primary OpenFootball JSON sources are validated against their complete league fixture volumes. Two final-round fixtures retained blank scores in those JSON files, so Atalanta 2-3 Parma and Getafe 1-2 Celta Vigo are completed from separately identified season sources.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier | Notable context |
+|---|---:|---:|---|
+| Atalanta | 1.0058 | 1.1600 | Similar opponents: 1.0353 attack |
+| Brighton & Hove Albion | 1.1701 | 1.0693 | Stronger opponents: 1.1800 attack |
+| SC Freiburg | 1.0554 | 1.1600 | Weaker opponents: 1.0826 attack |
+| Getafe | 0.8400 | 0.9367 | Stronger opponents: 0.9579 attack |
+| AS Monaco | 1.1574 | 1.1145 | Weaker opponents: 1.1448 attack |
+
+Atalanta remains close to its coefficient baseline. Brighton and Monaco show strong positive attacking residuals, while Freiburg is moderately positive overall. Getafe reaches the attack floor but also shows a positive home defensive residual because its visiting-goal multiplier is below 1. A visiting-goal multiplier above 1 means opponents scored above baseline; it is not a defensive bonus.
 
 ### Spain and Germany 2024/25
 
