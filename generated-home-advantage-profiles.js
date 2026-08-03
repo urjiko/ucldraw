@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 542,
-    "matches": 430,
+    "storedMatches": 576,
+    "matches": 464,
     "excludedStoredMatches": 112,
-    "teams": 22,
+    "teams": 24,
     "activeTeamScope": 42,
-    "domesticMatches": 418,
+    "domesticMatches": 452,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -30,7 +30,8 @@
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
       "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
-      "data/home-advantage-matches/manu-2024-25.json"
+      "data/home-advantage-matches/manu-2024-25.json",
+      "data/home-advantage-matches/porto-sporting-2024-25.json"
     ]
   },
   "methodology": {
@@ -152,12 +153,10 @@
     ]
   },
   "researchQueue": [
-    "porto",
     "real",
     "realbetis",
     "shakhtar",
     "slavia",
-    "sporting",
     "villareal",
     "azalkmaar",
     "bayerleverkusen",
@@ -1452,6 +1451,77 @@
         }
       }
     },
+    "porto": {
+      "name": "Porto",
+      "country": "POR",
+      "attack": {
+        "overall": 1.0822,
+        "domestic": 1.1002,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9779,
+        "vsWeaker": 1.1157
+      },
+      "defense": {
+        "overall": 1.0274,
+        "domestic": 1.0333,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.16,
+        "vsWeaker": 0.8311
+      },
+      "confidence": {
+        "overall": 0.4621,
+        "domestic": 0.563,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1868,
+        "vsWeaker": 0.5143
+      },
+      "defenseConfidence": {
+        "overall": 0.4621,
+        "domestic": 0.563,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1868,
+        "vsWeaker": 0.5143
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.46
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.46
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.76
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.71
+        }
+      },
+      "associationMatchups": {
+        "POR": {
+          "attack": 1.1002,
+          "defense": 1.0333,
+          "confidence": 0.563,
+          "samples": 17,
+          "effectiveSample": 15.46
+        }
+      }
+    },
     "psg": {
       "name": "Paris Saint-Germain",
       "country": "FRA",
@@ -1662,6 +1732,77 @@
           "confidence": 0.5913,
           "samples": 19,
           "effectiveSample": 17.36
+        }
+      }
+    },
+    "sporting": {
+      "name": "Sporting CP",
+      "country": "POR",
+      "attack": {
+        "overall": 1.0927,
+        "domestic": 1.1129,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9754,
+        "vsWeaker": 1.1303
+      },
+      "defense": {
+        "overall": 1.1191,
+        "domestic": 1.145,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.8817,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4634,
+        "domestic": 0.5644,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1844,
+        "vsWeaker": 0.5168
+      },
+      "defenseConfidence": {
+        "overall": 0.4634,
+        "domestic": 0.5644,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1844,
+        "vsWeaker": 0.5168
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.55
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.55
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.71
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.83
+        }
+      },
+      "associationMatchups": {
+        "POR": {
+          "attack": 1.1129,
+          "defense": 1.145,
+          "confidence": 0.5644,
+          "samples": 17,
+          "effectiveSample": 15.55
         }
       }
     },
