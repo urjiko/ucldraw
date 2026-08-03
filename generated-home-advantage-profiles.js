@@ -14,7 +14,7 @@
     "activeTeamScope": 42,
     "domesticMatches": 74,
     "europeanMatches": 12,
-    "latestIncludedMatchDate": "2025-05-25",
+    "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
