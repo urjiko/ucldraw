@@ -1,4 +1,4 @@
-name: Generate final guaranteed Europa profiles
+name: Finalize guaranteed Europa profiles
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  finalize:
     if: github.head_ref == 'agent/complete-guaranteed-europa-home-profiles'
     runs-on: ubuntu-latest
     steps:
@@ -20,222 +20,87 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Sunderland and Torreense home matches
+      - name: Lock final Europa regression values and documentation
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const vm = require('node:vm');
 
-          const ENGLISH_FLOOR = 23.903;
-          const PORTUGUESE_FLOOR = 14.633;
-
-          function simpleSlug(value) {
-            return String(value)
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .toLowerCase()
-              .replace(/\b(?:fc|afc|sc|cd|cf|gd|cs|ud|sl)\b/g, '')
-              .replace(/[^a-z0-9]+/g, '') || 'unknown';
+          function replaceChecked(text, before, after, label) {
+            if (!text.includes(before)) throw new Error(`Missing replacement target: ${label}`);
+            return text.replace(before, after);
           }
 
-          (async () => {
-            const [englishResponse, portugueseResponse] = await Promise.all([
-              fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/en.2.json'),
-              fetch('https://raw.githubusercontent.com/openfootball/europe/e27eb01726f394ddf9fa68b15d37b900487b5903/portugal/2024-25_pt2.txt')
-            ]);
-            if (!englishResponse.ok) throw new Error(`English source request failed: ${englishResponse.status}`);
-            if (!portugueseResponse.ok) throw new Error(`Portuguese source request failed: ${portugueseResponse.status}`);
+          let test = fs.readFileSync('tests/home-advantage-model.test.js', 'utf8');
+          test = replaceChecked(test,
+            "assert.equal(records.length, 865, 'Stored source archive must contain 865 home matches.');",
+            "assert.equal(records.length, 906, 'Stored source archive must contain 906 home matches.');",
+            'archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 850);",
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 891);",
+            'domestic archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.homeSlug === 'slavia').length, 18);",
+            "assert.equal(records.filter((match) => match.homeSlug === 'slavia').length, 18);\nassert.equal(records.filter((match) => match.homeSlug === 'sunderland').length, 24);\nassert.equal(records.filter((match) => match.homeSlug === 'sunderland' && match.date === '2025-05-13').length, 1);\nassert.equal(records.filter((match) => match.sourceKey === 'liga-portugal-official-2024-25').length, 4);",
+            'special final-team counts');
+          test = replaceChecked(test,
+            "  'leipzig', 'lens', 'lille', 'marseille', 'porto', 'psg', 'psv', 'rennais',\n  'sporting', 'stuttgart'",
+            "  'leipzig', 'lens', 'lille', 'marseille', 'porto', 'psg', 'psv', 'rennais',\n  'sporting', 'stuttgart', 'torreense'",
+            '17-match team list');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.storedMatches, 865);\nassert.equal(generated.sourceSummary.matches, 753);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 40);",
+            "assert.equal(generated.sourceSummary.storedMatches, 906);\nassert.equal(generated.sourceSummary.matches, 794);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 42);",
+            'generated summary counts');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.domesticMatches, 741);",
+            "assert.equal(generated.sourceSummary.domesticMatches, 782);",
+            'active domestic count');
+          test = replaceChecked(test,
+            "  stuttgart: 1.18,\n  villareal: 1.18",
+            "  stuttgart: 1.18,\n  sunderland: 0.9235,\n  torreense: 1.0528,\n  villareal: 1.18",
+            'final domestic attacks');
+          test = replaceChecked(test,
+            "assert.equal(generated.profiles.stuttgart.attack.vsWeaker, 0.9697);\nassert.equal(generated.profiles.villareal.attack.overall, 1.1617);",
+            "assert.equal(generated.profiles.stuttgart.attack.vsWeaker, 0.9697);\nassert.equal(generated.profiles.sunderland.attack.overall, 0.935);\nassert.equal(generated.profiles.sunderland.attack.vsSimilar, 0.9235);\nassert.equal(generated.profiles.sunderland.defense.overall, 0.8822);\nassert.equal(generated.profiles.sunderland.defense.domestic, 0.8614);\nassert.equal(generated.profiles.sunderland.samples.overall.raw, 24);\nassert.equal(generated.profiles.torreense.attack.overall, 1.0434);\nassert.equal(generated.profiles.torreense.attack.vsStronger, 1.0899);\nassert.equal(generated.profiles.torreense.attack.vsSimilar, 1.0241);\nassert.equal(generated.profiles.torreense.defense.domestic, 1.1549);\nassert.equal(generated.profiles.torreense.defense.vsSimilar, 1.1024);\nassert.equal(generated.profiles.villareal.attack.overall, 1.1617);",
+            'final profile contexts');
+          test = replaceChecked(test,
+            "assert.equal(generated.researchQueue.length, 2);\nassert.equal(generated.researchQueue[0], 'sunderland');\nassert.equal(generated.researchQueue.at(-1), 'torreense');",
+            "assert.equal(generated.researchQueue.length, 0);\nassert.deepEqual(Array.from(generated.researchQueue), []);",
+            'empty research queue');
+          fs.writeFileSync('tests/home-advantage-model.test.js', test);
 
-            const englishSource = await englishResponse.json();
-            const portugueseSource = await portugueseResponse.text();
-            if (!Array.isArray(englishSource.matches) || englishSource.matches.length !== 557) {
-              throw new Error(`Expected 557 Championship matches including play-offs, received ${englishSource.matches?.length}.`);
-            }
-            const regularEnglish = englishSource.matches.filter((match) => String(match.round).startsWith('Regular'));
-            if (regularEnglish.length !== 552) {
-              throw new Error(`Expected 552 regular Championship matches, received ${regularEnglish.length}.`);
-            }
-            if (!portugueseSource.includes('# Matches    306')) {
-              throw new Error('Portuguese source no longer declares the expected 306-match schedule.');
-            }
-
-            const coefficientContext = { window: {}, Object };
-            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
-            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
-
-            const aliases = {
-              'Sunderland AFC': ['sunderland'],
-              'Leeds United FC': ['leeds'],
-              'Sheffield United FC': ['sheffieldunited'],
-              'Burnley FC': ['burnley'],
-              'Coventry City FC': ['coventry'],
-              'West Bromwich Albion FC': ['westbrom'],
-              'Middlesbrough FC': ['middlesbrough'],
-              'Norwich City FC': ['norwich'],
-              'Watford FC': ['watford'],
-              'União Torreense': ['torreense'],
-              'CS Marítimo': ['maritimo'],
-              'GD Chaves': ['chaves'],
-              'FC Vizela': ['vizela'],
-              'FC Porto B': ['porto'],
-              'SL Benfica B': ['benfica']
-            };
-
-            function team(name, country, targetSlug = null) {
-              return {
-                slug: targetSlug || simpleSlug(name),
-                name: name
-                  .replace(/\s+(?:FC|AFC|SC)$/i, '')
-                  .replace(/^União Torreense$/, 'Torreense'),
-                country,
-                aliases: aliases[name] || [targetSlug || simpleSlug(name)]
-              };
-            }
-
-            function coefficientFor(candidate, floor) {
-              for (const alias of candidate.aliases) {
-                const value = Number(coefficients[alias]?.coefficient);
-                if (Number.isFinite(value)) return value;
-              }
-              return floor;
-            }
-
-            function normalizedRecord({ date, competition, home, away, homeGoals, awayGoals, floor, sourceKey }) {
-              return {
-                date,
-                competitionType: 'domestic',
-                competition,
-                homeSlug: home.slug,
-                homeName: home.name,
-                homeCountry: home.country,
-                awaySlug: away.slug,
-                awayName: away.name,
-                awayCountry: away.country,
-                homeCoefficient: coefficientFor(home, floor),
-                awayCoefficient: coefficientFor(away, floor),
-                homePot: 1,
-                awayPot: 1,
-                potCount: 1,
-                homeGoals: Number(homeGoals),
-                awayGoals: Number(awayGoals),
-                sourceKey
-              };
-            }
-
-            const records = [];
-            for (const match of englishSource.matches) {
-              if (match.team1 !== 'Sunderland AFC') continue;
-              const score = match.score?.ft;
-              if (!Array.isArray(score) || score.length !== 2) {
-                throw new Error(`Missing full-time score for ${match.date} ${match.team1} v ${match.team2}.`);
-              }
-              if (match.round === 'Finals, Final') {
-                throw new Error('A neutral Championship final was unexpectedly classified as a Sunderland home match.');
-              }
-              records.push(normalizedRecord({
-                date: match.date,
-                competition: 'English Championship 2024/25',
-                home: team(match.team1, 'ENG', 'sunderland'),
-                away: team(match.team2, 'ENG'),
-                homeGoals: score[0],
-                awayGoals: score[1],
-                floor: ENGLISH_FLOOR,
-                sourceKey: 'openfootball-england-championship-2024-25'
-              }));
-            }
-
-            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-            let currentYear = 2024;
-            let previousMonth = null;
-            let currentDate = null;
-            const completedPortugueseMatches = [];
-
-            for (const line of portugueseSource.split(/\r?\n/)) {
-              const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
-              if (dateMatch) {
-                const month = monthIndex[dateMatch[1]];
-                if (dateMatch[3]) currentYear = Number(dateMatch[3]);
-                else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
-                previousMonth = month;
-                currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
-                continue;
-              }
-
-              const result = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
-              if (!result || !currentDate) continue;
-              completedPortugueseMatches.push({
-                date: currentDate,
-                homeName: result[1].trim(),
-                awayName: result[2].trim(),
-                homeGoals: Number(result[3]),
-                awayGoals: Number(result[4])
-              });
-            }
-
-            // The pinned OpenFootball file declares all 306 fixtures but only supplies
-            // scores for matchdays 1-26 (234 matches). Missing Torreense home results
-            // are completed below from official Liga Portugal match records.
-            if (completedPortugueseMatches.length !== 234) {
-              throw new Error(`Expected 234 scored Portuguese records in the pinned source, received ${completedPortugueseMatches.length}.`);
-            }
-
-            const torreenseCompleted = completedPortugueseMatches.filter((match) => match.homeName === 'União Torreense');
-            if (torreenseCompleted.length !== 13) {
-              throw new Error(`Expected 13 scored Torreense home matches in OpenFootball, received ${torreenseCompleted.length}.`);
-            }
-
-            const officialTorreenseComplements = [
-              { date: '2025-03-30', homeName: 'União Torreense', awayName: 'FC Porto B', homeGoals: 2, awayGoals: 4 },
-              { date: '2025-04-13', homeName: 'União Torreense', awayName: 'FC Felgueiras 1932', homeGoals: 1, awayGoals: 1 },
-              { date: '2025-04-26', homeName: 'União Torreense', awayName: 'CS Marítimo', homeGoals: 2, awayGoals: 2 },
-              { date: '2025-05-11', homeName: 'União Torreense', awayName: 'Leixões SC', homeGoals: 3, awayGoals: 2 }
-            ];
-
-            for (const match of [...torreenseCompleted, ...officialTorreenseComplements]) {
-              records.push(normalizedRecord({
-                date: match.date,
-                competition: 'Portuguese Segunda Liga 2024/25',
-                home: team(match.homeName, 'POR', 'torreense'),
-                away: team(match.awayName, 'POR'),
-                homeGoals: match.homeGoals,
-                awayGoals: match.awayGoals,
-                floor: PORTUGUESE_FLOOR,
-                sourceKey: officialTorreenseComplements.includes(match)
-                  ? 'liga-portugal-official-2024-25'
-                  : 'openfootball-portugal-segunda-2024-25'
-              }));
-            }
-
-            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
-            if (records.length !== 41) throw new Error(`Expected 41 final Europa home matches, received ${records.length}.`);
-            const counts = Object.fromEntries(['sunderland', 'torreense'].map((slug) => [
-              slug,
-              records.filter((record) => record.homeSlug === slug).length
-            ]));
-            if (counts.sunderland !== 24) throw new Error(`Expected 24 Sunderland home matches, received ${counts.sunderland}.`);
-            if (counts.torreense !== 17) throw new Error(`Expected 17 Torreense home matches, received ${counts.torreense}.`);
-            if (!records.some((record) => record.homeSlug === 'sunderland' && record.date === '2025-05-13')) {
-              throw new Error('Sunderland home play-off semifinal is missing.');
-            }
-            if (records.filter((record) => record.sourceKey === 'liga-portugal-official-2024-25').length !== 4) {
-              throw new Error('Expected four official Liga Portugal result complements.');
-            }
-
-            fs.writeFileSync('data/home-advantage-matches/sunderland-torreense-2024-25.json', `${JSON.stringify(records)}\n`);
-            console.log(JSON.stringify(counts));
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
+          let docs = fs.readFileSync('docs/home-advantage-model.md', 'utf8');
+          docs = replaceChecked(docs,
+            'The archive contains 865 verified home matches. The guaranteed-team filter currently includes 753 matches across 40 active profiles:',
+            'The archive contains 906 verified home matches. The guaranteed-team filter currently includes 794 matches across all 42 active profiles:',
+            'documentation counts');
+          docs = replaceChecked(docs,
+            '- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Marseille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Rennes, Sporting CP, and VfB Stuttgart: 17 each;',
+            '- AZ Alkmaar, Bayer Leverkusen, Bayern München, Borussia Dortmund, Feyenoord, Hoffenheim, Lens, Lille, Marseille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Rennes, Sporting CP, Torreense, and VfB Stuttgart: 17 each;',
+            'documentation 17-match list');
+          docs = replaceChecked(docs,
+            '- Slavia Prague: 18, including the championship round.',
+            '- Slavia Prague: 18, including the championship round;\n- Sunderland: 24, including its home Championship play-off semifinal.',
+            'documentation Sunderland count');
+          docs = replaceChecked(docs,
+            'The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs have active profiles. AZ Alkmaar, Bayer Leverkusen, Bournemouth, Celta Vigo, Crystal Palace, Hoffenheim, Juventus, Marseille, Milan, Real Sociedad, and Rennes are completed guaranteed Europa League clubs, and the research queue now begins with Sunderland.',
+            'The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs and all 13 guaranteed Europa League clubs now have active profiles. The guaranteed-team research queue is empty.',
+            'documentation completed scope');
+          docs = replaceChecked(docs,
+            "Bournemouth scores below its coefficient baseline but shows a strong positive home defensive effect. Its attack values are `0.9967` against stronger opponents and `0.9308` against similar opponents. Crystal Palace is approximately neutral overall, rises to `1.1448` against stronger opponents, and falls to `0.9192` against similar opponents. Neither club has weaker-opponent observations under the current coefficient snapshot.\n\n### Spain and Germany 2024/25",
+            "Bournemouth scores below its coefficient baseline but shows a strong positive home defensive effect. Its attack values are `0.9967` against stronger opponents and `0.9308` against similar opponents. Crystal Palace is approximately neutral overall, rises to `1.1448` against stronger opponents, and falls to `0.9192` against similar opponents. Neither club has weaker-opponent observations under the current coefficient snapshot.\n\n`sunderland-torreense-2024-25.json` adds Sunderland's 23 regular Championship home matches plus its home play-off semifinal. The neutral Wembley final is not treated as a home fixture.\n\n| Club | Domestic attack | Domestic visiting-goal multiplier |\n|---|---:|---:|\n| Sunderland | 0.9235 | 0.8614 |\n\nSunderland scores below its coefficient baseline but shows a strong positive home defensive residual. All 24 observations fall into the similar-opponent bucket under the current coefficient snapshot.\n\n### Spain and Germany 2024/25",
+            'Sunderland documentation');
+          docs = replaceChecked(docs,
+            "Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.\n\n### Ukraine and Czechia 2024/25",
+            "Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.\n\nThe final batch also contains all 17 Torreense Segunda Liga home matches. The pinned OpenFootball file provides scores through matchday 26; four later home results are completed from official Liga Portugal match records and carry a separate source key.\n\n| Club | Domestic attack | Notable context |\n|---|---:|---:|\n| Torreense | 1.0528 | Similar opponents: 1.0241 |\n\nTorreense scores modestly above its coefficient baseline. Its domestic visiting-goal multiplier is `1.1549`, so this sample does not show a positive home defensive residual. No weaker-opponent observation exists under the current coefficient snapshot.\n\n### Ukraine and Czechia 2024/25",
+            'Torreense documentation');
+          fs.writeFileSync('docs/home-advantage-model.md', docs);
           NODE
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit verified final Europa profiles
+      - name: Commit completed guaranteed-team coverage
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/sunderland-torreense-2024-25.json generated-home-advantage-profiles.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate final guaranteed Europa profiles"
-            git push origin HEAD:agent/complete-guaranteed-europa-home-profiles
-          fi
+          git rm .github/workflows/generate-final-europa-home-profiles.yml
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md
+          git commit -m "Complete guaranteed-team home profile coverage"
+          git push origin HEAD:agent/complete-guaranteed-europa-home-profiles
