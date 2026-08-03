@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 793,
-    "matches": 681,
+    "storedMatches": 831,
+    "matches": 719,
     "excludedStoredMatches": 112,
-    "teams": 36,
+    "teams": 38,
     "activeTeamScope": 42,
-    "domesticMatches": 669,
+    "domesticMatches": 707,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -31,6 +31,7 @@
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/feyenoord-psv-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json",
+      "data/home-advantage-matches/juventus-milan-2024-25.json",
       "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
       "data/home-advantage-matches/leverkusen-hoffenheim-2024-25.json",
@@ -159,9 +160,7 @@
     ]
   },
   "researchQueue": [
-    "juventus",
     "marseille",
-    "milan",
     "rennais",
     "sunderland",
     "torreense"
@@ -1445,6 +1444,77 @@
         }
       }
     },
+    "juventus": {
+      "name": "Juventus",
+      "country": "ITA",
+      "attack": {
+        "overall": 0.9618,
+        "domestic": 0.9539,
+        "europe": 1,
+        "vsStronger": 0.9846,
+        "vsSimilar": 0.8521,
+        "vsWeaker": 1.0256
+      },
+      "defense": {
+        "overall": 1.0186,
+        "domestic": 1.0224,
+        "europe": 1,
+        "vsStronger": 0.9277,
+        "vsSimilar": 1.0061,
+        "vsWeaker": 1.094
+      },
+      "confidence": {
+        "overall": 0.4898,
+        "domestic": 0.5902,
+        "europe": 0,
+        "vsStronger": 0.0723,
+        "vsSimilar": 0.2288,
+        "vsWeaker": 0.5158
+      },
+      "defenseConfidence": {
+        "overall": 0.4898,
+        "domestic": 0.5902,
+        "europe": 0,
+        "vsStronger": 0.0723,
+        "vsSimilar": 0.2288,
+        "vsWeaker": 0.5158
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.28
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.28
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.94
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.56
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.79
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 0.9539,
+          "defense": 1.0224,
+          "confidence": 0.5902,
+          "samples": 19,
+          "effectiveSample": 17.28
+        }
+      }
+    },
     "leipzig": {
       "name": "RB Leipzig",
       "country": "GER",
@@ -1797,6 +1867,77 @@
           "confidence": 0.5908,
           "samples": 19,
           "effectiveSample": 17.33
+        }
+      }
+    },
+    "milan": {
+      "name": "Milan",
+      "country": "ITA",
+      "attack": {
+        "overall": 0.9522,
+        "domestic": 0.9424,
+        "europe": 1,
+        "vsStronger": 0.9862,
+        "vsSimilar": 0.84,
+        "vsWeaker": 1.0328
+      },
+      "defense": {
+        "overall": 1.0332,
+        "domestic": 1.04,
+        "europe": 1,
+        "vsStronger": 0.9867,
+        "vsSimilar": 0.9831,
+        "vsWeaker": 1.0844
+      },
+      "confidence": {
+        "overall": 0.4912,
+        "domestic": 0.5915,
+        "europe": 0,
+        "vsStronger": 0.0717,
+        "vsSimilar": 0.2328,
+        "vsWeaker": 0.5163
+      },
+      "defenseConfidence": {
+        "overall": 0.4912,
+        "domestic": 0.5915,
+        "europe": 0,
+        "vsStronger": 0.0717,
+        "vsSimilar": 0.2328,
+        "vsWeaker": 0.5163
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.38
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.93
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.64
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.81
+        }
+      },
+      "associationMatchups": {
+        "ITA": {
+          "attack": 0.9424,
+          "defense": 1.04,
+          "confidence": 0.5915,
+          "samples": 19,
+          "effectiveSample": 17.38
         }
       }
     },
