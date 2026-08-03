@@ -28,13 +28,13 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 576, 'Stored source archive must contain 576 home matches.');
+assert.equal(records.length, 633, 'Stored source archive must contain 633 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 561);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 618);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of [
   'arsenal', 'astonvilla', 'atleti', 'barcelona', 'city', 'como', 'inter',
-  'liverpool', 'manu', 'napoli', 'roma'
+  'liverpool', 'manu', 'napoli', 'real', 'realbetis', 'roma', 'villareal'
 ]) {
   assert.equal(records.filter((match) => match.homeSlug === slug).length, 19);
 }
@@ -55,12 +55,12 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 576);
-assert.equal(generated.sourceSummary.matches, 464);
+assert.equal(generated.sourceSummary.storedMatches, 633);
+assert.equal(generated.sourceSummary.matches, 521);
 assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
-assert.equal(generated.sourceSummary.teams, 24);
+assert.equal(generated.sourceSummary.teams, 27);
 assert.equal(generated.sourceSummary.activeTeamScope, 42);
-assert.equal(generated.sourceSummary.domesticMatches, 452);
+assert.equal(generated.sourceSummary.domesticMatches, 509);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -96,9 +96,12 @@ const expectedDomesticAttack = {
   porto: 1.1002,
   psg: 1.1445,
   psv: 1.18,
+  real: 1.0853,
+  realbetis: 0.9686,
   roma: 1.017,
   sporting: 1.1129,
-  stuttgart: 1.18
+  stuttgart: 1.18,
+  villareal: 1.18
 };
 for (const [slug, multiplier] of Object.entries(expectedDomesticAttack)) {
   assert.equal(generated.profiles[slug].attack.domestic, multiplier);
@@ -132,17 +135,26 @@ assert.equal(generated.profiles.porto.defense.vsWeaker, 0.8311);
 assert.equal(generated.profiles.psg.attack.overall, 1.1187);
 assert.equal(generated.profiles.psg.attack.vsWeaker, 1.1445);
 assert.equal(generated.profiles.psv.attack.vsSimilar, 1.014);
+assert.equal(generated.profiles.real.attack.overall, 1.0708);
+assert.equal(generated.profiles.real.attack.vsSimilar, 0.9119);
+assert.equal(generated.profiles.real.attack.vsWeaker, 1.1217);
+assert.equal(generated.profiles.realbetis.attack.overall, 0.974);
+assert.equal(generated.profiles.realbetis.attack.vsStronger, 1.0752);
+assert.equal(generated.profiles.realbetis.defense.vsSimilar, 0.9432);
 assert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);
 assert.equal(generated.profiles.sporting.attack.overall, 1.0927);
 assert.equal(generated.profiles.sporting.attack.vsSimilar, 0.9754);
 assert.equal(generated.profiles.sporting.defense.vsSimilar, 0.8817);
 assert.equal(generated.profiles.stuttgart.attack.vsSimilar, 0.9977);
 assert.equal(generated.profiles.stuttgart.attack.vsWeaker, 0.9697);
+assert.equal(generated.profiles.villareal.attack.overall, 1.1617);
+assert.equal(generated.profiles.villareal.attack.vsSimilar, 1.0069);
+assert.equal(generated.profiles.villareal.defense.vsSimilar, 1.1224);
 assert.equal(generated.profiles.fenerbahce, undefined);
 
-assert.equal(generated.researchQueue[0], 'real');
-assert.equal(generated.researchQueue[4], 'villareal');
-assert.equal(generated.researchQueue[5], 'azalkmaar');
+assert.equal(generated.researchQueue[0], 'shakhtar');
+assert.equal(generated.researchQueue[1], 'slavia');
+assert.equal(generated.researchQueue[2], 'azalkmaar');
 assert.equal(generated.researchQueue.at(-1), 'torreense');
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };

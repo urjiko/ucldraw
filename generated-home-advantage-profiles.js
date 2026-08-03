@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 576,
-    "matches": 464,
+    "storedMatches": 633,
+    "matches": 521,
     "excludedStoredMatches": 112,
-    "teams": 24,
+    "teams": 27,
     "activeTeamScope": 42,
-    "domesticMatches": 452,
+    "domesticMatches": 509,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -31,7 +31,8 @@
       "data/home-advantage-matches/leipzig-stuttgart-2024-25.json",
       "data/home-advantage-matches/lens-lille-psg-2024-25.json",
       "data/home-advantage-matches/manu-2024-25.json",
-      "data/home-advantage-matches/porto-sporting-2024-25.json"
+      "data/home-advantage-matches/porto-sporting-2024-25.json",
+      "data/home-advantage-matches/real-betis-villarreal-2024-25.json"
     ]
   },
   "methodology": {
@@ -153,11 +154,8 @@
     ]
   },
   "researchQueue": [
-    "real",
-    "realbetis",
     "shakhtar",
     "slavia",
-    "villareal",
     "azalkmaar",
     "bayerleverkusen",
     "bournemouth",
@@ -1664,6 +1662,148 @@
         }
       }
     },
+    "real": {
+      "name": "Real Madrid",
+      "country": "ESP",
+      "attack": {
+        "overall": 1.0708,
+        "domestic": 1.0853,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9119,
+        "vsWeaker": 1.1217
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4914,
+        "domestic": 0.5917,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1306,
+        "vsWeaker": 0.5651
+      },
+      "defenseConfidence": {
+        "overall": 0.4914,
+        "domestic": 0.5917,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1306,
+        "vsWeaker": 0.5651
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.39
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.39
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.8
+        },
+        "vsWeaker": {
+          "raw": 17,
+          "effective": 15.59
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 1.0853,
+          "defense": 1.16,
+          "confidence": 0.5917,
+          "samples": 19,
+          "effectiveSample": 17.39
+        }
+      }
+    },
+    "realbetis": {
+      "name": "Real Betis",
+      "country": "ESP",
+      "attack": {
+        "overall": 0.974,
+        "domestic": 0.9686,
+        "europe": 1,
+        "vsStronger": 1.0752,
+        "vsSimilar": 1.0215,
+        "vsWeaker": 0.9276
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.0326,
+        "vsSimilar": 0.9432,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4908,
+        "domestic": 0.5912,
+        "europe": 0,
+        "vsStronger": 0.1328,
+        "vsSimilar": 0.1879,
+        "vsWeaker": 0.5149
+      },
+      "defenseConfidence": {
+        "overall": 0.4908,
+        "domestic": 0.5912,
+        "europe": 0,
+        "vsStronger": 0.1328,
+        "vsSimilar": 0.1879,
+        "vsWeaker": 0.5149
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.35
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.35
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.84
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.78
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.74
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 0.9686,
+          "defense": 1.16,
+          "confidence": 0.5912,
+          "samples": 19,
+          "effectiveSample": 17.35
+        }
+      }
+    },
     "roma": {
       "name": "Roma",
       "country": "ITA",
@@ -1874,6 +2014,77 @@
           "confidence": 0.5639,
           "samples": 17,
           "effectiveSample": 15.51
+        }
+      }
+    },
+    "villareal": {
+      "name": "Villarreal",
+      "country": "ESP",
+      "attack": {
+        "overall": 1.1617,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.0148,
+        "vsSimilar": 1.0069,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 1.1224,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4921,
+        "domestic": 0.5924,
+        "europe": 0,
+        "vsStronger": 0.1803,
+        "vsSimilar": 0.135,
+        "vsWeaker": 0.5186
+      },
+      "defenseConfidence": {
+        "overall": 0.4921,
+        "domestic": 0.5924,
+        "europe": 0,
+        "vsStronger": 0.1803,
+        "vsSimilar": 0.135,
+        "vsWeaker": 0.5186
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.44
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.44
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.64
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.87
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.93
+        }
+      },
+      "associationMatchups": {
+        "ESP": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5924,
+          "samples": 19,
+          "effectiveSample": 17.44
         }
       }
     }

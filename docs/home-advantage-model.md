@@ -17,14 +17,14 @@ Current manifest scope:
 
 ## Current snapshot
 
-The archive contains 576 verified home matches. The guaranteed-team filter currently includes 464 matches across 24 active profiles:
+The archive contains 633 verified home matches. The guaranteed-team filter currently includes 521 matches across 27 active profiles:
 
 - Galatasaray: 48;
-- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, and Roma: 19 each;
+- Arsenal, Aston Villa, Atlético Madrid, Barcelona, Como, Internazionale, Liverpool, Manchester City, Manchester United, Napoli, Real Betis, Real Madrid, Roma, and Villarreal: 19 each;
 - Bayern München, Borussia Dortmund, Feyenoord, Lens, Lille, Paris Saint-Germain, Porto, PSV, RB Leipzig, Sporting CP, and VfB Stuttgart: 17 each;
 - Club Brugge: 20, including the championship play-off round.
 
-The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Real Madrid.
+The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Shakhtar Donetsk.
 
 ## Data batches
 
@@ -61,6 +61,16 @@ Spanish opponents without a higher individual value use `19.409`; German opponen
 | VfB Stuttgart | 1.1800 | Similar opponents: 0.9977 |
 
 Leipzig remains below the general attack ceiling but shows a strong residual against stronger opponents. Its similar-opponent visiting-goal multiplier is `0.9400`, a positive home defensive signal for that context. Stuttgart reaches the domestic attack ceiling, while its similar-opponent residual is essentially neutral and its single weaker-opponent observation is not treated as a broad conclusion.
+
+The follow-up Spanish batch `real-betis-villarreal-2024-25.json` adds 57 more La Liga home matches, 19 per club.
+
+| Club | Domestic attack | Notable context |
+|---|---:|---:|
+| Real Madrid | 1.0853 | Weaker opponents: 1.1217 |
+| Real Betis | 0.9686 | Stronger opponents: 1.0752 |
+| Villarreal | 1.1800 | Similar opponents: 1.0069 |
+
+Real Madrid remains below the attack ceiling and is weaker than neutral against the two similar-strength observations at `0.9119`. Real Betis scores below its overall coefficient baseline but rises above it against stronger opponents; its similar-opponent visiting-goal multiplier is `0.9432`. Villarreal reaches the domestic attack ceiling, while its similar-opponent attack residual is approximately neutral. The project keeps the historical runtime slug `villareal` for compatibility, while display text and source records use the correct club name.
 
 ### France 2024/25
 
