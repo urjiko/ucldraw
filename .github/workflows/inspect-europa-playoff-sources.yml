@@ -24,6 +24,17 @@ jobs:
         run: node scripts/generate-europa-playoff-home-profiles.mjs
       - name: Regenerate profile payload
         run: node scripts/build-home-advantage-profiles.mjs
+      - name: Report generated profile values
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const context = { window: {}, Object };
+          vm.runInNewContext(fs.readFileSync('generated-home-advantage-profiles.js', 'utf8'), context);
+          const profiles = context.window.UCLDRAW_HOME_ADVANTAGE_PROFILES.profiles;
+          const selected = Object.fromEntries(['crete', 'lillestrom', 'trabzonspor', 'truidense', 'viktoriaplzen'].map((slug) => [slug, profiles[slug]]));
+          console.log(JSON.stringify(selected));
+          NODE
       - name: Commit verified Europa playoff profiles
         run: |
           git config user.name "github-actions[bot]"
