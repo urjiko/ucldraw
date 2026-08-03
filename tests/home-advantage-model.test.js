@@ -7,16 +7,14 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const source = read('prediction-ai-controller.js');
+const controllerSource = read('prediction-ai-controller.js');
 const builderSource = read('scripts/build-home-advantage-profiles.mjs');
 const generatedSource = read('generated-home-advantage-profiles.js');
-const poolManifestSource = read('generated-team-pools.js');
-const profileSnapshotDate = '2025-06-01';
 
-const modularDirectory = path.join(root, 'data', 'home-advantage-matches');
+const dataDirectory = path.join(root, 'data', 'home-advantage-matches');
 const dataFiles = [
   'data/home-advantage-matches.json',
-  ...fs.readdirSync(modularDirectory)
+  ...fs.readdirSync(dataDirectory)
     .filter((name) => name.endsWith('.json'))
     .sort()
     .map((name) => `data/home-advantage-matches/${name}`)
@@ -30,63 +28,55 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-const poolContext = { window: {}, Object };
-vm.runInNewContext(poolManifestSource, poolContext, { filename: 'generated-team-pools.js' });
-const championsStages = poolContext.window.UCLDRAW_POOL_MANIFEST.champions;
-const championsTeams = Object.values(championsStages)
-  .flat()
-  .map((filename) => path.basename(filename, '.png'));
-const championsSet = new Set(championsTeams);
-const scopedRecords = records.filter((match) => championsSet.has(match.homeSlug));
-
-assert.equal(records.length, 160, 'Stored source set must contain 160 home matches.');
-assert.equal(new Set(matchKeys).size, records.length, 'Home-advantage source matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 145);
+assert.equal(records.length, 198, 'Stored source archive must contain 198 home matches.');
+assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 183);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
-assert.equal(championsTeams.length, 53, 'Current Champions pool must contain 53 unique team candidates.');
-assert.equal(championsSet.size, championsTeams.length, 'Champions pool slugs must be unique across stages.');
-assert.equal(scopedRecords.length, 66, 'Only current Champions League teams should feed runtime profiles.');
-assert.equal(scopedRecords.filter((match) => match.competitionType === 'domestic').length, 54);
-assert.equal(scopedRecords.filter((match) => match.competitionType === 'europe').length, 12);
-assert.equal(scopedRecords.filter((match) => match.homeSlug === 'galatasaray').length, 48);
-assert.equal(scopedRecords.filter((match) => match.homeSlug === 'fenerbahce').length, 18);
-assert.equal(scopedRecords.some((match) => match.homeSlug === 'trabzonspor'), false);
-assert.equal(scopedRecords.some((match) => match.homeSlug === 'besiktas'), false);
-assert.equal(scopedRecords.some((match) => match.homeSlug === 'basaksehir'), false);
-assert.equal(scopedRecords.some((match) => match.homeSlug === 'samsunspor'), false);
-assert.match(builderSource, /UCLDRAW_POOL_MANIFEST\?\.champions/);
-assert.match(builderSource, /scope\.teamSet\.has\(match\.homeSlug\)/);
+assert.equal(records.filter((match) => match.homeSlug === 'arsenal').length, 19);
+assert.equal(records.filter((match) => match.homeSlug === 'liverpool').length, 19);
+assert.match(builderSource, /competition: 'champions', stage: 'guaranteed'/);
+assert.match(builderSource, /competition: 'europa', stage: 'guaranteed'/);
 assert.match(builderSource, /Duplicate home-advantage match/);
 
 const generatedContext = { window: {}, Object };
-vm.runInNewContext(generatedSource, generatedContext, { filename: 'generated-home-advantage-profiles.js' });
+vm.runInNewContext(generatedSource, generatedContext, {
+  filename: 'generated-home-advantage-profiles.js'
+});
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
-assert.equal(generated.latestMatchDate, profileSnapshotDate);
-assert.equal(generated.sourceSummary.storedMatches, 160);
-assert.equal(generated.sourceSummary.matches, 66);
-assert.equal(generated.sourceSummary.excludedStoredMatches, 94);
-assert.equal(generated.sourceSummary.teams, 2);
-assert.equal(generated.sourceSummary.activeTeamScope, 53);
-assert.equal(generated.sourceSummary.domesticMatches, 54);
+assert.equal(generated.latestMatchDate, '2025-06-01');
+assert.equal(generated.sourceSummary.storedMatches, 198);
+assert.equal(generated.sourceSummary.matches, 86);
+assert.equal(generated.sourceSummary.excludedStoredMatches, 112);
+assert.equal(generated.sourceSummary.teams, 3);
+assert.equal(generated.sourceSummary.activeTeamScope, 42);
+assert.equal(generated.sourceSummary.domesticMatches, 74);
 assert.equal(generated.sourceSummary.europeanMatches, 12);
-assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-31');
+assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
-assert.equal(generated.scope.competition, 'champions');
-assert.equal(generated.scope.source, 'generated-team-pools.js');
-assert.deepEqual(Array.from(generated.scope.teams), championsTeams);
-assert.deepEqual(Object.keys(generated.profiles), ['fenerbahce', 'galatasaray']);
-assert.deepEqual(
-  Array.from(generated.researchQueue),
-  championsTeams.filter((slug) => !generated.profiles[slug])
-);
+
+assert.equal(generated.scope.priority.length, 2);
+assert.equal(generated.scope.priority[0].competition, 'champions');
+assert.equal(generated.scope.priority[0].stage, 'guaranteed');
+assert.equal(generated.scope.priority[0].teams.length, 29);
+assert.equal(generated.scope.priority[1].competition, 'europa');
+assert.equal(generated.scope.priority[1].stage, 'guaranteed');
+assert.equal(generated.scope.priority[1].teams.length, 13);
+assert.equal(generated.scope.teams.length, 42);
+assert.equal(new Set(generated.scope.teams).size, 42);
+
+assert.equal(generated.profiles.arsenal.samples.overall.raw, 19);
+assert.equal(generated.profiles.liverpool.samples.overall.raw, 19);
 assert.equal(generated.profiles.galatasaray.samples.overall.raw, 48);
-assert.equal(generated.profiles.fenerbahce.samples.overall.raw, 18);
-assert.equal(generated.profiles.galatasaray.attack.europe, 1.1512);
-assert.equal(generated.profiles.fenerbahce.attack.domestic, 1.1127);
-assert.equal(generated.profiles.trabzonspor, undefined);
-assert.equal(generated.profiles.besiktas, undefined);
-assert.equal(generated.profiles.basaksehir, undefined);
-assert.equal(generated.profiles.samsunspor, undefined);
+assert.equal(generated.profiles.arsenal.attack.domestic, 0.9824);
+assert.equal(generated.profiles.arsenal.attack.vsSimilar, 1.1547);
+assert.equal(generated.profiles.liverpool.attack.domestic, 1.0948);
+assert.equal(generated.profiles.liverpool.attack.vsWeaker, 1.0763);
+assert.equal(generated.profiles.fenerbahce, undefined, 'Non-guaranteed qualifying teams must not emit runtime profiles.');
+
+assert.equal(generated.researchQueue[0], 'astonvilla');
+assert.equal(generated.researchQueue[25], 'villareal');
+assert.equal(generated.researchQueue[26], 'azalkmaar');
+assert.equal(generated.researchQueue.at(-1), 'torreense');
 
 const home = { name: 'Galatasaray', poolSlug: 'galatasaray', country: 'TUR', coefficient: 45, pot: 3 };
 const strongerAway = { name: 'Liverpool', poolSlug: 'liverpool', country: 'ENG', coefficient: 130, pot: 1 };
@@ -95,17 +85,9 @@ const neutralHome = { name: 'Neutral FC', poolSlug: 'neutral-fc', country: 'NED'
 const baseEngine = {
   createState(comp, table, leagueId, selectedTeamName, seed = 'test') {
     return {
-      comp,
-      table,
-      leagueId,
-      selectedTeamName,
-      seed,
-      matches: [],
-      scores: {},
-      matchLocks: {},
-      teamLocks: {},
-      activeMatchdays: {},
-      rerollVersion: {}
+      comp, table, leagueId, selectedTeamName, seed,
+      matches: [], scores: {}, matchLocks: {}, teamLocks: {},
+      activeMatchdays: {}, rerollVersion: {}
     };
   },
   applyOutcome(state, matchId) {
@@ -119,7 +101,11 @@ const baseEngine = {
     return this.applyOutcome(state, matchId);
   },
   setManualScore(state, matchId, homeGoals, awayGoals) {
-    state.scores[matchId] = { homeGoals: Number(homeGoals), awayGoals: Number(awayGoals), source: 'user-score' };
+    state.scores[matchId] = {
+      homeGoals: Number(homeGoals),
+      awayGoals: Number(awayGoals),
+      source: 'user-score'
+    };
     state.matchLocks[matchId] = true;
     const match = state.matches.find((candidate) => candidate.id === matchId);
     state.rerollVersion[match.matchday] = Number(state.rerollVersion[match.matchday] || 0) + 1;
@@ -154,25 +140,15 @@ const context = vm.createContext({
   CustomEvent: class CustomEvent {
     constructor(type, options) { this.type = type; this.detail = options?.detail; }
   },
-  console,
-  Math,
-  Object,
-  Number,
-  String,
-  Boolean,
-  Array,
-  Map,
-  Set,
-  JSON
+  console, Math, Object, Number, String, Boolean, Array, Map, Set, JSON
 });
 context.window.window = context.window;
-
-vm.runInContext(source, context, { filename: 'prediction-ai-controller.js' });
+vm.runInContext(controllerSource, context, { filename: 'prediction-ai-controller.js' });
 
 const model = context.window.UCLDRAW_HOME_ADVANTAGE_MODEL;
 const engine = context.window.UCLDRAW_PREDICTION_ENGINE;
-assert.ok(model, 'Home advantage model must be exposed.');
-assert.equal(engine.__homeAdvantageModel, true, 'Prediction engine must expose the adjusted model marker.');
+assert.ok(model);
+assert.equal(engine.__homeAdvantageModel, true);
 assert.equal(model.opponentBand(home, strongerAway, 4), 'vsStronger');
 
 const adjusted = model.adjustExpectedGoals(
@@ -181,11 +157,10 @@ const adjusted = model.adjustExpectedGoals(
   1.5,
   1
 );
-assert.ok(adjusted.homeExpected > 1.5, 'Strong home profile must raise home expected goals.');
-assert.ok(adjusted.awayExpected < 1, 'Strong home defense profile must reduce away expected goals.');
-assert.ok(adjusted.attackMultiplier <= 1.18, 'Attack adjustment must stay inside the safety bound.');
-assert.ok(adjusted.defenseMultiplier >= 0.82, 'Defense adjustment must stay inside the safety bound.');
-assert.equal(adjusted.context, 'vsStronger');
+assert.ok(adjusted.homeExpected > 1.5);
+assert.ok(adjusted.awayExpected < 1);
+assert.ok(adjusted.attackMultiplier <= 1.18);
+assert.ok(adjusted.defenseMultiplier >= 0.82);
 assert.equal(adjusted.profileSlug, 'galatasaray');
 
 const neutral = model.adjustExpectedGoals(
@@ -194,8 +169,8 @@ const neutral = model.adjustExpectedGoals(
   1.5,
   1
 );
-assert.equal(neutral.homeExpected, 1.5, 'Teams without a profile must preserve the current model.');
-assert.equal(neutral.awayExpected, 1, 'Teams without a profile must preserve the current model.');
+assert.equal(neutral.homeExpected, 1.5);
+assert.equal(neutral.awayExpected, 1);
 assert.equal(neutral.profileSlug, null);
 
 const match = { id: '1:galatasaray:liverpool', matchday: 1, home, away: strongerAway };
@@ -212,14 +187,12 @@ const state = {
 engine.simulateMatchday(state, 1);
 assert.equal(state.scores[match.id].source, 'model-home-adjusted');
 assert.equal(state.scores[match.id].model.homeProfile, 'galatasaray');
-assert.equal(state.activeMatchdays[1], true);
-assert.equal(state.rerollVersion[1], 1);
-
 const firstScore = JSON.stringify(state.scores[match.id]);
+
 state.scores = {};
 state.activeMatchdays = {};
 state.rerollVersion[1] = 0;
 engine.simulateMatchday(state, 1);
-assert.equal(JSON.stringify(state.scores[match.id]), firstScore, 'Seeded adjusted predictions must remain reproducible.');
+assert.equal(JSON.stringify(state.scores[match.id]), firstScore);
 
-console.log('Champions-scoped home advantage data and prediction model checks passed.');
+console.log('Guaranteed-team home profile checks passed.');

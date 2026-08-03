@@ -7,16 +7,17 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 160,
-    "matches": 66,
-    "excludedStoredMatches": 94,
-    "teams": 2,
-    "activeTeamScope": 53,
-    "domesticMatches": 54,
+    "storedMatches": 198,
+    "matches": 86,
+    "excludedStoredMatches": 112,
+    "teams": 3,
+    "activeTeamScope": 42,
+    "domesticMatches": 74,
     "europeanMatches": 12,
-    "latestIncludedMatchDate": "2025-05-31",
+    "latestIncludedMatchDate": "2025-05-30",
     "files": [
       "data/home-advantage-matches.json",
+      "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/fenerbahce-besiktas-2024-25.json",
       "data/home-advantage-matches/galatasaray-trabzonspor-2023-24.json"
@@ -38,71 +39,63 @@
     ]
   },
   "scope": {
-    "competition": "champions",
     "source": "generated-team-pools.js",
-    "stages": {
-      "guaranteed": [
-        "arsenal",
-        "astonvilla",
-        "atleti",
-        "barcelona",
-        "bayern",
-        "brugge",
-        "bvb",
-        "city",
-        "como",
-        "feyenoord",
-        "galatasaray",
-        "inter",
-        "leipzig",
-        "lens",
-        "lille",
-        "liverpool",
-        "manu",
-        "napoli",
-        "porto",
-        "psg",
-        "psv",
-        "real",
-        "realbetis",
-        "roma",
-        "shakhtar",
-        "slavia",
-        "sporting",
-        "stuttgart",
-        "villareal"
-      ],
-      "playoffs": [
-        "aek",
-        "celtic",
-        "lask",
-        "viking"
-      ],
-      "q3": [
-        "bodo",
-        "lyon",
-        "nec",
-        "olympiacos",
-        "spartapraha",
-        "union"
-      ],
-      "q2": [
-        "aarhus",
-        "ararat",
-        "celje",
-        "crvenazvezda",
-        "dinamo",
-        "fenerbahce",
-        "hapoelbeersheva",
-        "kairat",
-        "levskisofia",
-        "mjallby",
-        "sabah",
-        "slovanbratislava",
-        "strumgraz",
-        "zalgiris"
-      ]
-    },
+    "priority": [
+      {
+        "competition": "champions",
+        "stage": "guaranteed",
+        "teams": [
+          "arsenal",
+          "astonvilla",
+          "atleti",
+          "barcelona",
+          "bayern",
+          "brugge",
+          "bvb",
+          "city",
+          "como",
+          "feyenoord",
+          "galatasaray",
+          "inter",
+          "leipzig",
+          "lens",
+          "lille",
+          "liverpool",
+          "manu",
+          "napoli",
+          "porto",
+          "psg",
+          "psv",
+          "real",
+          "realbetis",
+          "roma",
+          "shakhtar",
+          "slavia",
+          "sporting",
+          "stuttgart",
+          "villareal"
+        ]
+      },
+      {
+        "competition": "europa",
+        "stage": "guaranteed",
+        "teams": [
+          "azalkmaar",
+          "bayerleverkusen",
+          "bournemouth",
+          "celtavigo",
+          "crystalpalace",
+          "hoffenheim",
+          "juventus",
+          "marseille",
+          "milan",
+          "realsociedad",
+          "rennais",
+          "sunderland",
+          "torreense"
+        ]
+      }
+    ],
     "teams": [
       "arsenal",
       "astonvilla",
@@ -133,34 +126,22 @@
       "sporting",
       "stuttgart",
       "villareal",
-      "aek",
-      "celtic",
-      "lask",
-      "viking",
-      "bodo",
-      "lyon",
-      "nec",
-      "olympiacos",
-      "spartapraha",
-      "union",
-      "aarhus",
-      "ararat",
-      "celje",
-      "crvenazvezda",
-      "dinamo",
-      "fenerbahce",
-      "hapoelbeersheva",
-      "kairat",
-      "levskisofia",
-      "mjallby",
-      "sabah",
-      "slovanbratislava",
-      "strumgraz",
-      "zalgiris"
+      "azalkmaar",
+      "bayerleverkusen",
+      "bournemouth",
+      "celtavigo",
+      "crystalpalace",
+      "hoffenheim",
+      "juventus",
+      "marseille",
+      "milan",
+      "realsociedad",
+      "rennais",
+      "sunderland",
+      "torreense"
     ]
   },
   "researchQueue": [
-    "arsenal",
     "astonvilla",
     "atleti",
     "barcelona",
@@ -174,7 +155,6 @@
     "leipzig",
     "lens",
     "lille",
-    "liverpool",
     "manu",
     "napoli",
     "porto",
@@ -188,74 +168,64 @@
     "sporting",
     "stuttgart",
     "villareal",
-    "aek",
-    "celtic",
-    "lask",
-    "viking",
-    "bodo",
-    "lyon",
-    "nec",
-    "olympiacos",
-    "spartapraha",
-    "union",
-    "aarhus",
-    "ararat",
-    "celje",
-    "crvenazvezda",
-    "dinamo",
-    "hapoelbeersheva",
-    "kairat",
-    "levskisofia",
-    "mjallby",
-    "sabah",
-    "slovanbratislava",
-    "strumgraz",
-    "zalgiris"
+    "azalkmaar",
+    "bayerleverkusen",
+    "bournemouth",
+    "celtavigo",
+    "crystalpalace",
+    "hoffenheim",
+    "juventus",
+    "marseille",
+    "milan",
+    "realsociedad",
+    "rennais",
+    "sunderland",
+    "torreense"
   ],
   "profiles": {
-    "fenerbahce": {
-      "name": "Fenerbahçe",
-      "country": "TUR",
+    "arsenal": {
+      "name": "Arsenal",
+      "country": "ENG",
       "attack": {
-        "overall": 1.0932,
-        "domestic": 1.1127,
+        "overall": 0.9854,
+        "domestic": 0.9824,
         "europe": 1,
         "vsStronger": 1,
-        "vsSimilar": 0.9777,
-        "vsWeaker": 1.1227
+        "vsSimilar": 1.1547,
+        "vsWeaker": 0.9009
       },
       "defense": {
-        "overall": 1.16,
+        "overall": 1.1599,
         "domestic": 1.16,
         "europe": 1,
         "vsStronger": 1,
-        "vsSimilar": 1.1332,
+        "vsSimilar": 1.0607,
         "vsWeaker": 1.16
       },
       "confidence": {
-        "overall": 0.4793,
-        "domestic": 0.58,
+        "overall": 0.4912,
+        "domestic": 0.5916,
         "europe": 0,
         "vsStronger": 0,
-        "vsSimilar": 0.0663,
-        "vsWeaker": 0.5671
+        "vsSimilar": 0.2766,
+        "vsWeaker": 0.516
       },
       "defenseConfidence": {
-        "overall": 0.4793,
-        "domestic": 0.58,
+        "overall": 0.4912,
+        "domestic": 0.5916,
         "europe": 0,
         "vsStronger": 0,
-        "vsSimilar": 0.0663,
-        "vsWeaker": 0.5671
+        "vsSimilar": 0.2766,
+        "vsWeaker": 0.516
       },
       "samples": {
         "overall": {
-          "raw": 18,
-          "effective": 16.57
+          "raw": 19,
+          "effective": 17.38
         },
         "domestic": {
-          "raw": 18,
-          "effective": 16.57
+          "raw": 19,
+          "effective": 17.38
         },
         "europe": {
           "raw": 0,
@@ -266,21 +236,21 @@
           "effective": 0
         },
         "vsSimilar": {
-          "raw": 1,
-          "effective": 0.85
+          "raw": 5,
+          "effective": 4.59
         },
         "vsWeaker": {
-          "raw": 17,
-          "effective": 15.72
+          "raw": 14,
+          "effective": 12.79
         }
       },
       "associationMatchups": {
-        "TUR": {
-          "attack": 1.1127,
+        "ENG": {
+          "attack": 0.9824,
           "defense": 1.16,
-          "confidence": 0.58,
-          "samples": 18,
-          "effectiveSample": 16.57
+          "confidence": 0.5916,
+          "samples": 19,
+          "effectiveSample": 17.38
         }
       }
     },
@@ -352,6 +322,77 @@
           "confidence": 0.7091,
           "samples": 36,
           "effectiveSample": 29.25
+        }
+      }
+    },
+    "liverpool": {
+      "name": "Liverpool",
+      "country": "ENG",
+      "attack": {
+        "overall": 1.0787,
+        "domestic": 1.0948,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0574,
+        "vsWeaker": 1.0763
+      },
+      "defense": {
+        "overall": 1.1548,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0107,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4916,
+        "domestic": 0.5919,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1862,
+        "vsWeaker": 0.5499
+      },
+      "defenseConfidence": {
+        "overall": 0.4916,
+        "domestic": 0.5919,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1862,
+        "vsWeaker": 0.5499
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.41
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.41
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.75
+        },
+        "vsWeaker": {
+          "raw": 16,
+          "effective": 14.66
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 1.0948,
+          "defense": 1.16,
+          "confidence": 0.5919,
+          "samples": 19,
+          "effectiveSample": 17.41
         }
       }
     }
