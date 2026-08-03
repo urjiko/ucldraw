@@ -1,4 +1,4 @@
-name: Generate final guaranteed Champions profiles
+name: Finalize guaranteed Champions profiles
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  finalize:
     if: github.head_ref == 'agent/complete-guaranteed-champions-home-profiles'
     runs-on: ubuntu-latest
     steps:
@@ -20,152 +20,75 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Shakhtar and Slavia home matches
+      - name: Lock final Champions regression values and documentation
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const vm = require('node:vm');
 
-          (async () => {
-            const sources = [
-              {
-                url: 'https://raw.githubusercontent.com/openfootball/europe/master/ukraine/2024-25_ua1.txt',
-                country: 'UKR',
-                competition: 'Ukraine Premier League 2024/25',
-                targetName: 'Shakhtar Donetsk',
-                targetSlug: 'shakhtar',
-                expected: 15,
-                floor: 5.182,
-                sourceKey: 'openfootball-ukraine-2024-25'
-              },
-              {
-                url: 'https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt',
-                country: 'CZE',
-                competition: 'Czech First League 2024/25',
-                targetName: 'Slavia Praha',
-                targetSlug: 'slavia',
-                expected: 18,
-                floor: 9.705,
-                sourceKey: 'openfootball-czech-2024-25'
-              }
-            ];
+          function replaceChecked(text, before, after, label) {
+            if (!text.includes(before)) throw new Error(`Missing replacement target: ${label}`);
+            return text.replace(before, after);
+          }
 
-            const coefficientContext = { window: {}, Object };
-            vm.runInNewContext(fs.readFileSync('generated-club-coefficients.js', 'utf8'), coefficientContext);
-            const coefficients = coefficientContext.window.UCLDRAW_CLUB_COEFFICIENTS.clubs;
-            const aliases = {
-              'Shakhtar Donetsk': ['shakhtar'],
-              'Dinamo Kiev': ['dynamokyiv'],
-              'Polissya Zhytomyr': ['polissya'],
-              'Kryvbas Kryvyi Rih': ['kryvbas'],
-              'Slavia Praha': ['slavia'],
-              'AC Sparta Praha': ['spartapraha'],
-              'Viktoria Plzeň': ['plzen'],
-              'Baník Ostrava': ['banikostrava'],
-              'Sigma Olomouc': ['sigmaolomouc'],
-              'FK Jablonec': ['jablonec'],
-              'FC Hradec Králové': ['hradeckralove']
-            };
-            const explicitSlugs = {
-              'Shakhtar Donetsk': 'shakhtar',
-              'Dinamo Kiev': 'dynamokyiv',
-              'Polissya Zhytomyr': 'polissya',
-              'Kryvbas Kryvyi Rih': 'kryvbas',
-              'Slavia Praha': 'slavia',
-              'AC Sparta Praha': 'spartapraha',
-              'Viktoria Plzeň': 'plzen',
-              'Baník Ostrava': 'banikostrava',
-              'Sigma Olomouc': 'sigmaolomouc',
-              'FK Jablonec': 'jablonec',
-              'FC Hradec Králové': 'hradeckralove'
-            };
-            const monthIndex = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+          let test = fs.readFileSync('tests/home-advantage-model.test.js', 'utf8');
+          test = replaceChecked(test,
+            "assert.equal(records.length, 633, 'Stored source archive must contain 633 home matches.');",
+            "assert.equal(records.length, 666, 'Stored source archive must contain 666 home matches.');",
+            'archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 618);",
+            "assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 651);",
+            'domestic archive count');
+          test = replaceChecked(test,
+            "assert.equal(records.filter((match) => match.homeSlug === 'brugge').length, 20);",
+            "assert.equal(records.filter((match) => match.homeSlug === 'brugge').length, 20);\nassert.equal(records.filter((match) => match.homeSlug === 'shakhtar').length, 15);\nassert.equal(records.filter((match) => match.homeSlug === 'slavia').length, 18);",
+            'final Champions match counts');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.storedMatches, 633);\nassert.equal(generated.sourceSummary.matches, 521);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 27);",
+            "assert.equal(generated.sourceSummary.storedMatches, 666);\nassert.equal(generated.sourceSummary.matches, 554);\nassert.equal(generated.sourceSummary.excludedStoredMatches, 112);\nassert.equal(generated.sourceSummary.teams, 29);",
+            'generated summary counts');
+          test = replaceChecked(test,
+            "assert.equal(generated.sourceSummary.domesticMatches, 509);",
+            "assert.equal(generated.sourceSummary.domesticMatches, 542);",
+            'active domestic count');
+          test = replaceChecked(test,
+            "  roma: 1.017,\n  sporting: 1.1129,",
+            "  roma: 1.017,\n  shakhtar: 1.1538,\n  slavia: 1.1747,\n  sporting: 1.1129,",
+            'final Champions attack values');
+          test = replaceChecked(test,
+            "assert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);\nassert.equal(generated.profiles.sporting.attack.overall, 1.0927);",
+            "assert.equal(generated.profiles.roma.attack.vsWeaker, 1.0533);\nassert.equal(generated.profiles.shakhtar.attack.overall, 1.1245);\nassert.equal(generated.profiles.shakhtar.attack.vsWeaker, 1.1538);\nassert.equal(generated.profiles.slavia.attack.overall, 1.1442);\nassert.equal(generated.profiles.slavia.attack.vsSimilar, 1.0413);\nassert.equal(generated.profiles.slavia.attack.vsWeaker, 1.1654);\nassert.equal(generated.profiles.slavia.defense.overall, 0.8419);\nassert.equal(generated.profiles.slavia.defense.domestic, 0.82);\nassert.equal(generated.profiles.sporting.attack.overall, 1.0927);",
+            'final Champions context assertions');
+          test = replaceChecked(test,
+            "assert.equal(generated.researchQueue[0], 'shakhtar');\nassert.equal(generated.researchQueue[1], 'slavia');\nassert.equal(generated.researchQueue[2], 'azalkmaar');\nassert.equal(generated.researchQueue.at(-1), 'torreense');",
+            "assert.equal(generated.researchQueue.length, 13);\nassert.equal(generated.researchQueue[0], 'azalkmaar');\nassert.equal(generated.researchQueue.at(-1), 'torreense');",
+            'Europa-only research queue');
+          fs.writeFileSync('tests/home-advantage-model.test.js', test);
 
-            function normalizedSlug(name) {
-              if (explicitSlugs[name]) return explicitSlugs[name];
-              return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase().replace(/[^a-z0-9]+/g, '').replace(/^(fc|fk|nk|sk)/, '');
-            }
-
-            function coefficientFor(name, floor) {
-              for (const alias of aliases[name] || [normalizedSlug(name)]) {
-                const value = Number(coefficients[alias]?.coefficient);
-                if (Number.isFinite(value)) return value;
-              }
-              return floor;
-            }
-
-            const records = [];
-            for (const config of sources) {
-              const response = await fetch(config.url);
-              if (!response.ok) throw new Error(`${config.country} source request failed: ${response.status}`);
-              const text = await response.text();
-              let currentYear = 2024;
-              let previousMonth = null;
-              let currentDate = null;
-              let count = 0;
-
-              for (const line of text.split(/\r?\n/)) {
-                const dateMatch = line.match(/^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$/);
-                if (dateMatch) {
-                  const month = monthIndex[dateMatch[1]];
-                  if (dateMatch[3]) currentYear = Number(dateMatch[3]);
-                  else if (previousMonth !== null && month < previousMonth - 6) currentYear += 1;
-                  previousMonth = month;
-                  currentDate = `${currentYear}-${String(month + 1).padStart(2, '0')}-${String(Number(dateMatch[2])).padStart(2, '0')}`;
-                  continue;
-                }
-
-                const match = line.match(/^\s*(?:\d{2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s+(\d+)-(\d+)(?:\s+\([^)]*\))?(?:\s+\[[^\]]+\])?\s*$/);
-                if (!match || !currentDate || match[1].trim() !== config.targetName) continue;
-                const homeName = match[1].trim();
-                const awayName = match[2].trim();
-                records.push({
-                  date: currentDate,
-                  competitionType: 'domestic',
-                  competition: config.competition,
-                  homeSlug: config.targetSlug,
-                  homeName,
-                  homeCountry: config.country,
-                  awaySlug: normalizedSlug(awayName),
-                  awayName,
-                  awayCountry: config.country,
-                  homeCoefficient: coefficientFor(homeName, config.floor),
-                  awayCoefficient: coefficientFor(awayName, config.floor),
-                  homePot: 1,
-                  awayPot: 1,
-                  potCount: 1,
-                  homeGoals: Number(match[3]),
-                  awayGoals: Number(match[4]),
-                  sourceKey: config.sourceKey
-                });
-                count += 1;
-              }
-              if (count !== config.expected) {
-                throw new Error(`Expected ${config.expected} ${config.targetSlug} home matches, received ${count}.`);
-              }
-            }
-
-            records.sort((left, right) => left.date.localeCompare(right.date) || left.homeSlug.localeCompare(right.homeSlug));
-            if (records.length !== 33) throw new Error(`Expected 33 final Champions home matches, received ${records.length}.`);
-            fs.writeFileSync('data/home-advantage-matches/shakhtar-slavia-2024-25.json', `${JSON.stringify(records)}\n`);
-            console.log(JSON.stringify({
-              shakhtar: records.filter((record) => record.homeSlug === 'shakhtar').length,
-              slavia: records.filter((record) => record.homeSlug === 'slavia').length
-            }));
-          })().catch((error) => {
-            console.error(error);
-            process.exitCode = 1;
-          });
+          let docs = fs.readFileSync('docs/home-advantage-model.md', 'utf8');
+          docs = replaceChecked(docs,
+            'The archive contains 633 verified home matches. The guaranteed-team filter currently includes 521 matches across 27 active profiles:',
+            'The archive contains 666 verified home matches. The guaranteed-team filter currently includes 554 matches across 29 active profiles:',
+            'documentation counts');
+          docs = replaceChecked(docs,
+            '- Club Brugge: 20, including the championship play-off round.',
+            '- Club Brugge: 20, including the championship play-off round;\n- Shakhtar Donetsk: 15;\n- Slavia Prague: 18, including the championship round.',
+            'documentation final club counts');
+          docs = replaceChecked(docs,
+            'The remaining 112 archived records are retained but excluded from runtime generation. The next missing guaranteed Champions League club is Shakhtar Donetsk.',
+            'The remaining 112 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs now have active profiles, so the research queue begins with guaranteed Europa League club AZ Alkmaar.',
+            'documentation completed scope');
+          docs = replaceChecked(docs,
+            "Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.\n\n### Belgium 2024/25",
+            "Porto remains below the attack ceiling and is approximately neutral against similar-strength opponents at `0.9779`. Its weaker-opponent visiting-goal multiplier is `0.8311`, a strong positive home defensive signal in that context. Sporting is also below the ceiling; its similar-opponent attack residual is `0.9754`, while the corresponding visiting-goal multiplier is `0.8817`.\n\n### Ukraine and Czechia 2024/25\n\n`shakhtar-slavia-2024-25.json` contains all 15 Shakhtar Donetsk Ukrainian Premier League home matches and all 18 Slavia Prague Czech First League home matches. Slavia's records include its three championship-round home fixtures. Ukrainian opponents without a higher individual coefficient use the `5.182` association floor; Czech opponents use `9.705`.\n\n| Club | Domestic attack | Notable context |\n|---|---:|---:|\n| Shakhtar Donetsk | 1.1538 | Weaker opponents: 1.1538 |\n| Slavia Prague | 1.1747 | Domestic visiting-goal multiplier: 0.8200 |\n\nAll Shakhtar league opponents fall into the weaker-opponent bucket under the current coefficient snapshot, so no unsupported similar- or stronger-opponent effect is emitted. Slavia remains just below the attack ceiling and combines that signal with a visiting-goal multiplier at the conservative `0.82` floor. Its similar-opponent attack value is `1.0413`, while the broader weaker-opponent attack value is `1.1654`.\n\n### Belgium 2024/25",
+            'Ukraine and Czechia documentation');
+          fs.writeFileSync('docs/home-advantage-model.md', docs);
           NODE
-      - name: Regenerate profile payload
-        run: node scripts/build-home-advantage-profiles.mjs
-      - name: Commit verified final Champions profiles
+      - name: Commit finalized guaranteed Champions profiles
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/home-advantage-matches/shakhtar-slavia-2024-25.json generated-home-advantage-profiles.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate final guaranteed Champions profiles"
-            git push origin HEAD:agent/complete-guaranteed-champions-home-profiles
-          fi
+          git rm .github/workflows/generate-final-champions-home-profiles.yml
+          git add tests/home-advantage-model.test.js docs/home-advantage-model.md
+          git commit -m "Finalize guaranteed Champions home profiles"
+          git push origin HEAD:agent/complete-guaranteed-champions-home-profiles
