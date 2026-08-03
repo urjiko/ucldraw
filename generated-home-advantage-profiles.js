@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 717,
-    "matches": 605,
+    "storedMatches": 755,
+    "matches": 643,
     "excludedStoredMatches": 112,
-    "teams": 32,
+    "teams": 34,
     "activeTeamScope": 42,
-    "domesticMatches": 593,
+    "domesticMatches": 631,
     "europeanMatches": 12,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -23,6 +23,7 @@
       "data/home-advantage-matches/azalkmaar-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
+      "data/home-advantage-matches/bournemouth-palace-2024-25.json",
       "data/home-advantage-matches/brugge-2024-25.json",
       "data/home-advantage-matches/city-2024-25.json",
       "data/home-advantage-matches/como-inter-napoli-roma-2024-25.json",
@@ -157,9 +158,7 @@
     ]
   },
   "researchQueue": [
-    "bournemouth",
     "celtavigo",
-    "crystalpalace",
     "juventus",
     "marseille",
     "milan",
@@ -666,6 +665,77 @@
         }
       }
     },
+    "bournemouth": {
+      "name": "Bournemouth",
+      "country": "ENG",
+      "attack": {
+        "overall": 0.9456,
+        "domestic": 0.9345,
+        "europe": 1,
+        "vsStronger": 0.9967,
+        "vsSimilar": 0.9308,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 0.8754,
+        "domestic": 0.8499,
+        "europe": 1,
+        "vsStronger": 0.9156,
+        "vsSimilar": 0.8825,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4917,
+        "domestic": 0.592,
+        "europe": 0,
+        "vsStronger": 0.2786,
+        "vsSimilar": 0.5158,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4917,
+        "domestic": 0.592,
+        "europe": 0,
+        "vsStronger": 0.2786,
+        "vsSimilar": 0.5158,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.42
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.42
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 5,
+          "effective": 4.63
+        },
+        "vsSimilar": {
+          "raw": 14,
+          "effective": 12.78
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 0.9345,
+          "defense": 0.8499,
+          "confidence": 0.592,
+          "samples": 19,
+          "effectiveSample": 17.42
+        }
+      }
+    },
     "brugge": {
       "name": "Club Brugge",
       "country": "BEL",
@@ -947,6 +1017,77 @@
           "confidence": 0.5932,
           "samples": 19,
           "effectiveSample": 17.5
+        }
+      }
+    },
+    "crystalpalace": {
+      "name": "Crystal Palace",
+      "country": "ENG",
+      "attack": {
+        "overall": 0.9854,
+        "domestic": 0.9824,
+        "europe": 1,
+        "vsStronger": 1.1448,
+        "vsSimilar": 0.9192,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.091,
+        "domestic": 1.1096,
+        "europe": 1,
+        "vsStronger": 1.0626,
+        "vsSimilar": 1.0843,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4903,
+        "domestic": 0.5906,
+        "europe": 0,
+        "vsStronger": 0.2705,
+        "vsSimilar": 0.5174,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4903,
+        "domestic": 0.5906,
+        "europe": 0,
+        "vsStronger": 0.2705,
+        "vsSimilar": 0.5174,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.31
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 5,
+          "effective": 4.45
+        },
+        "vsSimilar": {
+          "raw": 14,
+          "effective": 12.86
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ENG": {
+          "attack": 0.9824,
+          "defense": 1.1096,
+          "confidence": 0.5906,
+          "samples": 19,
+          "effectiveSample": 17.31
         }
       }
     },
