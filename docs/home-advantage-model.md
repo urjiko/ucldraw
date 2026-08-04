@@ -8,9 +8,10 @@ Profile work follows the active groups in `generated-team-pools.js`:
 2. `europa.guaranteed`;
 3. `champions.playoffs`;
 4. `europa.playoffs`;
-5. `conference.playoffs`.
+5. `conference.playoffs`;
+6. `champions.q3`.
 
-Guaranteed Champions and Europa clubs remain the first two priorities, followed by the Champions, Europa, and Conference play-off pools. All five configured groups are complete. Records outside these groups remain archived and do not affect runtime generation.
+Guaranteed Champions and Europa clubs remain the first two priorities, followed by the Champions, Europa, and Conference play-off pools and then the Champions League third qualifying-round pool. All six configured groups are complete. Records outside these groups remain archived and do not affect runtime generation.
 
 Current manifest scope:
 
@@ -19,11 +20,12 @@ Current manifest scope:
 - 4 Champions League play-off clubs;
 - 5 Europa League play-off clubs;
 - 5 Conference League play-off clubs;
-- 56 unique active clubs.
+- 6 Champions League third qualifying-round clubs;
+- 62 unique active clubs.
 
 ## Current snapshot
 
-The archive contains 1,150 verified home matches. The active-team filter currently includes 1,078 matches across all 56 active profiles:
+The archive contains 1,252 verified home matches. The active-team filter currently includes 1,180 matches across all 62 active profiles:
 
 - Galatasaray: 48;
 - Arsenal, Aston Villa, Atlético Madrid, Barcelona, Bournemouth, Celta Vigo, Como, Crystal Palace, Internazionale, Juventus, Liverpool, Manchester City, Manchester United, Milan, Napoli, Real Betis, Real Madrid, Real Sociedad, Roma, and Villarreal: 19 each;
@@ -42,9 +44,13 @@ The archive contains 1,150 verified home matches. The active-team filter current
 - Sint-Truiden: 18;
 - Viktoria Plzeň: 18;
 - Atalanta, Brighton & Hove Albion, and Getafe: 19 each;
-- SC Freiburg and AS Monaco: 17 each.
+- SC Freiburg and AS Monaco: 17 each;
+- Bodø/Glimt: 15;
+- Olympique Lyonnais, NEC, and Sparta Praha: 17 each;
+- Olympiacos: 16;
+- Union Saint-Gilloise: 20, including the championship play-off round.
 
-The remaining 72 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, all four Champions League play-off clubs, all five Europa League play-off clubs, and all five Conference League play-off clubs now have active profiles. The active-scope research queue is empty.
+The remaining 72 archived records are retained but excluded from runtime generation. All 29 guaranteed Champions League clubs, all 13 guaranteed Europa League clubs, all four Champions League play-off clubs, all five Europa League play-off clubs, all five Conference League play-off clubs, and all six Champions League third qualifying-round clubs now have active profiles. The active-scope research queue is empty.
 
 ## Data batches
 
@@ -120,6 +126,21 @@ OFI is nearly neutral overall but improves against similar opponents. Lillestrø
 | AS Monaco | 1.1574 | 1.1145 | Weaker opponents: 1.1448 attack |
 
 Atalanta remains close to its coefficient baseline. Brighton and Monaco show strong positive attacking residuals, while Freiburg is moderately positive overall. Getafe reaches the attack floor but also shows a positive home defensive residual because its visiting-goal multiplier is below 1. A visiting-goal multiplier above 1 means opponents scored above baseline; it is not a defensive bonus.
+
+### Champions League third qualifying-round clubs, 2024/25
+
+`bodo-lyon-nec-olympiacos-spartapraha-union-2024-25.json` adds 102 domestic home matches for the six clubs in `champions.q3`: Bodø/Glimt 15, Olympique Lyonnais 17, NEC 17, Olympiacos 16, Sparta Praha 17, and Union Saint-Gilloise 20. Belgian and Czech championship-round matches remain included. Sparta has 17 rather than 18 home observations because its five-match championship group contained two home and three away fixtures.
+
+| Club | Domestic attack | Domestic visiting-goal multiplier | Notable context |
+|---|---:|---:|---|
+| Bodø/Glimt | 1.1800 | 1.1600 | All 15 observations: weaker opponents |
+| Olympique Lyonnais | 1.1210 | 1.1600 | Weaker opponents: 1.1236 attack |
+| NEC | 1.1800 | 1.1544 | Stronger and similar opponents: 1.1800 attack |
+| Olympiacos | 1.0039 | 1.1600 | All 16 observations: weaker opponents |
+| Sparta Praha | 1.0200 | 1.1600 | Similar opponents: 1.0576 attack |
+| Union Saint-Gilloise | 1.0924 | 0.8888 | Similar opponents: 0.8342 visiting goals |
+
+Bodø/Glimt and NEC reach the attack ceiling, while Lyon and Union show clear positive domestic attacking residuals. Olympiacos and Sparta remain close to their coefficient baselines. Union also shows the strongest positive home defensive residual in this batch. Values above 1 in the visiting-goal column mean opponents scored above baseline; they are not defensive bonuses.
 
 ### Spain and Germany 2024/25
 
