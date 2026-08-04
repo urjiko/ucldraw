@@ -85,6 +85,14 @@
       link.dataset.uiRefinementV7 = 'true';
       document.head.appendChild(link);
     }
+
+    if (!document.querySelector('link[data-ui-refinement-v8]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'ui-refinement-v8.css';
+      link.dataset.uiRefinementV8 = 'true';
+      document.head.appendChild(link);
+    }
   }
 
   function applyInterfaceCopy(root = document) {

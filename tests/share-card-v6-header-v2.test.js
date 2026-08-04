@@ -10,6 +10,7 @@ const html = read('index.html');
 const share = read('prediction-share-v6.js');
 const headerJs = read('prediction-header-v2.js');
 const headerCss = read('prediction-header-v2.css');
+const refinementCss = read('ui-refinement-v8.css');
 const branding = read('branding-fixes.js');
 
 assert.ok(html.includes('<link rel="stylesheet" href="prediction-header-v2.css">'));
@@ -54,6 +55,8 @@ for (const [leagueId, asset] of Object.entries({
 assert.match(branding, /Object\.entries\(svgLogos\)\.forEach/);
 assert.match(branding, /#competitionPicker button\[data-league\]/);
 assert.match(branding, /#brandMark img/);
+assert.match(branding, /ui-refinement-v8\.css/);
+assert.match(branding, /data-ui-refinement-v8/);
 
 assert.match(headerJs, /function fallbackProgress\(summary\)/);
 assert.match(headerJs, /engine\.standings\(state\)/);
@@ -61,12 +64,19 @@ assert.match(headerJs, /engine\.progress\(state, activeName\)/);
 assert.match(headerJs, /setText\(rank, `\$\{row\.rank\}\. sıra`\)/);
 assert.match(headerJs, /setText\(status, zoneText\(row\.zone\)\)/);
 assert.match(headerJs, /prediction-header-progress-track/);
-assert.match(headerJs, /if \(fill\.style\.width !== width\) fill\.style\.width = width/);
+assert.match(headerJs, /new ClipboardItem|prediction-header-progress-value/);
+assert.doesNotMatch(headerJs, /prediction-header-progress-label/);
+assert.match(headerJs, /header\.dataset\.progress = String\(progress\.percentage\)/);
 assert.match(headerCss, /width:\s*min\(920px, 100%\)/);
-assert.match(headerCss, /min-height:\s*74px/);
-assert.match(headerCss, /width:\s*54px !important/);
-assert.match(headerCss, /grid-template-columns:\s*minmax\(0, 1fr\)/);
 assert.match(headerCss, /\.prediction-back-button::before[\s\S]*content:\s*'←'/);
 assert.match(headerCss, /\.prediction-header-progress-track/);
 
-console.log('Soft glass share-card, SVG picker and compact prediction-header checks passed.');
+assert.match(refinementCss, /grid-template-columns:\s*38px minmax\(0, 1fr\) minmax\(220px, 300px\)/);
+assert.match(refinementCss, /grid-template-rows:\s*1fr\s*!important/);
+assert.match(refinementCss, /\.prediction-header-progress[\s\S]*display:\s*contents\s*!important/);
+assert.match(refinementCss, /@media \(max-width:\s*600px\)[\s\S]*grid-template-columns:\s*34px minmax\(0, 1fr\) minmax\(132px, 150px\)/);
+assert.match(refinementCss, /\.prediction-summary-status,[\s\S]*\.prediction-header-progress-value[\s\S]*display:\s*block\s*!important/);
+assert.match(refinementCss, /draw-header-refined\.is-complete[\s\S]*place-items:\s*center\s*!important/);
+assert.match(refinementCss, /:has\(\.progress-track\.is-complete\)/);
+
+console.log('Soft glass share-card, SVG picker and one-row prediction-header checks passed.');

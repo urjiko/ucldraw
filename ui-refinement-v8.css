@@ -1,0 +1,220 @@
+/* Final one-row prediction header and completed-draw centering. Loaded after v7. */
+body.prediction-active .prediction-header.prediction-header-refined.prediction-header-compact {
+  --prediction-header-control-height: 54px;
+  width: min(920px, 100%) !important;
+  min-height: 64px !important;
+  max-height: none !important;
+  grid-template-columns: 38px minmax(0, 1fr) minmax(220px, 300px) !important;
+  grid-template-rows: 1fr !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 5px 7px !important;
+}
+
+body.prediction-active .prediction-header-compact .prediction-back-button {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 54px !important;
+  min-height: 54px !important;
+}
+
+body.prediction-active .prediction-header-compact .prediction-header-identity {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0;
+  gap: 8px !important;
+}
+
+body.prediction-active .prediction-header-compact .prediction-hero-crest .polished-hero-crest {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+body.prediction-active .prediction-header-compact .prediction-header-controls {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  min-width: 0;
+  height: 54px !important;
+}
+
+body.prediction-active .prediction-header-compact .prediction-summary {
+  width: 100%;
+  min-width: 0;
+  height: 54px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto 4px !important;
+  align-content: center !important;
+  gap: 0 8px !important;
+  padding: 5px 8px !important;
+  overflow: visible !important;
+}
+
+.prediction-header-compact .prediction-summary > strong {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  font-size: 0.78rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap;
+}
+
+.prediction-header-compact .prediction-summary > span:not(.prediction-summary-status):not(.prediction-header-progress) {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.58rem !important;
+  line-height: 1.05 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prediction-header-compact .prediction-summary-status {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: block !important;
+  align-self: end !important;
+  max-width: none !important;
+  font-size: 0.64rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap;
+}
+
+.prediction-header-compact .prediction-header-progress {
+  display: contents !important;
+}
+
+.prediction-header-compact .prediction-header-progress-value {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: start;
+  font-size: 0.58rem !important;
+  line-height: 1.05 !important;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.prediction-header-compact .prediction-header-progress-track {
+  grid-column: 1 / -1 !important;
+  grid-row: 3 !important;
+  align-self: end;
+  height: 4px !important;
+}
+
+body.draw-active .draw-topbar.draw-header-refined.is-complete,
+body.draw-active .draw-topbar.draw-header-refined:has(.progress-track.is-complete) {
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important;
+  place-items: center !important;
+  padding: 8px !important;
+}
+
+body.draw-active .draw-topbar.draw-header-refined.is-complete .progress-track,
+body.draw-active .draw-topbar.draw-header-refined:has(.progress-track.is-complete) .progress-track {
+  display: none !important;
+}
+
+body.draw-active .draw-topbar.draw-header-refined.is-complete .draw-header-identity,
+body.draw-active .draw-topbar.draw-header-refined:has(.progress-track.is-complete) .draw-header-identity {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 600px) {
+  body.prediction-active .prediction-header.prediction-header-refined.prediction-header-compact {
+    --prediction-header-control-height: 48px;
+    min-height: 58px !important;
+    grid-template-columns: 34px minmax(0, 1fr) minmax(132px, 150px) !important;
+    grid-template-rows: 1fr !important;
+    gap: 5px !important;
+    padding: 5px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-back-button {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-header-identity {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    gap: 6px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-header-controls {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    height: 48px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-hero-crest .polished-hero-crest {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .prediction-header-compact .prediction-header-identity h2 {
+    font-size: clamp(1rem, 4.3vw, 1.28rem) !important;
+  }
+
+  .prediction-header-compact .prediction-kicker {
+    font-size: 0.46rem !important;
+    letter-spacing: 0.07em !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-summary {
+    height: 48px !important;
+    grid-template-rows: auto auto 3px !important;
+    gap: 0 4px !important;
+    padding: 4px 6px !important;
+  }
+
+  .prediction-header-compact .prediction-summary > strong {
+    font-size: 0.68rem !important;
+  }
+
+  .prediction-header-compact .prediction-summary > span:not(.prediction-summary-status):not(.prediction-header-progress) {
+    font-size: 0.51rem !important;
+  }
+
+  .prediction-header-compact .prediction-summary-status,
+  .prediction-header-compact .prediction-header-progress-value {
+    display: block !important;
+    font-size: 0.54rem !important;
+  }
+
+  .prediction-header-compact .prediction-header-progress-track {
+    height: 3px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body.prediction-active .prediction-header.prediction-header-refined.prediction-header-compact {
+    grid-template-columns: 32px minmax(0, 1fr) minmax(124px, 138px) !important;
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-back-button {
+    width: 32px !important;
+    min-width: 32px !important;
+  }
+
+  body.prediction-active .prediction-header-compact .prediction-hero-crest .polished-hero-crest {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .prediction-header-compact .prediction-header-identity h2 {
+    font-size: 0.94rem !important;
+  }
+}
