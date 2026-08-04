@@ -1,0 +1,23 @@
+name: Inspect Champions Q3 home sources
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.head_ref == 'agent/add-champions-q3-home-profiles'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-champions-q3-home-profiles
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Inspect source coverage
+        run: node scripts/inspect-champions-q3-sources.mjs
