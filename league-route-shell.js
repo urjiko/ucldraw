@@ -8,8 +8,12 @@
 
   window.UCLDRAW_APP_ROOT = appRootUrl.href;
 
-  const base = document.querySelector('base') || document.head.prepend(document.createElement('base'));
-  if (base instanceof HTMLBaseElement) base.href = appRootUrl.href;
+  let base = document.querySelector('base');
+  if (!base) {
+    base = document.createElement('base');
+    document.head.prepend(base);
+  }
+  base.href = appRootUrl.href;
 
   function appUrl(source) {
     return new URL(source, appRootUrl).href;
