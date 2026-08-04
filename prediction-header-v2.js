@@ -60,8 +60,6 @@
       ].join('');
       summary.appendChild(block);
     }
-
-    block.querySelector('.prediction-header-progress-label')?.remove();
     return block;
   }
 
