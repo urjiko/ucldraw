@@ -1,6 +1,14 @@
 (() => {
   'use strict';
 
+  const existingRuntime = document.querySelector('script[data-league-routes-runtime]');
+  if (!existingRuntime) {
+    const runtime = document.createElement('script');
+    runtime.src = 'league-routes.js';
+    runtime.dataset.leagueRoutesRuntime = 'true';
+    document.body.appendChild(runtime);
+  }
+
   if (document.querySelector('.site-disclaimer')) return;
   const app = document.getElementById('app');
   if (!app) return;
