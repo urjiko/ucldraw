@@ -33,8 +33,11 @@ for (const [leagueId, league, asset] of [
 if (!javascript.includes('Object.entries(svgLogos).forEach')) {
   throw new Error('SVG competition logos are not applied after dynamic pool loading.');
 }
-if (!javascript.includes("competitions.uecl.background = 'crests/pools/conference/arkaplancon.jpg'")) {
-  throw new Error('Conference League background is not connected.');
+if (!javascript.includes("competitions.uecl.background = assetUrl('crests/pools/conference/arkaplancon.jpg')")) {
+  throw new Error('Conference League background is not connected through the shared asset root.');
+}
+if (!javascript.includes("window.UCLDRAW_APP_ROOT || '.'")) {
+  throw new Error('Runtime branding assets do not use the shared application root.');
 }
 if (!javascript.includes("element.lang = 'en'")) {
   throw new Error('English competition names are not locale protected.');

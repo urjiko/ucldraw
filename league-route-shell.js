@@ -3,15 +3,30 @@
 
   const loader = document.currentScript;
   const leagueId = loader?.dataset.league || document.body.dataset.initialLeague || 'ucl';
+  const loaderUrl = new URL(loader?.src || 'league-route-shell.js', window.location.href);
+  const appRootUrl = new URL('./', loaderUrl);
+
+  window.UCLDRAW_APP_ROOT = appRootUrl.href;
+
+  let base = document.querySelector('base');
+  if (!base) {
+    base = document.createElement('base');
+    document.head.prepend(base);
+  }
+  base.href = appRootUrl.href;
+
+  function appUrl(source) {
+    return new URL(source, appRootUrl).href;
+  }
 
   function loadScript(source, attributes = {}) {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = source;
+      script.src = appUrl(source);
       script.async = false;
       Object.entries(attributes).forEach(([name, value]) => script.setAttribute(name, value));
       script.addEventListener('load', resolve, { once: true });
-      script.addEventListener('error', () => reject(new Error(`${source} yüklenemedi.`)), { once: true });
+      script.addEventListener('error', () => reject(new Error(`${script.src} yüklenemedi.`)), { once: true });
       document.body.appendChild(script);
     });
   }
@@ -28,7 +43,7 @@
   }
 
   async function boot() {
-    const response = await fetch('index.html', { cache: 'no-cache' });
+    const response = await fetch(appUrl('index.html'), { cache: 'no-cache' });
     if (!response.ok) throw new Error(`Ana uygulama ${response.status} hatası verdi.`);
     const source = await response.text();
     const parsed = new DOMParser().parseFromString(source, 'text/html');
@@ -36,7 +51,7 @@
     parsed.head.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
       const copy = document.createElement('link');
       copy.rel = 'stylesheet';
-      copy.href = link.getAttribute('href');
+      copy.href = appUrl(link.getAttribute('href'));
       document.head.appendChild(copy);
     });
 
@@ -61,7 +76,7 @@
 
   boot().catch((error) => {
     document.documentElement.classList.remove('route-loading');
-    document.body.innerHTML = `<main class="route-error"><h1>Sayfa yüklenemedi</h1><p>${error.message}</p><a href="../">Ana sayfaya dön</a></main>`;
+    document.body.innerHTML = `<main class="route-error"><h1>Sayfa yüklenemedi</h1><p>${error.message}</p><a href="${appRootUrl.href}">Ana sayfaya dön</a></main>`;
     console.error(error);
   });
 })();
