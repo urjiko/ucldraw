@@ -53,10 +53,14 @@ assert.match(css6, /body\.draw-active \.draw-topbar\.themed-hero\.draw-header-re
 assert.match(css6, /\.draw-header-refined \.polished-hero-crest[\s\S]*width:\s*58px/);
 assert.match(css6, /body\.draw-active \.draw-topbar\.draw-header-refined \.progress-track[\s\S]*bottom:\s*3px/);
 assert.match(css6, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*--prediction-header-column-gap:\s*clamp\(18px, 2\.4vw, 28px\)/);
-assert.match(css6, /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(190px, 230px\) minmax\(118px, 156px\)/);
+assert.match(css6, /grid-template-columns:\s*42px minmax\(0, 1fr\) minmax\(250px, 320px\)/);
 assert.match(css6, /column-gap:\s*var\(--prediction-header-column-gap\)/);
+assert.match(css6, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*width:\s*min\(920px, 100%\)/);
 assert.match(css6, /body\.prediction-active \.prediction-header\.prediction-header-refined[\s\S]*min-height:\s*70px/);
-assert.match(css6, /\.prediction-header-refined \.prediction-hero-crest \.polished-hero-crest[\s\S]*width:\s*60px/);
+assert.match(css6, /\.prediction-header-refined \.prediction-back-button[\s\S]*width:\s*42px\s*!important/);
+assert.match(css6, /\.prediction-header-refined \.prediction-back-button::before[\s\S]*content:\s*'←'/);
+assert.match(css6, /\.prediction-header-refined \.prediction-hero-crest \.polished-hero-crest[\s\S]*width:\s*54px/);
+assert.match(css6, /\.prediction-header-refined \.prediction-summary-status[\s\S]*display:\s*block\s*!important/);
 
 assert.match(css7, /body\.draw-active \.draw-screen[\s\S]*align-content:\s*start\s*!important/);
 assert.match(css7, /body\.draw-active \.draw-screen[\s\S]*grid-auto-rows:\s*max-content\s*!important/);
