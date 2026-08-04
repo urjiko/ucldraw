@@ -2,7 +2,6 @@ const jsonSources = Object.freeze({
   france: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/fr.1.json',
   netherlands: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/nl.1.json',
   greece: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/gr.1.json',
-  czechia: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/cz.1.json',
   belgium: 'https://raw.githubusercontent.com/openfootball/football.json/master/2024-25/be.1.json'
 });
 
@@ -10,7 +9,6 @@ const targetHints = Object.freeze({
   france: ['lyon'],
   netherlands: ['nec'],
   greece: ['olympi'],
-  czechia: ['sparta'],
   belgium: ['union', 'gilloise']
 });
 
@@ -41,15 +39,27 @@ for (const [key, url] of Object.entries(jsonSources)) {
   };
 }
 
-const norwayUrl = 'https://raw.githubusercontent.com/openfootball/europe/master/norway/2024_no1.txt';
-const norwayResponse = await fetch(norwayUrl, { headers: { 'user-agent': 'UEFA-home-profile-inspector/1.0' } });
-if (!norwayResponse.ok) throw new Error(`Norway source failed: ${norwayResponse.status}`);
-const norwayText = await norwayResponse.text();
-const norwayLines = norwayText.split(/\r?\n/).filter((line) => /bod[oø]/i.test(line));
-report.norway = {
-  source: norwayUrl,
-  fixtureHeader: norwayText.match(/\d+\s+matches?/i)?.[0] || null,
-  targetLines: norwayLines
-};
+const textSources = Object.freeze({
+  norway: {
+    url: 'https://raw.githubusercontent.com/openfootball/europe/master/norway/2024_no1.txt',
+    pattern: /bod[oø]/i
+  },
+  czechia: {
+    url: 'https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt',
+    pattern: /sparta/i
+  }
+});
+
+for (const [key, config] of Object.entries(textSources)) {
+  const response = await fetch(config.url, { headers: { 'user-agent': 'UEFA-home-profile-inspector/1.0' } });
+  if (!response.ok) throw new Error(`${key} source failed: ${response.status}`);
+  const text = await response.text();
+  const targetLines = text.split(/\r?\n/).filter((line) => config.pattern.test(line));
+  report[key] = {
+    source: config.url,
+    fixtureHeader: text.match(/\d+\s+matches?/i)?.[0] || null,
+    targetLines
+  };
+}
 
 console.log(JSON.stringify(report, null, 2));
