@@ -55,14 +55,18 @@ assert.match(branding, /Object\.entries\(svgLogos\)\.forEach/);
 assert.match(branding, /#competitionPicker button\[data-league\]/);
 assert.match(branding, /#brandMark img/);
 
-assert.match(headerJs, /function parseProgress\(summary\)/);
-assert.match(headerJs, /Math\.round\(\(completed \/ total\) \* 100\)/);
+assert.match(headerJs, /function fallbackProgress\(summary\)/);
+assert.match(headerJs, /engine\.standings\(state\)/);
+assert.match(headerJs, /engine\.progress\(state, activeName\)/);
+assert.match(headerJs, /setText\(rank, `\$\{row\.rank\}\. sıra`\)/);
+assert.match(headerJs, /setText\(status, zoneText\(row\.zone\)\)/);
 assert.match(headerJs, /prediction-header-progress-track/);
-assert.match(headerJs, /style\.width = `\$\{progress\.percentage\}%`/);
-assert.match(headerCss, /width:\s*min\(1120px, 100%\)/);
-assert.match(headerCss, /min-height:\s*94px/);
-assert.match(headerCss, /width:\s*60px !important/);
-assert.match(headerCss, /grid-template-columns:\s*auto minmax\(205px, 238px\)/);
+assert.match(headerJs, /if \(fill\.style\.width !== width\) fill\.style\.width = width/);
+assert.match(headerCss, /width:\s*min\(920px, 100%\)/);
+assert.match(headerCss, /min-height:\s*74px/);
+assert.match(headerCss, /width:\s*54px !important/);
+assert.match(headerCss, /grid-template-columns:\s*minmax\(0, 1fr\)/);
+assert.match(headerCss, /\.prediction-back-button::before[\s\S]*content:\s*'←'/);
 assert.match(headerCss, /\.prediction-header-progress-track/);
 
-console.log('Soft glass share-card, SVG picker and prediction-header checks passed.');
+console.log('Soft glass share-card, SVG picker and compact prediction-header checks passed.');
