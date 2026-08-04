@@ -1,4 +1,4 @@
-name: Inspect Champions Q3 home sources
+name: Generate Champions Q3 home profiles
 
 on:
   pull_request:
@@ -6,18 +6,45 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  inspect:
+  generate:
     if: github.head_ref == 'agent/add-champions-q3-home-profiles'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/add-champions-q3-home-profiles
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Inspect source coverage
-        run: node scripts/inspect-champions-q3-sources.mjs
+      - name: Build Champions Q3 home matches
+        run: node scripts/generate-champions-q3-home-profiles.mjs
+      - name: Regenerate profile payload
+        run: node scripts/build-home-advantage-profiles.mjs
+      - name: Report generated profile values
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const context = { window: {}, Object };
+          vm.runInNewContext(fs.readFileSync('generated-home-advantage-profiles.js', 'utf8'), context);
+          const payload = context.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
+          const slugs = ['bodo', 'lyon', 'nec', 'olympiacos', 'spartapraha', 'union'];
+          console.log(JSON.stringify({
+            sourceSummary: payload.sourceSummary,
+            researchQueue: payload.researchQueue,
+            profiles: Object.fromEntries(slugs.map((slug) => [slug, payload.profiles[slug]]))
+          }));
+          NODE
+      - name: Commit generated Champions Q3 profiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/home-advantage-matches/bodo-lyon-nec-olympiacos-spartapraha-union-2024-25.json scripts/build-home-advantage-profiles.mjs generated-home-advantage-profiles.js docs/home-advantage-sources/champions-q3-2024-25.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate Champions Q3 home profiles"
+            git push origin HEAD:agent/add-champions-q3-home-profiles
+          fi
