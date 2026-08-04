@@ -7,16 +7,17 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 1252,
-    "matches": 1180,
-    "excludedStoredMatches": 72,
-    "teams": 62,
-    "activeTeamScope": 62,
-    "domesticMatches": 1165,
+    "storedMatches": 1338,
+    "matches": 1284,
+    "excludedStoredMatches": 54,
+    "teams": 68,
+    "activeTeamScope": 76,
+    "domesticMatches": 1269,
     "europeanMatches": 15,
-    "latestIncludedMatchDate": "2025-05-30",
+    "latestIncludedMatchDate": "2025-05-31",
     "files": [
       "data/home-advantage-matches.json",
+      "data/home-advantage-matches/aarhus-ararat-celje-crvenazvezda-dinamo-2024-25.json",
       "data/home-advantage-matches/aek-celtic-lask-viking-2024-25.json",
       "data/home-advantage-matches/arsenal-liverpool-2024-25.json",
       "data/home-advantage-matches/astonvilla-2024-25.json",
@@ -162,6 +163,26 @@
           "spartapraha",
           "union"
         ]
+      },
+      {
+        "competition": "champions",
+        "stage": "q2",
+        "teams": [
+          "aarhus",
+          "ararat",
+          "celje",
+          "crvenazvezda",
+          "dinamo",
+          "fenerbahce",
+          "hapoelbeersheva",
+          "kairat",
+          "levskisofia",
+          "mjallby",
+          "sabah",
+          "slovanbratislava",
+          "strumgraz",
+          "zalgiris"
+        ]
       }
     ],
     "teams": [
@@ -226,11 +247,105 @@
       "nec",
       "olympiacos",
       "spartapraha",
-      "union"
+      "union",
+      "aarhus",
+      "ararat",
+      "celje",
+      "crvenazvezda",
+      "dinamo",
+      "fenerbahce",
+      "hapoelbeersheva",
+      "kairat",
+      "levskisofia",
+      "mjallby",
+      "sabah",
+      "slovanbratislava",
+      "strumgraz",
+      "zalgiris"
     ]
   },
-  "researchQueue": [],
+  "researchQueue": [
+    "hapoelbeersheva",
+    "kairat",
+    "levskisofia",
+    "mjallby",
+    "sabah",
+    "slovanbratislava",
+    "strumgraz",
+    "zalgiris"
+  ],
   "profiles": {
+    "aarhus": {
+      "name": "AGF Aarhus",
+      "country": "DEN",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 1.1521,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.0041,
+        "domestic": 1.005,
+        "europe": 1,
+        "vsStronger": 1.0164,
+        "vsSimilar": 0.9775,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4449,
+        "domestic": 0.5459,
+        "europe": 0,
+        "vsStronger": 0.5127,
+        "vsSimilar": 0.1305,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4449,
+        "domestic": 0.5459,
+        "europe": 0,
+        "vsStronger": 0.5127,
+        "vsSimilar": 0.1305,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 16,
+          "effective": 14.43
+        },
+        "domestic": {
+          "raw": 16,
+          "effective": 14.43
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 14,
+          "effective": 12.62
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.8
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "DEN": {
+          "attack": 1.18,
+          "defense": 1.005,
+          "confidence": 0.5459,
+          "samples": 16,
+          "effectiveSample": 14.43
+        }
+      }
+    },
     "aek": {
       "name": "AEK Athens",
       "country": "GRE",
@@ -299,6 +414,77 @@
           "confidence": 0.547,
           "samples": 16,
           "effectiveSample": 14.49
+        }
+      }
+    },
+    "ararat": {
+      "name": "Ararat-Armenia",
+      "country": "ARM",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.18,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 0.9746,
+        "domestic": 0.9686,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9686,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4318,
+        "domestic": 0.5327,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.5327,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4318,
+        "domestic": 0.5327,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.5327,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 15,
+          "effective": 13.68
+        },
+        "domestic": {
+          "raw": 15,
+          "effective": 13.68
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 15,
+          "effective": 13.68
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "ARM": {
+          "attack": 1.18,
+          "defense": 0.9686,
+          "confidence": 0.5327,
+          "samples": 15,
+          "effectiveSample": 13.68
         }
       }
     },
@@ -1225,6 +1411,77 @@
         }
       }
     },
+    "celje": {
+      "name": "NK Celje",
+      "country": "SVN",
+      "attack": {
+        "overall": 1.1464,
+        "domestic": 1.1774,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.1774
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4758,
+        "domestic": 0.5766,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5766
+      },
+      "defenseConfidence": {
+        "overall": 0.4758,
+        "domestic": 0.5766,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5766
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.34
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.34
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 18,
+          "effective": 16.34
+        }
+      },
+      "associationMatchups": {
+        "SVN": {
+          "attack": 1.1774,
+          "defense": 1.16,
+          "confidence": 0.5766,
+          "samples": 18,
+          "effectiveSample": 16.34
+        }
+      }
+    },
     "celtavigo": {
       "name": "Celta Vigo",
       "country": "ESP",
@@ -1580,6 +1837,77 @@
         }
       }
     },
+    "crvenazvezda": {
+      "name": "Crvena Zvezda",
+      "country": "SRB",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4896,
+        "domestic": 0.59,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.59
+      },
+      "defenseConfidence": {
+        "overall": 0.4896,
+        "domestic": 0.59,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.59
+      },
+      "samples": {
+        "overall": {
+          "raw": 19,
+          "effective": 17.27
+        },
+        "domestic": {
+          "raw": 19,
+          "effective": 17.27
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 19,
+          "effective": 17.27
+        }
+      },
+      "associationMatchups": {
+        "SRB": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.59,
+          "samples": 19,
+          "effectiveSample": 17.27
+        }
+      }
+    },
     "crystalpalace": {
       "name": "Crystal Palace",
       "country": "ENG",
@@ -1648,6 +1976,148 @@
           "confidence": 0.5906,
           "samples": 19,
           "effectiveSample": 17.31
+        }
+      }
+    },
+    "dinamo": {
+      "name": "Dinamo Zagreb",
+      "country": "CRO",
+      "attack": {
+        "overall": 1.096,
+        "domestic": 1.1163,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.1163
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4763,
+        "domestic": 0.577,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.577
+      },
+      "defenseConfidence": {
+        "overall": 0.4763,
+        "domestic": 0.577,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.577
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.37
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.37
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 18,
+          "effective": 16.37
+        }
+      },
+      "associationMatchups": {
+        "CRO": {
+          "attack": 1.1163,
+          "defense": 1.16,
+          "confidence": 0.577,
+          "samples": 18,
+          "effectiveSample": 16.37
+        }
+      }
+    },
+    "fenerbahce": {
+      "name": "Fenerbahçe",
+      "country": "TUR",
+      "attack": {
+        "overall": 1.0932,
+        "domestic": 1.1127,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 0.9777,
+        "vsWeaker": 1.1227
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1332,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4793,
+        "domestic": 0.58,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.0663,
+        "vsWeaker": 0.5671
+      },
+      "defenseConfidence": {
+        "overall": 0.4793,
+        "domestic": 0.58,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.0663,
+        "vsWeaker": 0.5671
+      },
+      "samples": {
+        "overall": {
+          "raw": 18,
+          "effective": 16.57
+        },
+        "domestic": {
+          "raw": 18,
+          "effective": 16.57
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 1,
+          "effective": 0.85
+        },
+        "vsWeaker": {
+          "raw": 17,
+          "effective": 15.72
+        }
+      },
+      "associationMatchups": {
+        "TUR": {
+          "attack": 1.1127,
+          "defense": 1.16,
+          "confidence": 0.58,
+          "samples": 18,
+          "effectiveSample": 16.57
         }
       }
     },

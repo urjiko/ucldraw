@@ -336,3 +336,9 @@ node scripts/build-home-advantage-profiles.mjs
 ```
 
 The output must remain byte-for-byte unchanged when neither the match archive nor the guaranteed-team manifest changes.
+
+
+<!-- champions-q2-batch1 -->
+## Active-scope extension: Champions Q2 batch 1
+
+The active priority order now continues from `champions.q3` into `champions.q2`. The first Q2 data batch covers AGF Aarhus, Ararat-Armenia, NK Celje, Crvena Zvezda, and Dinamo Zagreb. Fenerbahçe's previously stored profile is also reactivated; remaining Q2 clubs stay on the research queue and retain neutral fallback until sourced.
