@@ -5,6 +5,10 @@
   const engine = window.UCLDRAW_PREDICTION_ENGINE;
   if (!section) return;
 
+  function setText(element, value) {
+    if (element && element.textContent !== value) element.textContent = value;
+  }
+
   function zoneText(zone) {
     if (zone === 'direct') return 'Son 16';
     if (zone === 'playoff') return 'Play-off';
@@ -71,19 +75,19 @@
     const status = summary.querySelector(':scope > .prediction-summary-status');
 
     if (row) {
-      if (rank) rank.textContent = `${row.rank}. sıra`;
-      if (stats) {
-        const average = `${row.goalDifference >= 0 ? '+' : ''}${row.goalDifference}`;
-        stats.textContent = `${progress.completed}/${progress.total} maç · ${average} AV`;
-      }
-      if (status) status.textContent = zoneText(row.zone);
+      setText(rank, `${row.rank}. sıra`);
+      const average = `${row.goalDifference >= 0 ? '+' : ''}${row.goalDifference}`;
+      setText(stats, `${progress.completed}/${progress.total} maç · ${average} AV`);
+      setText(status, zoneText(row.zone));
       summary.dataset.zone = row.zone;
     }
 
     const block = ensureProgress(summary);
-    block.querySelector('.prediction-header-progress-label').textContent = `${progress.completed}/${progress.total} maç`;
-    block.querySelector('.prediction-header-progress-value').textContent = `${progress.percentage}%`;
-    block.querySelector('.prediction-header-progress-track > span').style.width = `${progress.percentage}%`;
+    setText(block.querySelector('.prediction-header-progress-label'), `${progress.completed}/${progress.total} maç`);
+    setText(block.querySelector('.prediction-header-progress-value'), `${progress.percentage}%`);
+    const fill = block.querySelector('.prediction-header-progress-track > span');
+    const width = `${progress.percentage}%`;
+    if (fill.style.width !== width) fill.style.width = width;
     block.setAttribute('aria-label', `Tahmin ilerlemesi yüzde ${progress.percentage}`);
   }
 
