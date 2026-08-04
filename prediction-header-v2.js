@@ -51,16 +51,17 @@
 
   function ensureProgress(summary) {
     let block = summary.querySelector(':scope > .prediction-header-progress');
-    if (block) return block;
+    if (!block) {
+      block = document.createElement('div');
+      block.className = 'prediction-header-progress';
+      block.innerHTML = [
+        '<strong class="prediction-header-progress-value"></strong>',
+        '<span class="prediction-header-progress-track" aria-hidden="true"><span></span></span>'
+      ].join('');
+      summary.appendChild(block);
+    }
 
-    block = document.createElement('div');
-    block.className = 'prediction-header-progress';
-    block.innerHTML = [
-      '<span class="prediction-header-progress-label"></span>',
-      '<strong class="prediction-header-progress-value"></strong>',
-      '<span class="prediction-header-progress-track" aria-hidden="true"><span></span></span>'
-    ].join('');
-    summary.appendChild(block);
+    block.querySelector('.prediction-header-progress-label')?.remove();
     return block;
   }
 
@@ -83,12 +84,12 @@
     }
 
     const block = ensureProgress(summary);
-    setText(block.querySelector('.prediction-header-progress-label'), `${progress.completed}/${progress.total} maç`);
     setText(block.querySelector('.prediction-header-progress-value'), `${progress.percentage}%`);
     const fill = block.querySelector('.prediction-header-progress-track > span');
     const width = `${progress.percentage}%`;
     if (fill.style.width !== width) fill.style.width = width;
     block.setAttribute('aria-label', `Tahmin ilerlemesi yüzde ${progress.percentage}`);
+    header.dataset.progress = String(progress.percentage);
   }
 
   function refresh() {
