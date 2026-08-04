@@ -40,10 +40,11 @@ assert.doesNotMatch(ui, /\[3,\s*1,\s*0\]/);
 assert.doesNotMatch(ui, /travelContext|Akdeniz|Kuzey deplasmanı/);
 
 assert.match(header, /engine\.standings\(state\)/);
-assert.match(header, /rank\.textContent = `\$\{row\.rank\}\. sıra`/);
-assert.match(header, /status\.textContent = zoneText\(row\.zone\)/);
-assert.match(header, /stats\.textContent = `\$\{progress\.completed\}\/\$\{progress\.total\} maç · \$\{average\} AV`/);
+assert.match(header, /setText\(rank, `\$\{row\.rank\}\. sıra`\)/);
+assert.match(header, /setText\(status, zoneText\(row\.zone\)\)/);
+assert.match(header, /setText\(stats, `\$\{progress\.completed\}\/\$\{progress\.total\} maç · \$\{average\} AV`\)/);
 assert.match(header, /prediction-header-progress-track/);
+assert.match(header, /if \(element && element\.textContent !== value\)/);
 assert.match(headerCss, /\.prediction-header-compact \.prediction-summary-status[\s\S]*display:\s*block !important/);
 assert.match(refinementCss, /width:\s*min\(920px, 100%\)\s*!important/);
 assert.match(refinementCss, /\.prediction-header-refined \.prediction-back-button::before[\s\S]*content:\s*'←'/);
