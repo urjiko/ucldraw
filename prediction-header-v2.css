@@ -1,91 +1,109 @@
 .prediction-header.themed-hero.prediction-header-compact {
-  width: min(1120px, 100%);
-  min-height: 94px;
+  width: min(920px, 100%);
+  min-height: 74px;
   margin-inline: auto;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: 20px;
+  grid-template-columns: 42px minmax(0, 1fr) minmax(250px, 320px);
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  border-radius: 17px;
 }
 
 .prediction-header-compact .prediction-header-identity {
   grid-column: 2;
-  justify-self: start;
+  min-width: 0;
+  justify-self: stretch;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
 
 .prediction-header-compact .prediction-hero-crest .polished-hero-crest {
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 18px !important;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 16px !important;
   background: rgba(0, 0, 0, 0.22);
   box-shadow:
-    0 10px 26px rgba(0, 0, 0, 0.42),
-    0 0 22px rgba(var(--accent-rgb), 0.22);
+    0 8px 22px rgba(0, 0, 0, 0.42),
+    0 0 18px rgba(var(--accent-rgb), 0.2);
 }
 
 .prediction-header-compact .prediction-header-copy {
+  min-width: 0;
   display: grid;
   align-content: center;
 }
 
 .prediction-header-compact .prediction-header-identity h2 {
-  max-width: min(46vw, 480px);
-  font-size: clamp(1.65rem, 2.8vw, 2.3rem);
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
   line-height: 0.98;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .prediction-header-compact .prediction-kicker {
-  font-size: 0.61rem;
-  letter-spacing: 0.12em;
+  font-size: 0.58rem;
+  letter-spacing: 0.11em;
 }
 
 .prediction-header-compact .prediction-back-button {
   grid-column: 1;
-  min-height: 42px;
-  padding-inline: 12px;
+  width: 42px !important;
+  min-width: 42px !important;
+  min-height: 56px;
+  padding: 0 !important;
+  overflow: hidden;
+  font-size: 0 !important;
+}
+
+.prediction-header-compact .prediction-back-button::before {
+  content: '←';
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .prediction-header-compact .prediction-header-controls {
   grid-column: 3;
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: auto minmax(205px, 238px);
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  gap: 8px;
-}
-
-.prediction-header-compact .prediction-team-lock {
-  min-width: 82px;
-  min-height: 62px;
-  padding-inline: 10px;
 }
 
 .prediction-header-compact .prediction-summary {
+  width: 100%;
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 2px 10px;
-  padding: 8px 10px;
+  gap: 1px 10px;
+  padding: 7px 10px;
 }
 
 .prediction-header-compact .prediction-summary > strong {
   grid-column: 1;
   grid-row: 1;
   align-self: end;
+  white-space: nowrap;
 }
 
-.prediction-header-compact .prediction-summary > span:not(.prediction-summary-status) {
+.prediction-header-compact .prediction-summary > span:not(.prediction-summary-status):not(.prediction-header-progress) {
   grid-column: 1;
   grid-row: 2;
+  white-space: nowrap;
 }
 
 .prediction-header-compact .prediction-summary-status {
   grid-column: 2;
   grid-row: 1 / 3;
+  display: block !important;
   align-self: center;
-  max-width: 88px;
+  max-width: none;
   text-align: right;
+  white-space: nowrap;
 }
 
 .prediction-header-progress {
@@ -93,28 +111,29 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 3px 8px;
-  margin-top: 3px;
+  gap: 2px 8px;
+  margin-top: 2px;
 }
 
 .prediction-header-progress-label {
   color: rgba(255, 255, 255, 0.62) !important;
-  font-size: 0.58rem !important;
+  font-size: 0.56rem !important;
   font-weight: 750;
+  white-space: nowrap;
 }
 
 .prediction-header-progress-value {
   color: #fff;
-  font-size: 0.68rem !important;
+  font-size: 0.66rem !important;
   font-weight: 900;
 }
 
 .prediction-header-progress-track {
   grid-column: 1 / -1;
-  height: 5px;
+  height: 4px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .prediction-header-progress-track > span {
@@ -123,58 +142,60 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.72), rgba(255, 255, 255, 0.88));
-  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.40);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.4);
   transition: width 180ms ease;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 760px) {
   .prediction-header.themed-hero.prediction-header-compact {
-    grid-template-columns: auto minmax(0, 1fr);
-    min-height: 0;
-  }
-
-  .prediction-header-compact .prediction-header-identity {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 7px 9px;
   }
 
   .prediction-header-compact .prediction-back-button {
     grid-column: 1;
     grid-row: 1;
+    width: 40px !important;
+    min-width: 40px !important;
+    min-height: 52px;
+  }
+
+  .prediction-header-compact .prediction-header-identity {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .prediction-header-compact .prediction-header-controls {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 460px) {
   .prediction-header.themed-hero.prediction-header-compact {
-    gap: 10px;
-    padding: 11px;
+    padding: 7px;
   }
 
-  .prediction-header-compact .prediction-header-controls {
-    width: 100%;
-    grid-column: 1 / -1;
-    grid-row: 3;
-    grid-template-columns: 84px minmax(0, 1fr);
+  .prediction-header-compact .prediction-header-identity {
+    gap: 8px;
   }
 
   .prediction-header-compact .prediction-header-identity h2 {
-    max-width: calc(100vw - 112px);
-    font-size: clamp(1.55rem, 8vw, 2rem);
+    font-size: clamp(1.25rem, 6.4vw, 1.7rem);
   }
 
   .prediction-header-compact .prediction-hero-crest .polished-hero-crest {
-    width: 54px !important;
-    height: 54px !important;
-    border-radius: 16px !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  .prediction-header-compact .prediction-summary {
+    padding-inline: 8px;
   }
 
   .prediction-header-compact .prediction-summary-status {
-    display: none;
+    font-size: 0.68rem !important;
   }
 }
