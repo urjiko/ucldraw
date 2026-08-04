@@ -28,9 +28,9 @@ const matchKeys = records.map((match) => [
   match.awaySlug
 ].join('|'));
 
-assert.equal(records.length, 1150, 'Stored source archive must contain 1150 home matches.');
+assert.equal(records.length, 1252, 'Stored source archive must contain 1252 home matches.');
 assert.equal(new Set(matchKeys).size, records.length, 'Stored home matches must be unique.');
-assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 1135);
+assert.equal(records.filter((match) => match.competitionType === 'domestic').length, 1237);
 assert.equal(records.filter((match) => match.competitionType === 'europe').length, 15);
 for (const slug of [
   'arsenal', 'astonvilla', 'atleti', 'barcelona', 'bournemouth', 'celtavigo',
@@ -56,6 +56,12 @@ assert.equal(records.filter((match) => match.homeSlug === 'brighton').length, 19
 assert.equal(records.filter((match) => match.homeSlug === 'freiburg').length, 17);
 assert.equal(records.filter((match) => match.homeSlug === 'getafe').length, 19);
 assert.equal(records.filter((match) => match.homeSlug === 'monaco').length, 17);
+assert.equal(records.filter((match) => match.homeSlug === 'bodo').length, 15);
+assert.equal(records.filter((match) => match.homeSlug === 'lyon').length, 17);
+assert.equal(records.filter((match) => match.homeSlug === 'nec').length, 17);
+assert.equal(records.filter((match) => match.homeSlug === 'olympiacos').length, 16);
+assert.equal(records.filter((match) => match.homeSlug === 'spartapraha').length, 17);
+assert.equal(records.filter((match) => match.homeSlug === 'union').length, 20);
 assert.equal(records.filter((match) => match.sourceKey === 'openfootball-italy-complete-2024-25').length, 1);
 assert.equal(records.filter((match) => match.sourceKey === 'transfermarkt-getafe-2024-25').length, 1);
 assert.equal(records.filter((match) => match.homeSlug === 'sunderland').length, 24);
@@ -73,6 +79,7 @@ assert.match(builderSource, /competition: 'europa', stage: 'guaranteed'/);
 assert.match(builderSource, /competition: 'champions', stage: 'playoffs'/);
 assert.match(builderSource, /competition: 'europa', stage: 'playoffs'/);
 assert.match(builderSource, /competition: 'conference', stage: 'playoffs'/);
+assert.match(builderSource, /competition: 'champions', stage: 'q3'/);
 assert.match(builderSource, /Duplicate home-advantage match/);
 
 const generatedContext = { window: {}, Object };
@@ -81,12 +88,12 @@ vm.runInNewContext(generatedSource, generatedContext, {
 });
 const generated = generatedContext.window.UCLDRAW_HOME_ADVANTAGE_PROFILES;
 assert.equal(generated.latestMatchDate, '2025-06-01');
-assert.equal(generated.sourceSummary.storedMatches, 1150);
-assert.equal(generated.sourceSummary.matches, 1078);
+assert.equal(generated.sourceSummary.storedMatches, 1252);
+assert.equal(generated.sourceSummary.matches, 1180);
 assert.equal(generated.sourceSummary.excludedStoredMatches, 72);
-assert.equal(generated.sourceSummary.teams, 56);
-assert.equal(generated.sourceSummary.activeTeamScope, 56);
-assert.equal(generated.sourceSummary.domesticMatches, 1063);
+assert.equal(generated.sourceSummary.teams, 62);
+assert.equal(generated.sourceSummary.activeTeamScope, 62);
+assert.equal(generated.sourceSummary.domesticMatches, 1165);
 assert.equal(generated.sourceSummary.europeanMatches, 15);
 assert.equal(generated.sourceSummary.latestIncludedMatchDate, '2025-05-30');
 assert.deepEqual(Array.from(generated.sourceSummary.files), dataFiles);
@@ -106,13 +113,18 @@ assert.deepEqual(Array.from(generated.scope.priority[3].teams), ['crete', 'lille
 assert.equal(generated.scope.priority[4].competition, 'conference');
 assert.equal(generated.scope.priority[4].stage, 'playoffs');
 assert.deepEqual(Array.from(generated.scope.priority[4].teams), ['atalanta', 'brighton', 'freiburg', 'getafe', 'monaco']);
-assert.equal(generated.scope.teams.length, 56);
-assert.equal(new Set(generated.scope.teams).size, 56);
+assert.equal(generated.scope.priority[5].competition, 'champions');
+assert.equal(generated.scope.priority[5].stage, 'q3');
+assert.deepEqual(Array.from(generated.scope.priority[5].teams), ['bodo', 'lyon', 'nec', 'olympiacos', 'spartapraha', 'union']);
+assert.equal(generated.scope.teams.length, 62);
+assert.equal(new Set(generated.scope.teams).size, 62);
+assert.deepEqual(Array.from(generated.researchQueue), []);
 
 const expectedDomesticAttack = {
   aek: 1.1073,
   arsenal: 0.9824,
   atalanta: 1.0058,
+  bodo: 1.18,
   brighton: 1.1701,
   celtic: 1.18,
   crete: 0.9945,
@@ -120,9 +132,14 @@ const expectedDomesticAttack = {
   getafe: 0.84,
   lask: 1.0245,
   lillestrom: 0.9219,
+  lyon: 1.121,
   monaco: 1.1574,
+  nec: 1.18,
+  olympiacos: 1.0039,
+  spartapraha: 1.02,
   trabzonspor: 1.18,
   truidense: 1.1,
+  union: 1.0924,
   viktoriaplzen: 1.1341,
   viking: 1.18,
   astonvilla: 1.021,
@@ -251,6 +268,41 @@ assert.equal(generated.profiles.monaco.attack.vsSimilar, 1.012);
 assert.equal(generated.profiles.monaco.attack.vsWeaker, 1.1448);
 assert.equal(generated.profiles.monaco.defense.vsSimilar, 0.8673);
 assert.equal(generated.profiles.monaco.samples.overall.raw, 17);
+assert.equal(generated.profiles.bodo.attack.overall, 1.1659);
+assert.equal(generated.profiles.bodo.attack.vsWeaker, 1.18);
+assert.equal(generated.profiles.bodo.defense.domestic, 1.16);
+assert.equal(generated.profiles.bodo.samples.overall.raw, 15);
+assert.equal(generated.profiles.bodo.samples.vsWeaker.raw, 15);
+assert.equal(generated.profiles.lyon.attack.overall, 1.0993);
+assert.equal(generated.profiles.lyon.attack.vsStronger, 1.0463);
+assert.equal(generated.profiles.lyon.attack.vsSimilar, 0.9826);
+assert.equal(generated.profiles.lyon.attack.vsWeaker, 1.1236);
+assert.equal(generated.profiles.lyon.defense.domestic, 1.16);
+assert.equal(generated.profiles.lyon.samples.overall.raw, 17);
+assert.equal(generated.profiles.nec.attack.overall, 1.18);
+assert.equal(generated.profiles.nec.attack.vsStronger, 1.18);
+assert.equal(generated.profiles.nec.attack.vsSimilar, 1.18);
+assert.equal(generated.profiles.nec.defense.domestic, 1.1544);
+assert.equal(generated.profiles.nec.defense.vsSimilar, 1.0493);
+assert.equal(generated.profiles.nec.samples.overall.raw, 17);
+assert.equal(generated.profiles.olympiacos.attack.overall, 1.0032);
+assert.equal(generated.profiles.olympiacos.attack.vsWeaker, 1.0039);
+assert.equal(generated.profiles.olympiacos.defense.domestic, 1.16);
+assert.equal(generated.profiles.olympiacos.samples.overall.raw, 16);
+assert.equal(generated.profiles.olympiacos.samples.vsWeaker.raw, 16);
+assert.equal(generated.profiles.spartapraha.attack.overall, 1.0164);
+assert.equal(generated.profiles.spartapraha.attack.vsSimilar, 1.0576);
+assert.equal(generated.profiles.spartapraha.attack.vsWeaker, 0.9971);
+assert.equal(generated.profiles.spartapraha.defense.vsSimilar, 1.1184);
+assert.equal(generated.profiles.spartapraha.samples.overall.raw, 17);
+assert.equal(generated.profiles.union.attack.overall, 1.0771);
+assert.equal(generated.profiles.union.attack.vsStronger, 0.9631);
+assert.equal(generated.profiles.union.attack.vsSimilar, 0.9633);
+assert.equal(generated.profiles.union.attack.vsWeaker, 1.1413);
+assert.equal(generated.profiles.union.defense.overall, 0.9072);
+assert.equal(generated.profiles.union.defense.domestic, 0.8888);
+assert.equal(generated.profiles.union.defense.vsSimilar, 0.8342);
+assert.equal(generated.profiles.union.samples.overall.raw, 20);
 assert.equal(generated.profiles.astonvilla.attack.vsStronger, 1.0687);
 assert.equal(generated.profiles.atleti.attack.vsSimilar, 1.1184);
 assert.equal(generated.profiles.azalkmaar.attack.overall, 0.9668);
