@@ -125,55 +125,37 @@
     cachedExport = null;
   }
 
-  async function downloadCurrent() {
-    const output = await prepareExport();
-    downloadBlob(output.blob, output.filename);
-    showToast('2400×3200 PNG indirildi.');
-    return 'downloaded';
-  }
-
-  async function copyCurrent() {
-    const output = await prepareExport();
-    if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
-      downloadBlob(output.blob, output.filename);
-      showToast('Tarayıcı görsel kopyalamayı desteklemedi; PNG indirildi.');
-      return 'downloaded';
-    }
-
-    try {
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': output.blob })
-      ]);
-      showToast('Görsel panoya kopyalandı.');
-      return 'copied';
-    } catch (error) {
-      console.warn('Clipboard image export failed; downloading instead.', error);
-      downloadBlob(output.blob, output.filename);
-      showToast('Panoya kopyalanamadı; PNG indirildi.');
-      return 'downloaded';
-    }
-  }
-
   async function shareCurrent() {
     const output = await prepareExport();
     const file = new File([output.blob], output.filename, { type: 'image/png' });
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ title: output.title, files: [file] });
-      showToast('Yüksek çözünürlüklü görsel paylaşmaya hazır.');
+    const shareData = { title: output.title, files: [file] };
+    const canShareFiles = navigator.share
+      && (!navigator.canShare || navigator.canShare(shareData));
+
+    if (canShareFiles) {
+      await navigator.share(shareData);
+      showToast('Paylaşım menüsü açıldı.');
       return 'shared';
     }
+
     downloadBlob(output.blob, output.filename);
     showToast('Paylaşım desteklenmedi; PNG indirildi.');
     return 'downloaded';
   }
 
-  function createExportButton(label, action, extraClass = '') {
+  function createShareButton(extraClass = '') {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `action-button prediction-export-v9-button ${extraClass}`.trim();
-    button.dataset.exportAction = action;
-    button.textContent = label;
+    button.className = `action-button prediction-export-v9-button prediction-export-share-v9-button ${extraClass}`.trim();
+    button.textContent = 'Paylaş';
+    button.setAttribute('aria-label', 'Tahmin görselini paylaş');
     return button;
+  }
+
+  function normalizeShareGroup(group) {
+    const buttons = [...group.querySelectorAll(':scope > .prediction-export-v9-button')];
+    if (buttons.length === 1 && buttons[0].classList.contains('prediction-export-share-v9-button')) return;
+    group.replaceChildren(createShareButton('primary'));
   }
 
   function ensureExportActions() {
@@ -189,13 +171,9 @@
     if (!group) {
       group = document.createElement('div');
       group.className = 'prediction-export-group-v9';
-      group.append(
-        createExportButton('PNG İndir', 'download', 'primary prediction-export-download-v9-button'),
-        createExportButton('Kopyala', 'copy', 'prediction-export-copy-v9-button'),
-        createExportButton('Paylaş', 'share', 'prediction-export-share-v9-button')
-      );
       row.appendChild(group);
     }
+    normalizeShareGroup(group);
 
     const complete = predictionsComplete();
     group.hidden = !complete;
@@ -210,11 +188,7 @@
     const wrapper = document.createElement('div');
     wrapper.className = 'prediction-export-floating-v9';
     wrapper.hidden = true;
-    wrapper.append(
-      createExportButton('PNG İndir', 'download', 'primary'),
-      createExportButton('Kopyala', 'copy'),
-      createExportButton('Paylaş', 'share')
-    );
+    wrapper.appendChild(createShareButton('primary'));
     document.body.appendChild(wrapper);
     return wrapper;
   }
@@ -266,28 +240,25 @@
       ...document.querySelectorAll('.prediction-export-floating-v9 .prediction-export-v9-button')
     ];
     buttons.forEach((button) => { button.disabled = busy; });
-    if (clickedButton) {
-      if (busy) {
-        clickedButton.dataset.idleText = clickedButton.textContent;
-        clickedButton.textContent = 'Hazırlanıyor...';
-      } else {
-        clickedButton.textContent = clickedButton.dataset.idleText || clickedButton.textContent;
-        delete clickedButton.dataset.idleText;
-      }
+    if (!clickedButton) return;
+
+    if (busy) {
+      clickedButton.dataset.idleText = clickedButton.textContent;
+      clickedButton.textContent = 'Hazırlanıyor...';
+    } else {
+      clickedButton.textContent = clickedButton.dataset.idleText || 'Paylaş';
+      delete clickedButton.dataset.idleText;
     }
   }
 
-  async function runExportAction(button) {
+  async function runShareAction(button) {
     const row = document.querySelector('#predictionSection .prediction-share-actions-v4');
     const group = row?.querySelector(':scope > .prediction-export-group-v9');
     if (!group || group.dataset.busy === 'true' || !predictionsComplete()) return;
 
     setBusy(group, button, true);
     try {
-      const action = button.dataset.exportAction;
-      if (action === 'copy') await copyCurrent();
-      else if (action === 'share') await shareCurrent();
-      else await downloadCurrent();
+      await shareCurrent();
     } catch (error) {
       if (error?.name !== 'AbortError') {
         console.error(error);
@@ -305,7 +276,7 @@
     if (!button) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    runExportAction(button);
+    runShareAction(button);
   }, true);
 
   function queueRefresh() {
@@ -352,8 +323,6 @@
   window.UCLDRAW_PREDICTION_SHARE_V9 = Object.freeze({
     renderExportCard,
     prepareExport,
-    downloadCurrent,
-    copyCurrent,
     shareCurrent,
     outputWidth: OUTPUT_WIDTH,
     outputHeight: OUTPUT_HEIGHT
