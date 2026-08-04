@@ -7,12 +7,12 @@
   "generatedAt": "2025-06-01T00:00:00.000Z",
   "latestMatchDate": "2025-06-01",
   "sourceSummary": {
-    "storedMatches": 1150,
-    "matches": 1078,
+    "storedMatches": 1252,
+    "matches": 1180,
     "excludedStoredMatches": 72,
-    "teams": 56,
-    "activeTeamScope": 56,
-    "domesticMatches": 1063,
+    "teams": 62,
+    "activeTeamScope": 62,
+    "domesticMatches": 1165,
     "europeanMatches": 15,
     "latestIncludedMatchDate": "2025-05-30",
     "files": [
@@ -25,6 +25,7 @@
       "data/home-advantage-matches/azalkmaar-2024-25.json",
       "data/home-advantage-matches/basaksehir-samsunspor-2024-25.json",
       "data/home-advantage-matches/bayern-bvb-2024-25.json",
+      "data/home-advantage-matches/bodo-lyon-nec-olympiacos-spartapraha-union-2024-25.json",
       "data/home-advantage-matches/bournemouth-palace-2024-25.json",
       "data/home-advantage-matches/brugge-2024-25.json",
       "data/home-advantage-matches/celta-sociedad-2024-25.json",
@@ -149,6 +150,18 @@
           "getafe",
           "monaco"
         ]
+      },
+      {
+        "competition": "champions",
+        "stage": "q3",
+        "teams": [
+          "bodo",
+          "lyon",
+          "nec",
+          "olympiacos",
+          "spartapraha",
+          "union"
+        ]
       }
     ],
     "teams": [
@@ -207,7 +220,13 @@
       "brighton",
       "freiburg",
       "getafe",
-      "monaco"
+      "monaco",
+      "bodo",
+      "lyon",
+      "nec",
+      "olympiacos",
+      "spartapraha",
+      "union"
     ]
   },
   "researchQueue": [],
@@ -848,6 +867,77 @@
           "confidence": 0.5652,
           "samples": 17,
           "effectiveSample": 15.6
+        }
+      }
+    },
+    "bodo": {
+      "name": "Bodø/Glimt",
+      "country": "NOR",
+      "attack": {
+        "overall": 1.1659,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.18
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4065,
+        "domestic": 0.5068,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5068
+      },
+      "defenseConfidence": {
+        "overall": 0.4065,
+        "domestic": 0.5068,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5068
+      },
+      "samples": {
+        "overall": {
+          "raw": 15,
+          "effective": 12.33
+        },
+        "domestic": {
+          "raw": 15,
+          "effective": 12.33
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 12.33
+        }
+      },
+      "associationMatchups": {
+        "NOR": {
+          "attack": 1.18,
+          "defense": 1.16,
+          "confidence": 0.5068,
+          "samples": 15,
+          "effectiveSample": 12.33
         }
       }
     },
@@ -2484,6 +2574,77 @@
         }
       }
     },
+    "lyon": {
+      "name": "Olympique Lyonnais",
+      "country": "FRA",
+      "attack": {
+        "overall": 1.0993,
+        "domestic": 1.121,
+        "europe": 1,
+        "vsStronger": 1.0463,
+        "vsSimilar": 0.9826,
+        "vsWeaker": 1.1236
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1.1028,
+        "vsSimilar": 1.16,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4634,
+        "domestic": 0.5644,
+        "europe": 0,
+        "vsStronger": 0.0726,
+        "vsSimilar": 0.1811,
+        "vsWeaker": 0.499
+      },
+      "defenseConfidence": {
+        "overall": 0.4634,
+        "domestic": 0.5644,
+        "europe": 0,
+        "vsStronger": 0.0726,
+        "vsSimilar": 0.1811,
+        "vsWeaker": 0.499
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.55
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.55
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 1,
+          "effective": 0.94
+        },
+        "vsSimilar": {
+          "raw": 3,
+          "effective": 2.65
+        },
+        "vsWeaker": {
+          "raw": 13,
+          "effective": 11.95
+        }
+      },
+      "associationMatchups": {
+        "FRA": {
+          "attack": 1.121,
+          "defense": 1.16,
+          "confidence": 0.5644,
+          "samples": 17,
+          "effectiveSample": 15.55
+        }
+      }
+    },
     "manu": {
       "name": "Manchester United",
       "country": "ENG",
@@ -2836,6 +2997,148 @@
           "confidence": 0.5916,
           "samples": 19,
           "effectiveSample": 17.38
+        }
+      }
+    },
+    "nec": {
+      "name": "NEC",
+      "country": "NED",
+      "attack": {
+        "overall": 1.18,
+        "domestic": 1.18,
+        "europe": 1,
+        "vsStronger": 1.18,
+        "vsSimilar": 1.18,
+        "vsWeaker": 1
+      },
+      "defense": {
+        "overall": 1.1267,
+        "domestic": 1.1544,
+        "europe": 1,
+        "vsStronger": 1.16,
+        "vsSimilar": 1.0493,
+        "vsWeaker": 1
+      },
+      "confidence": {
+        "overall": 0.4615,
+        "domestic": 0.5624,
+        "europe": 0,
+        "vsStronger": 0.188,
+        "vsSimilar": 0.5131,
+        "vsWeaker": 0
+      },
+      "defenseConfidence": {
+        "overall": 0.4615,
+        "domestic": 0.5624,
+        "europe": 0,
+        "vsStronger": 0.188,
+        "vsSimilar": 0.5131,
+        "vsWeaker": 0
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.42
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.42
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 3,
+          "effective": 2.78
+        },
+        "vsSimilar": {
+          "raw": 14,
+          "effective": 12.65
+        },
+        "vsWeaker": {
+          "raw": 0,
+          "effective": 0
+        }
+      },
+      "associationMatchups": {
+        "NED": {
+          "attack": 1.18,
+          "defense": 1.1544,
+          "confidence": 0.5624,
+          "samples": 17,
+          "effectiveSample": 15.42
+        }
+      }
+    },
+    "olympiacos": {
+      "name": "Olympiacos",
+      "country": "GRE",
+      "attack": {
+        "overall": 1.0032,
+        "domestic": 1.0039,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.0039
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4469,
+        "domestic": 0.5479,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5479
+      },
+      "defenseConfidence": {
+        "overall": 0.4469,
+        "domestic": 0.5479,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0,
+        "vsWeaker": 0.5479
+      },
+      "samples": {
+        "overall": {
+          "raw": 16,
+          "effective": 14.54
+        },
+        "domestic": {
+          "raw": 16,
+          "effective": 14.54
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsWeaker": {
+          "raw": 16,
+          "effective": 14.54
+        }
+      },
+      "associationMatchups": {
+        "GRE": {
+          "attack": 1.0039,
+          "defense": 1.16,
+          "confidence": 0.5479,
+          "samples": 16,
+          "effectiveSample": 14.54
         }
       }
     },
@@ -3549,6 +3852,77 @@
         }
       }
     },
+    "spartapraha": {
+      "name": "Sparta Praha",
+      "country": "CZE",
+      "attack": {
+        "overall": 1.0164,
+        "domestic": 1.02,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.0576,
+        "vsWeaker": 0.9971
+      },
+      "defense": {
+        "overall": 1.16,
+        "domestic": 1.16,
+        "europe": 1,
+        "vsStronger": 1,
+        "vsSimilar": 1.1184,
+        "vsWeaker": 1.16
+      },
+      "confidence": {
+        "overall": 0.4607,
+        "domestic": 0.5617,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1372,
+        "vsWeaker": 0.5288
+      },
+      "defenseConfidence": {
+        "overall": 0.4607,
+        "domestic": 0.5617,
+        "europe": 0,
+        "vsStronger": 0,
+        "vsSimilar": 0.1372,
+        "vsWeaker": 0.5288
+      },
+      "samples": {
+        "overall": {
+          "raw": 17,
+          "effective": 15.38
+        },
+        "domestic": {
+          "raw": 17,
+          "effective": 15.38
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsSimilar": {
+          "raw": 2,
+          "effective": 1.91
+        },
+        "vsWeaker": {
+          "raw": 15,
+          "effective": 13.47
+        }
+      },
+      "associationMatchups": {
+        "CZE": {
+          "attack": 1.02,
+          "defense": 1.16,
+          "confidence": 0.5617,
+          "samples": 17,
+          "effectiveSample": 15.38
+        }
+      }
+    },
     "sporting": {
       "name": "Sporting CP",
       "country": "POR",
@@ -3972,6 +4346,77 @@
           "confidence": 0.575,
           "samples": 18,
           "effectiveSample": 16.24
+        }
+      }
+    },
+    "union": {
+      "name": "Union Saint-Gilloise",
+      "country": "BEL",
+      "attack": {
+        "overall": 1.0771,
+        "domestic": 1.0924,
+        "europe": 1,
+        "vsStronger": 0.9631,
+        "vsSimilar": 0.9633,
+        "vsWeaker": 1.1413
+      },
+      "defense": {
+        "overall": 0.9072,
+        "domestic": 0.8888,
+        "europe": 1,
+        "vsStronger": 0.9769,
+        "vsSimilar": 0.8342,
+        "vsWeaker": 1.0064
+      },
+      "confidence": {
+        "overall": 0.5031,
+        "domestic": 0.603,
+        "europe": 0,
+        "vsStronger": 0.1355,
+        "vsSimilar": 0.2344,
+        "vsWeaker": 0.5136
+      },
+      "defenseConfidence": {
+        "overall": 0.5031,
+        "domestic": 0.603,
+        "europe": 0,
+        "vsStronger": 0.1355,
+        "vsSimilar": 0.2344,
+        "vsWeaker": 0.5136
+      },
+      "samples": {
+        "overall": {
+          "raw": 20,
+          "effective": 18.23
+        },
+        "domestic": {
+          "raw": 20,
+          "effective": 18.23
+        },
+        "europe": {
+          "raw": 0,
+          "effective": 0
+        },
+        "vsStronger": {
+          "raw": 2,
+          "effective": 1.88
+        },
+        "vsSimilar": {
+          "raw": 4,
+          "effective": 3.67
+        },
+        "vsWeaker": {
+          "raw": 14,
+          "effective": 12.67
+        }
+      },
+      "associationMatchups": {
+        "BEL": {
+          "attack": 1.0924,
+          "defense": 0.8888,
+          "confidence": 0.603,
+          "samples": 20,
+          "effectiveSample": 18.23
         }
       }
     },
