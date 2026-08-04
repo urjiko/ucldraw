@@ -21,7 +21,9 @@ jobs:
         with:
           node-version: 22
       - name: Build Champions Q3 home matches
-        run: node scripts/generate-champions-q3-home-profiles.mjs
+        run: |
+          node scripts/fix-champions-q3-count.mjs
+          node scripts/generate-champions-q3-home-profiles.mjs
       - name: Regenerate profile payload
         run: node scripts/build-home-advantage-profiles.mjs
       - name: Report generated profile values
