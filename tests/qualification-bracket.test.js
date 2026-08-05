@@ -74,8 +74,8 @@ for (let run = 1; run <= 50; run += 1) {
 
   const fenerTie = result.rounds['ucl-q3'].find((tie) => tie.id === 'ucl-q3-fener-sturm');
   assert.deepEqual(
-    new Set([fenerTie.first.id, fenerTie.second.id]),
-    new Set(['fenerbahce', 'strumgraz'])
+    [...new Set([fenerTie.first.id, fenerTie.second.id])].sort(),
+    ['fenerbahce', 'strumgraz']
   );
   const leaguePlayoff = result.rounds['ucl-playoffs']
     .find((tie) => tie.id === 'ucl-po-fener-sturm-sparta-lyon');
@@ -91,14 +91,17 @@ for (let run = 1; run <= 50; run += 1) {
   assert.ok(uelIds.has(fenerTie.loser.id));
   assert.ok(!uclIds.has(fenerTie.loser.id));
 
-  assert.deepEqual(result.diagnostics.transferCounts, {
-    uclPlayoffWinners: 7,
-    uclLeaguePathQ3LosersToUel: 4,
-    uclPlayoffLosersToUel: 7,
-    uelPlayoffWinners: 12,
-    uelPlayoffLosersToUecl: 12,
-    ueclPlayoffWinners: 24
-  });
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(result.diagnostics.transferCounts)),
+    {
+      uclPlayoffWinners: 7,
+      uclLeaguePathQ3LosersToUel: 4,
+      uclPlayoffLosersToUel: 7,
+      uelPlayoffWinners: 12,
+      uelPlayoffLosersToUecl: 12,
+      ueclPlayoffWinners: 24
+    }
+  );
 }
 
 console.log('Qualification bracket checks passed.');
