@@ -3,6 +3,7 @@
 
   const data = window.UCLDRAW_DATA;
   const manifest = window.UCLDRAW_POOL_MANIFEST;
+  const bracket = window.UCLDRAW_QUALIFICATION_BRACKET;
   const catalog = Object.fromEntries(`aarhus|AGF Aarhus|DEN
 aek|AEK Athens|GRE
 ajax|Ajax|NED
@@ -143,43 +144,33 @@ zimbru|Zimbru Chișinău|MDA`.trim().split('\n').map((row) => {
   if (!data?.competitions || !manifest) {
     throw new Error('Takım havuzu verileri yüklenemedi.');
   }
-
-  const STAGE_WEIGHTS = Object.freeze({
-    guaranteed: Infinity,
-    playoffs: 8,
-    q3: 4,
-    q2: 2
-  });
+  if (!bracket?.simulate) {
+    throw new Error('2026/27 eleme ağacı yüklenemedi; bağımsız aday seçimi güvenli olmadığı için kadro üretilmedi.');
+  }
 
   const COMPETITIONS = Object.freeze({
     champions: Object.freeze({
       id: 'ucl',
       target: 36,
+      guaranteedCount: 29,
       logo: 'crests/pools/champions/ucl_logo.png',
       background: 'crests/pools/champions/arkaplanucl.jpg'
     }),
     europa: Object.freeze({
       id: 'uel',
       target: 36,
+      guaranteedCount: 13,
       logo: 'crests/pools/europa/europaleague.png',
       background: 'crests/pools/europa/arkaplanuel.jpg'
     }),
     conference: Object.freeze({
       id: 'uecl',
       target: 36,
+      guaranteedCount: 0,
       logo: 'crests/pools/conference/ConferenceLeague.png',
       background: 'crests/pools/conference/arkaplancon.jpg'
     })
   });
-
-  function shuffle(items) {
-    const copy = [...items];
-    for (let index = copy.length - 1; index > 0; index -= 1) {
-      const swapIndex = Math.floor(Math.random() * (index + 1));
-      [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
-    }
-    return copy;
-  }
 
   function humanizeSlug(slug) {
     return String(slug)
@@ -187,165 +178,98 @@ zimbru|Zimbru Chișinău|MDA`.trim().split('\n').map((row) => {
       .replace(/\b\w/g, (letter) => letter.toLocaleUpperCase('tr-TR'));
   }
 
-  function createPoolTeam(competitionKey, stage, entry, fallbackIndex) {
+  function entryParts(entry) {
     const file = typeof entry === 'string' ? entry : entry.file;
     const slug = typeof entry === 'string'
       ? entry.replace(/\.png$/i, '').toLocaleLowerCase('en-US')
       : entry.slug;
+    return { file, slug };
+  }
+
+  function createGuaranteedTeam(competitionKey, entry, fallbackIndex) {
+    const { file, slug } = entryParts(entry);
     const metadata = catalog[slug];
     const fileStem = file.replace(/\.png$/i, '');
-    const unknownCountry = `X${String(fallbackIndex).padStart(2, '0')}`;
-
     return {
       name: metadata?.name || humanizeSlug(slug),
-      country: metadata?.country || unknownCountry,
+      country: metadata?.country || `X${String(fallbackIndex).padStart(2, '0')}`,
       pot: 0,
-      crest: `pools/${competitionKey}/${stage}/${fileStem}`,
+      crest: `pools/${competitionKey}/guaranteed/${fileStem}`,
       poolSlug: slug,
-      qualificationStage: stage,
+      coefficientSlug: slug,
+      qualificationId: slug,
+      qualificationStage: 'guaranteed',
+      qualificationRoute: 'direct',
       metadataMissing: !metadata
     };
   }
 
-  function weightedSample(candidates, count) {
-    const available = [...candidates];
-    const selected = [];
-
-    while (selected.length < count && available.length) {
-      const totalWeight = available.reduce((total, candidate) => total + candidate.weight, 0);
-      let cursor = Math.random() * totalWeight;
-      let selectedIndex = available.length - 1;
-
-      for (let index = 0; index < available.length; index += 1) {
-        cursor -= available[index].weight;
-        if (cursor <= 0) {
-          selectedIndex = index;
-          break;
-        }
-      }
-
-      selected.push(available.splice(selectedIndex, 1)[0].team);
-    }
-
-    return selected;
-  }
-
-  function createPlaceholder(competitionKey, index) {
-    const label = competitionKey === 'conference' ? 'Conference' : competitionKey;
-    return {
-      name: `${label} Adayı ${String(index).padStart(2, '0')}`,
-      country: `X${String(index).padStart(2, '0')}`,
+  function createQualifiedTeam(descriptor, destinationId) {
+    const source = descriptor.source;
+    const team = {
+      name: descriptor.name,
+      country: descriptor.country,
       pot: 0,
-      poolSlug: `placeholder-${competitionKey}-${index}`,
-      qualificationStage: 'placeholder',
-      isPlaceholder: true
+      poolSlug: descriptor.poolSlug,
+      coefficientSlug: descriptor.coefficientSlug || descriptor.poolSlug,
+      qualificationId: descriptor.id,
+      qualificationStage: 'qualified',
+      qualificationRoute: destinationId,
+      metadataMissing: false
     };
+    if (source) {
+      team.crest = `pools/${source.competitionKey}/${source.stage}/${source.fileSlug}`;
+      team.qualificationSourceCompetition = source.competitionKey;
+      team.qualificationSourceStage = source.stage;
+    }
+    return team;
   }
 
-  function assignPots(teams, potCount) {
-    const capacity = teams.length / potCount;
-    if (!Number.isInteger(capacity)) {
-      throw new Error(`${teams.length} takım ${potCount} eşit torbaya ayrılamıyor.`);
-    }
-
-    const countryFrequency = new Map();
-    teams.forEach((team) => {
-      countryFrequency.set(team.country, (countryFrequency.get(team.country) || 0) + 1);
-    });
-
-    const ordered = shuffle(teams).sort((first, second) => (
-      (countryFrequency.get(second.country) || 0) - (countryFrequency.get(first.country) || 0)
-    ));
-    const pots = Array.from({ length: potCount }, () => []);
-
-    ordered.forEach((team) => {
-      const availablePots = pots
-        .map((pot, index) => ({ pot, index }))
-        .filter(({ pot }) => pot.length < capacity)
-        .map(({ pot, index }) => ({
-          index,
-          sameCountry: pot.filter((candidate) => candidate.country === team.country).length,
-          size: pot.length,
-          random: Math.random()
-        }))
-        .sort((first, second) => (
-          first.sameCountry - second.sameCountry
-          || first.size - second.size
-          || first.random - second.random
-        ));
-
-      pots[availablePots[0].index].push(team);
-    });
-
-    return pots.flatMap((pot, index) => pot.map((team) => ({ ...team, pot: index + 1 })));
-  }
-
-  function buildCompetitionRoster(competitionKey, definition) {
-    const source = manifest[competitionKey];
-    if (!source) throw new Error(`${competitionKey} takım havuzu bulunamadı.`);
-
-    let fallbackIndex = 1;
-    const guaranteed = (source.guaranteed || []).map((entry) => (
-      createPoolTeam(competitionKey, 'guaranteed', entry, fallbackIndex++)
-    ));
-
-    const candidates = ['playoffs', 'q3', 'q2'].flatMap((stage) => (
-      (source[stage] || []).map((entry) => ({
-        team: createPoolTeam(competitionKey, stage, entry, fallbackIndex++),
-        weight: STAGE_WEIGHTS[stage]
-      }))
-    ));
-
-    let selected;
-    const warnings = [];
-
-    if (guaranteed.length > definition.target) {
-      selected = shuffle(guaranteed).slice(0, definition.target);
-      warnings.push(`${competitionKey}: garanti klasöründe ${definition.target} sınırını aşan takım var.`);
-    } else {
-      selected = [
-        ...guaranteed,
-        ...weightedSample(candidates, definition.target - guaranteed.length)
-      ];
-    }
-
-    let placeholderIndex = 1;
-    while (selected.length < definition.target) {
-      selected.push(createPlaceholder(competitionKey, placeholderIndex++));
-    }
-
-    const missingMetadata = selected.filter((team) => team.metadataMissing).map((team) => team.poolSlug);
-    if (missingMetadata.length) {
-      warnings.push(`${competitionKey}: metadata eksik (${missingMetadata.join(', ')}).`);
-    }
-    if (placeholderIndex > 1) {
-      warnings.push(`${competitionKey}: havuzda ${definition.target} takım olmadığı için ${placeholderIndex - 1} geçici aday eklendi.`);
-    }
-
-    return {
-      teams: assignPots(selected, data.competitions[definition.id].potCount),
-      warnings
-    };
-  }
-
+  const simulation = bracket.simulate(Math.random);
   const diagnostics = {};
 
   Object.entries(COMPETITIONS).forEach(([competitionKey, definition]) => {
     const competition = data.competitions[definition.id];
-    const result = buildCompetitionRoster(competitionKey, definition);
-    competition.teams = result.teams;
+    const guaranteed = (manifest[competitionKey]?.guaranteed || [])
+      .map((entry, index) => createGuaranteedTeam(competitionKey, entry, index + 1));
+    const qualifiers = simulation.qualifiers[definition.id]
+      .map((descriptor) => createQualifiedTeam(descriptor, definition.id));
+    const selected = [...guaranteed, ...qualifiers];
+
+    if (guaranteed.length !== definition.guaranteedCount) {
+      throw new Error(`${competitionKey} doğrudan katılımcı sayısı ${definition.guaranteedCount} yerine ${guaranteed.length}.`);
+    }
+    if (selected.length !== definition.target) {
+      throw new Error(`${competitionKey} lig aşaması ${definition.target} yerine ${selected.length} takım üretti.`);
+    }
+
+    const identities = selected.map((team) => team.qualificationId);
+    if (new Set(identities).size !== identities.length) {
+      throw new Error(`${competitionKey} kadrosunda aynı takım iki kez yer aldı.`);
+    }
+
+    competition.teams = selected;
     competition.logo = definition.logo;
     competition.background = definition.background;
     diagnostics[definition.id] = {
-      warnings: result.warnings,
-      selectedSlugs: result.teams.filter((team) => !team.isPlaceholder).map((team) => team.poolSlug),
-      placeholderCount: result.teams.filter((team) => team.isPlaceholder).length
+      warnings: [],
+      selectedSlugs: selected.map((team) => team.poolSlug),
+      selectedQualificationIds: identities,
+      guaranteedCount: guaranteed.length,
+      qualifierCount: qualifiers.length,
+      placeholderCount: 0,
+      bracketVersion: simulation.diagnostics.bracketVersion,
+      qualificationTransfers: simulation.diagnostics.transferCounts
     };
   });
 
-  window.UCLDRAW_POOL_DIAGNOSTICS = diagnostics;
+  const allQualificationIds = Object.values(data.competitions)
+    .flatMap((competition) => competition.teams)
+    .map((team) => team.qualificationId);
+  if (new Set(allQualificationIds).size !== allQualificationIds.length) {
+    throw new Error('Aynı kulüp birden fazla UEFA lig aşamasına yerleştirildi.');
+  }
 
-  Object.values(diagnostics).flatMap((entry) => entry.warnings).forEach((warning) => {
-    console.warn(`[UCL Draw Pools] ${warning}`);
-  });
+  window.UCLDRAW_POOL_DIAGNOSTICS = diagnostics;
+  window.UCLDRAW_QUALIFICATION_RESULT = simulation;
 })();
