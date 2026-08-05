@@ -30,7 +30,8 @@
   });
 
   function recordFor(team) {
-    return coefficientData.clubs?.[team.poolSlug] || reviewedFallbacks[team.poolSlug] || null;
+    const coefficientSlug = team.coefficientSlug || team.poolSlug;
+    return coefficientData.clubs?.[coefficientSlug] || reviewedFallbacks[coefficientSlug] || null;
   }
 
   function coefficientFor(team) {

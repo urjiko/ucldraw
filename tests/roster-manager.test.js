@@ -30,6 +30,7 @@ const context = vm.createContext({
   Boolean,
   RegExp,
   JSON,
+  TypeError,
   CustomEvent: TestCustomEvent
 });
 context.window = context;
@@ -38,6 +39,7 @@ context.window.dispatchEvent = (event) => dispatched.push(event);
 load('teams.js', context);
 load('generated-team-pools.js', context);
 load('generated-club-coefficients.js', context);
+load('qualification-bracket.js', context);
 load('team-pool-loader.js', context);
 load('coefficient-pots.js', context);
 load('roster-manager.js', context);
@@ -48,7 +50,7 @@ const competition = data.competitions.ucl;
 const all = manager.allTeams('ucl');
 
 assert.ok(all.length > competition.teams.length, 'UCL search must include reserve qualification teams');
-assert.ok(all.some((team) => team.poolSlug === 'fenerbahce'), 'Fenerbahçe must stay searchable even when outside the random 36');
+assert.ok(all.some((team) => team.poolSlug === 'fenerbahce'), 'Fenerbahçe must stay searchable through the qualification roster');
 
 const reserve = manager.reserveTeams('ucl').find((team) => team.poolSlug === 'fenerbahce')
   || manager.reserveTeams('ucl')[0];
