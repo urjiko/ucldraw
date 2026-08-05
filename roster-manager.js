@@ -2,49 +2,37 @@
   'use strict';
 
   const data = window.UCLDRAW_DATA;
-  const manifest = window.UCLDRAW_POOL_MANIFEST;
+  const bracket = window.UCLDRAW_QUALIFICATION_BRACKET;
   const coefficientData = window.UCLDRAW_CLUB_COEFFICIENTS || { clubs: {} };
   const coefficientPots = window.UCLDRAW_COEFFICIENT_POTS;
 
-  if (!data?.competitions || !manifest || !coefficientPots?.assignCoefficientPots) {
-    throw new Error('Kadro yöneticisi için gerekli veriler yüklenemedi.');
+  if (!data?.competitions || !bracket?.rounds || !coefficientPots?.assignCoefficientPots) {
+    throw new Error('Kadro yöneticisi için gerekli eleme verileri yüklenemedi.');
   }
 
-  const competitionKeys = Object.freeze({
-    ucl: 'champions',
-    uel: 'europa',
-    uecl: 'conference'
-  });
-  const stages = Object.freeze(['guaranteed', 'playoffs', 'q3', 'q2']);
   const definitions = Object.freeze({
     ucl: Object.freeze({ titleHolderSlug: 'psg' }),
     uel: Object.freeze({ titleHolderSlug: null }),
     uecl: Object.freeze({ titleHolderSlug: null })
   });
-  const stagePriority = Object.freeze({ q2: 0, q3: 1, playoffs: 2, placeholder: 3, guaranteed: 99 });
+  const stagePriority = Object.freeze({ q2: 0, q3: 1, playoffs: 2, qualified: 3, guaranteed: 99 });
+  const destinationRounds = Object.freeze({
+    ucl: Object.freeze(['ucl-playoffs']),
+    uel: Object.freeze(['ucl-playoffs', 'uel-playoffs']),
+    uecl: Object.freeze(['uel-playoffs', 'uecl-playoffs'])
+  });
+  const roundById = new Map(bracket.rounds.map((round) => [round.id, round]));
+  const tieById = new Map(bracket.rounds.flatMap((round) => round.ties.map((tie) => [tie.id, tie])));
 
-  function slugFromEntry(entry) {
-    const file = typeof entry === 'string' ? entry : entry.file;
-    return String(typeof entry === 'string' ? file.replace(/\.png$/i, '') : entry.slug)
-      .toLocaleLowerCase('en-US');
-  }
-
-  function fileFromEntry(entry) {
-    return typeof entry === 'string' ? entry : entry.file;
-  }
-
-  function humanizeSlug(slug) {
-    return String(slug)
-      .replace(/[-_]+/g, ' ')
-      .replace(/\b\w/g, (letter) => letter.toLocaleUpperCase('tr-TR'));
-  }
-
-  function coefficientRecord(slug) {
+  function coefficientRecord(teamOrSlug) {
+    const slug = typeof teamOrSlug === 'string'
+      ? teamOrSlug
+      : teamOrSlug?.coefficientSlug || teamOrSlug?.poolSlug;
     return coefficientData.clubs?.[slug] || null;
   }
 
   function decorateCandidate(team) {
-    const record = coefficientRecord(team.poolSlug);
+    const record = coefficientRecord(team);
     const coefficient = Number(record?.coefficient);
     const rank = Number(record?.rank);
     return {
@@ -56,41 +44,68 @@
     };
   }
 
+  function collectLeafTeams(participant, teams, visiting) {
+    if (participant?.id) {
+      teams.set(participant.id, participant);
+      return;
+    }
+    const tieId = participant?.tieId;
+    if (!tieId || visiting.has(tieId)) return;
+    const tie = tieById.get(tieId);
+    if (!tie) throw new Error(`Eleme ağacında eşleşme bulunamadı: ${tieId}`);
+    visiting.add(tieId);
+    collectLeafTeams(tie.first, teams, visiting);
+    collectLeafTeams(tie.second, teams, visiting);
+    visiting.delete(tieId);
+  }
+
+  function qualificationCandidates(competitionId) {
+    const teams = new Map();
+    (destinationRounds[competitionId] || []).forEach((roundId) => {
+      const round = roundById.get(roundId);
+      if (!round) throw new Error(`Eleme turu bulunamadı: ${roundId}`);
+      round.ties.forEach((tie) => {
+        collectLeafTeams(tie.first, teams, new Set());
+        collectLeafTeams(tie.second, teams, new Set());
+      });
+    });
+    return [...teams.values()];
+  }
+
+  function teamFromDescriptor(descriptor) {
+    const source = descriptor.source;
+    const team = decorateCandidate({
+      name: descriptor.name,
+      country: descriptor.country,
+      pot: 0,
+      poolSlug: descriptor.poolSlug,
+      coefficientSlug: descriptor.coefficientSlug || descriptor.poolSlug,
+      qualificationId: descriptor.id,
+      qualificationStage: source?.stage || 'qualified',
+      qualificationRoute: 'candidate',
+      isReserveCandidate: true
+    });
+    if (source) team.crest = `pools/${source.competitionKey}/${source.stage}/${source.fileSlug}`;
+    return team;
+  }
+
   function allTeams(competitionId) {
     const competition = data.competitions[competitionId];
-    const competitionKey = competitionKeys[competitionId];
-    const source = manifest[competitionKey];
-    if (!competition || !source) return [];
+    if (!competition) return [];
 
-    const selectedBySlug = new Map(competition.teams.map((team) => [team.poolSlug, team]));
     const teams = [];
     const seen = new Set();
+    competition.teams.forEach((team) => {
+      const identity = team.qualificationId || team.poolSlug;
+      if (seen.has(identity)) return;
+      seen.add(identity);
+      teams.push(team);
+    });
 
-    stages.forEach((stage) => {
-      (source[stage] || []).forEach((entry) => {
-        const slug = slugFromEntry(entry);
-        if (seen.has(slug)) return;
-        seen.add(slug);
-
-        const selected = selectedBySlug.get(slug);
-        if (selected) {
-          teams.push(selected);
-          return;
-        }
-
-        const file = fileFromEntry(entry);
-        const fileStem = String(file).replace(/\.png$/i, '');
-        const record = coefficientRecord(slug);
-        teams.push(decorateCandidate({
-          name: record?.officialName || humanizeSlug(slug),
-          country: record?.country || '---',
-          pot: 0,
-          crest: `pools/${competitionKey}/${stage}/${fileStem}`,
-          poolSlug: slug,
-          qualificationStage: stage,
-          isReserveCandidate: true
-        }));
-      });
+    qualificationCandidates(competitionId).forEach((descriptor) => {
+      if (seen.has(descriptor.id)) return;
+      seen.add(descriptor.id);
+      teams.push(teamFromDescriptor(descriptor));
     });
 
     return teams;
@@ -158,11 +173,7 @@
       .map((team) => {
         const previous = beforeBySlug.get(team.poolSlug);
         if (!previous || previous.pot === team.pot) return null;
-        return Object.freeze({
-          team,
-          fromPot: previous.pot,
-          toPot: team.pot
-        });
+        return Object.freeze({ team, fromPot: previous.pot, toPot: team.pot });
       })
       .filter(Boolean);
 
