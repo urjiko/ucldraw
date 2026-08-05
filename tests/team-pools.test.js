@@ -22,7 +22,8 @@ function createContext() {
     Number,
     Boolean,
     RegExp,
-    JSON
+    JSON,
+    TypeError
   });
   context.window = context;
   return context;
@@ -44,19 +45,18 @@ for (const [competitionKey, stages] of Object.entries(manifest)) {
   }
 }
 
-const conferenceEntries = Object.values(manifest.conference)
-  .flat()
-  .map((entry) => (typeof entry === 'string' ? entry : entry.file));
-const expectedConferencePlaceholders = Math.max(0, 36 - conferenceEntries.length);
-
 for (let run = 0; run < 20; run += 1) {
   const context = createContext();
   load('teams.js', context);
   load('generated-team-pools.js', context);
+  load('generated-club-coefficients.js', context);
+  load('qualification-bracket.js', context);
   load('team-pool-loader.js', context);
+  load('coefficient-pots.js', context);
 
   const competitions = context.window.UCLDRAW_DATA.competitions;
   const diagnostics = context.window.UCLDRAW_POOL_DIAGNOSTICS;
+  const qualification = context.window.UCLDRAW_QUALIFICATION_RESULT;
 
   for (const id of ['ucl', 'uel', 'uecl']) {
     const competition = competitions[id];
@@ -69,22 +69,45 @@ for (let run = 0; run < 20; run += 1) {
 
     const names = competition.teams.map((team) => team.name);
     assert.equal(new Set(names).size, names.length, `${id} team names must be unique`);
+    assert.equal(diagnostics[id].placeholderCount, 0, `${id} must not use independent placeholders`);
+
+    competition.teams.filter((team) => team.crest).forEach((team) => {
+      assert.ok(
+        fs.existsSync(path.join(root, 'crests', `${team.crest}.png`)),
+        `${id}/${team.name} points to a missing crest ${team.crest}.png`
+      );
+    });
   }
 
+  const allQualificationIds = Object.values(competitions)
+    .flatMap((competition) => competition.teams)
+    .map((team) => team.qualificationId);
+  assert.equal(
+    new Set(allQualificationIds).size,
+    108,
+    'the same club must not appear in more than one league phase'
+  );
+
   const psg = competitions.ucl.teams.find((team) => team.poolSlug === 'psg');
-  assert.ok(psg, 'psg.png must be selected from the guaranteed folder');
+  assert.ok(psg, 'psg.png must stay in the guaranteed Champions group');
   assert.equal(psg.name, 'Paris Saint-Germain');
   assert.equal(psg.crest, 'pools/champions/guaranteed/psg');
 
-  const allGuaranteedUcl = context.window.UCLDRAW_POOL_MANIFEST.champions.guaranteed.map((entry) => entry.replace(/\.png$/i, '').toLowerCase());
+  const allGuaranteedUcl = context.window.UCLDRAW_POOL_MANIFEST.champions.guaranteed
+    .map((entry) => entry.replace(/\.png$/i, '').toLowerCase());
   const selectedUcl = new Set(diagnostics.ucl.selectedSlugs);
   allGuaranteedUcl.forEach((slug) => assert.ok(selectedUcl.has(slug), `${slug} must stay guaranteed`));
 
-  assert.equal(
-    diagnostics.uecl.placeholderCount,
-    expectedConferencePlaceholders,
-    'Conference placeholder count must follow the current pool manifest'
-  );
+  assert.equal(diagnostics.ucl.guaranteedCount, 29);
+  assert.equal(diagnostics.ucl.qualifierCount, 7);
+  assert.equal(diagnostics.uel.guaranteedCount, 13);
+  assert.equal(diagnostics.uel.qualifierCount, 23);
+  assert.equal(diagnostics.uecl.guaranteedCount, 0);
+  assert.equal(diagnostics.uecl.qualifierCount, 36);
+
+  assert.equal(qualification.qualifiers.ucl.length, 7);
+  assert.equal(qualification.qualifiers.uel.length, 23);
+  assert.equal(qualification.qualifiers.uecl.length, 36);
 }
 
 console.log('Team pool generation checks passed.');
