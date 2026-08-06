@@ -11,6 +11,7 @@ function load(file, context) {
 }
 
 const dispatched = [];
+const stored = new Map();
 class TestCustomEvent {
   constructor(type, options = {}) {
     this.type = type;
@@ -35,6 +36,11 @@ const context = vm.createContext({
 });
 context.window = context;
 context.window.dispatchEvent = (event) => dispatched.push(event);
+context.window.sessionStorage = {
+  getItem(key) { return stored.has(key) ? stored.get(key) : null; },
+  setItem(key, value) { stored.set(key, String(value)); },
+  removeItem(key) { stored.delete(key); }
+};
 
 load('teams.js', context);
 load('generated-team-pools.js', context);
@@ -50,58 +56,77 @@ const competition = data.competitions.ucl;
 const all = manager.allTeams('ucl');
 
 assert.ok(all.length > competition.teams.length, 'UCL search must include reserve qualification teams');
-assert.ok(all.some((team) => team.poolSlug === 'fenerbahce'), 'Fenerbahçe must stay searchable through the qualification roster');
+assert.ok(all.some((team) => team.poolSlug === 'fenerbahce'), 'Fenerbahçe must stay searchable through its real qualification slot');
 
-const reserve = manager.reserveTeams('ucl').find((team) => team.poolSlug === 'fenerbahce')
-  || manager.reserveTeams('ucl')[0];
-assert.ok(reserve, 'At least one reserve team is required for replacement testing');
+const pathIds = ['fenerbahce', 'strumgraz', 'spartapraha', 'lyon'];
+const selectedPathTeams = competition.teams.filter((team) => pathIds.includes(team.poolSlug));
+assert.equal(selectedPathTeams.length, 1, 'the Fenerbahçe/Sturm/Sparta/Lyon path must produce exactly one UCL club');
+const pathWinner = selectedPathTeams[0];
 
-const removable = competition.teams.filter((team) => manager.isRemovable('ucl', team));
+const pathScenarios = manager.incomingScenarios('ucl', pathWinner);
+assert.deepEqual(
+  new Set(pathScenarios.map((scenario) => scenario.incoming.poolSlug)),
+  new Set(pathIds.filter((id) => id !== pathWinner.poolSlug)),
+  'replacing the UCL path winner must only offer clubs from the same four-team path'
+);
+assert.equal(pathScenarios.length, 3, 'the selected UCL berth must have exactly three alternatives');
+assert.ok(pathScenarios.every((scenario) => scenario.outgoing.poolSlug === pathWinner.poolSlug));
+
+const incomingSlug = pathWinner.poolSlug === 'fenerbahce' ? 'lyon' : 'fenerbahce';
+const incoming = manager.candidateTeam('ucl', incomingSlug);
+const reverseScenarios = manager.replacementScenarios('ucl', incoming);
+assert.equal(reverseScenarios.length, 1, 'a reserve team may replace only the active holder of its real UCL berth');
+assert.equal(reverseScenarios[0].outgoing.poolSlug, pathWinner.poolSlug);
+
 const guaranteed = competition.teams.filter((team) => manager.isGuaranteed(team));
-assert.ok(removable.length > 0, 'the active roster needs at least one removable qualification team');
 assert.ok(guaranteed.length > 0, 'the active roster needs guaranteed participants');
-
-const scenarios = manager.replacementScenarios('ucl', reserve);
-assert.equal(scenarios.length, removable.length, 'every removable team must produce a full final-roster scenario');
-assert.ok(scenarios.every((scenario) => !manager.isGuaranteed(scenario.outgoing)), 'guaranteed teams must never be offered for removal');
-assert.ok(scenarios.every((scenario) => scenario.outgoing.poolSlug !== 'psg'), 'Champions League titleholder must stay protected');
-
-for (const scenario of scenarios) {
-  assert.equal(scenario.teams.length, 36, 'every scenario must preserve the 36-team roster');
-  assert.equal(new Set(scenario.teams.map((team) => team.poolSlug)).size, 36, 'scenario roster must stay unique');
-  assert.ok(scenario.teams.some((team) => team.poolSlug === reserve.poolSlug), 'scenario must contain the incoming team');
-  assert.ok(!scenario.teams.some((team) => team.poolSlug === scenario.outgoing.poolSlug), 'scenario must remove the selected outgoing team');
-  assert.equal(scenario.teams.find((team) => team.poolSlug === reserve.poolSlug).pot, scenario.incomingPot);
-  const potSizes = Array.from({ length: competition.potCount }, (_, index) => (
-    scenario.teams.filter((team) => team.pot === index + 1).length
-  ));
-  assert.deepEqual(potSizes, [9, 9, 9, 9]);
-}
-
-const scenarioPots = [...new Set(scenarios.map((scenario) => scenario.incomingPot))].sort();
-assert.deepEqual([...manager.possiblePots('ucl', reserve)], scenarioPots, 'search result pots must come from real 36-team replacement scenarios');
-assert.equal(manager.replacementCandidates('ucl', reserve).length, removable.length, 'legacy candidate list must no longer be limited to one projected pot');
-
 assert.throws(
-  () => manager.simulateReplacement('ucl', reserve, guaranteed[0]),
+  () => manager.simulateReplacement('ucl', incoming, guaranteed[0]),
   /Garanti katılımcılar/,
   'guaranteed participants must be impossible to remove'
 );
 
-const outgoing = removable[0];
-const incomingScenarios = manager.incomingScenarios('ucl', outgoing);
-assert.equal(incomingScenarios.length, manager.reserveTeams('ucl').length, 'clicking a removable pot team must offer every reserve team');
-assert.ok(incomingScenarios.every((scenario) => scenario.outgoing.poolSlug === outgoing.poolSlug));
+const preview = reverseScenarios[0];
+for (const id of ['ucl', 'uel', 'uecl']) {
+  assert.equal(preview.competitionUpdates[id].length, 36, `${id} preview must preserve 36 clubs`);
+}
+const previewIds = Object.values(preview.competitionUpdates)
+  .flat()
+  .map((team) => team.qualificationId || team.poolSlug);
+assert.equal(new Set(previewIds).size, 108, 'preview must keep all three league phases globally unique');
 
-const chosen = scenarios[0];
-const inserted = manager.replaceTeam('ucl', reserve.poolSlug, chosen.outgoing.poolSlug);
-assert.equal(competition.teams.length, 36, 'replacement must preserve the 36-team roster');
-assert.equal(new Set(competition.teams.map((team) => team.poolSlug)).size, 36, 'replacement roster must stay unique');
-assert.equal(inserted.poolSlug, reserve.poolSlug);
-assert.equal(inserted.pot, chosen.incomingPot, 'applied replacement must match its simulated final pot');
-assert.equal(manager.selectedTeam('ucl', chosen.outgoing.poolSlug), null, 'chosen outgoing team must leave the active roster');
+const inserted = manager.replaceTeam('ucl', incomingSlug, pathWinner.poolSlug);
+assert.equal(inserted.poolSlug, incomingSlug);
+assert.equal(data.competitions.ucl.teams.filter((team) => pathIds.includes(team.poolSlug)).length, 1);
+assert.equal(data.competitions.ucl.teams.find((team) => pathIds.includes(team.poolSlug)).poolSlug, incomingSlug);
+
+const europaPathIds = data.competitions.uel.teams
+  .filter((team) => pathIds.includes(team.poolSlug))
+  .map((team) => team.poolSlug);
+assert.deepEqual(
+  new Set(europaPathIds),
+  new Set(pathIds.filter((id) => id !== incomingSlug)),
+  'the other three clubs from the path must move coherently into Europa League'
+);
+assert.equal(data.competitions.uecl.teams.filter((team) => pathIds.includes(team.poolSlug)).length, 0);
+
+const finalIds = Object.values(data.competitions)
+  .flatMap((entry) => entry.teams)
+  .map((team) => team.qualificationId || team.poolSlug);
+assert.equal(new Set(finalIds).size, 108, 'manual replacement must not duplicate a club across competitions');
+
+for (const [id, entry] of Object.entries(data.competitions)) {
+  const capacity = entry.teams.length / entry.potCount;
+  for (let pot = 1; pot <= entry.potCount; pot += 1) {
+    assert.equal(entry.teams.filter((team) => team.pot === pot).length, capacity, `${id} Pot ${pot} must remain full`);
+  }
+}
+
 assert.equal(dispatched.at(-1)?.type, 'ucldraw:roster-changed');
-assert.equal(dispatched.at(-1)?.detail?.incoming?.poolSlug, reserve.poolSlug);
-assert.ok(Array.isArray(dispatched.at(-1)?.detail?.potChanges));
+assert.equal(dispatched.at(-1)?.detail?.incoming?.poolSlug, incomingSlug);
+assert.ok(dispatched.at(-1)?.detail?.affectedCompetitionIds.includes('ucl'));
+assert.ok(dispatched.at(-1)?.detail?.affectedCompetitionIds.includes('uel'));
+assert.ok(Array.isArray(dispatched.at(-1)?.detail?.slotChanges));
+assert.ok(stored.has('ucldraw:qualification-slot-assignments:v1'), 'coherent slot assignments must persist across league route reloads');
 
-console.log('Guaranteed locks and coefficient replacement scenarios passed.');
+console.log('Qualification-slot roster replacement checks passed.');
