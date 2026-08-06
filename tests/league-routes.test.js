@@ -31,6 +31,8 @@ assert.match(runtime, /europa-league\//);
 assert.match(runtime, /conference-league\//);
 assert.match(runtime, /window\.location\.assign/);
 assert.match(runtime, /stopImmediatePropagation/);
+assert.match(runtime, /!event\.isTrusted/);
+assert.match(runtime, /Internal UI refreshes use HTMLElement\.click/);
 assert.match(shell, /window\.UCLDRAW_APP_ROOT = appRootUrl\.href/);
 assert.match(shell, /base\.href = appRootUrl\.href/);
 assert.match(shell, /fetch\(appUrl\('index\.html'\)/);
