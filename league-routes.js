@@ -37,7 +37,9 @@
 
   document.addEventListener('click', (event) => {
     const button = event.target.closest?.('.competition-picker [data-league]');
-    if (!button || bypassNavigation) return;
+    // Internal UI refreshes use HTMLElement.click(). Those synthetic clicks must
+    // update the in-memory league view without turning into a page navigation.
+    if (!button || bypassNavigation || !event.isTrusted) return;
     const leagueId = button.dataset.league;
     if (!routes[leagueId]) return;
     const target = routeUrl(leagueId);
